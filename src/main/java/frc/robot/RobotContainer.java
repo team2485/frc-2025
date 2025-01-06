@@ -4,10 +4,15 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+import frc.WarlordsLib.WL_CommandXboxController;
+import frc.robot.Constants.OIConstants;
+import static frc.robot.Constants.OIConstants.*;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DriveWithController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.drive.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,13 +25,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private final Drivetrain m_drivetrain = new Drivetrain();
+
+  private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
+  private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
@@ -41,14 +48,27 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+  /*
+   *  DoubleSupplier xSpeedSupplier,
+      DoubleSupplier ySpeedSupplier,
+      DoubleSupplier rotSpeedSupplier,
+      BooleanSupplier fieldRelative,
+      Drivetrain drivetrain,
+      PoseEstimation poseEstimation
+   * 
+   * 
+   * 
+   */
+  private void configureBindings() {
+    m_drivetrain.setDefaultCommand(
+      new DriveWithController(
+          m_driver::getLeftY,
+          m_driver::getLeftX,
+          m_driver::getRightX,
+          () -> true,
+          m_drivetrain, m_poseEstimation));
+
   }
 
   /**
@@ -58,6 +78,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return new Command() {
+       // TODO: Placeholder
+    };
   }
 }

@@ -84,16 +84,19 @@ public final class Constants {
   public static final COTSFalconSwerveConstants chosenModule = // TODO: This must be tuned to specific robot
   COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0; // hi asdasdsa
-  } 
+  public static final class OIConstants {
+    public static final int kDriverPort = 0;
+    public static final int kOperatorPort = 1;
+
+    public static final double kDriverRightXDeadband = 0.05;
+    public static final double kDriverLeftXDeadband = 0.05;
+    public static final double kDriverLeftYDeadband = 0.05;
+
+    public static final double kTriggerThreshold = 0.1;
+  }
 
   public interface FieldConstants {
-    public Pose2d getPickupPos();
-    public Pose2d getSpeakerPos();
-    public Pose2d getSpeakerAnglePos();
-    public Pose2d getAmpPos();
-    public Pose2d[] getRingPositions();
+
     public boolean isOnRed();
   }
 
@@ -172,29 +175,11 @@ public final class Constants {
   }
 
   public static final class RedFieldConstants implements FieldConstants {
-    public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getSpeakerAnglePos() { return new Pose2d(16.559342, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.5, new Rotation2d()); }
-    public Pose2d[] getRingPositions() {
-        return new Pose2d[] {
-            new Pose2d(13.5, 7, new Rotation2d()),
-            new Pose2d(13.5, 5, new Rotation2d()),
-        };
-    }
+
     public boolean isOnRed() {return true;}
   }
   public static final class BlueFieldConstants implements FieldConstants {
-    public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
-    public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
-    public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
-    public Pose2d[] getRingPositions() {
-        return new Pose2d[] {
-            new Pose2d(),
-            new Pose2d(),
-        };
-    }
+
     public boolean isOnRed() {return false;}
   }
 

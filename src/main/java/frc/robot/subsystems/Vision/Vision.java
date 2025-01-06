@@ -52,13 +52,13 @@ public class Vision implements Runnable {
     private Pose3d m_badPose;
     private boolean noteExists = false;
 
-    public Vision() {
+    public Vision(String cameraName) {
         PhotonPoseEstimator photonPoseEstimator = null;
         PhotonPoseEstimator estimatorWithError = null;
         cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
     
 
-        this.m_camera = new PhotonCamera(kCameraName);
+        this.m_camera = new PhotonCamera(cameraName);
         this.m_noteCamera = new PhotonCamera("notecamera");
 
         try {

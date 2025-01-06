@@ -42,7 +42,8 @@ public class PoseEstimation extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDrivePoseEstimator noVisionPoseEstimator;
   private final Field2d field2d = new Field2d();
-  private final Vision photonEstimator = new Vision();
+  private final Vision photonEstimator = new Vision("placeholder"); // TODO: Replace Camera Name here!
+  private final Vision multiCamTest = new Vision("anotherCamera"); // TODO: See if this would work for multicamera localization.
   private final Notifier photonNotifier = new Notifier(photonEstimator);
   private final WL_CommandXboxController m_driver;
     private final WL_CommandXboxController m_operator;
@@ -101,12 +102,20 @@ public class PoseEstimation extends SubsystemBase {
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
     noVisionPoseEstimator.update(rotation.get(), modulePosition.get());
+    // TODO: For loop over cameras here
     var visionPose = photonEstimator.grabLatestEstimatedPose();
+    var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
     if (visionPose != null) {
       var pose2d = visionPose.estimatedPose.toPose2d();
    
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
       
+    }
+    if(theoreticalOtherCamPose != null){
+
+      var pose2d = theoreticalOtherCamPose.estimatedPose.toPose2d();
+      poseEstimator.addVisionMeasurement(pose2d, theoreticalOtherCamPose.timestampSeconds);
+
     }
 
     var dashboardPose = poseEstimator.getEstimatedPosition();
