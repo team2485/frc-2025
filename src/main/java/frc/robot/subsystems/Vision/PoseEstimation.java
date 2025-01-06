@@ -105,7 +105,7 @@ public class PoseEstimation extends SubsystemBase {
     // TODO: For loop over cameras here
     var visionPose = photonEstimator.grabLatestEstimatedPose();
     var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
-    if (visionPose != null) {
+    if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4
       var pose2d = visionPose.estimatedPose.toPose2d();
    
       poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);

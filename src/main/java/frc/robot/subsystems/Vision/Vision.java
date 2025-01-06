@@ -54,6 +54,7 @@ public class Vision implements Runnable {
     public Vision(String cameraName) {
         PhotonPoseEstimator photonPoseEstimator = null;
         PhotonPoseEstimator estimatorWithError = null;
+
         cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
     
 
@@ -76,7 +77,8 @@ public class Vision implements Runnable {
             DriverStation.reportError("Path: ", e.getStackTrace()); // can't estimate poses without known tag positions
             photonPoseEstimator = null;
         }
-
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        estimatorWithError.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         this.m_photonPoseEstimator = photonPoseEstimator;
         this.m_estimatorWithError = estimatorWithError;
     }
