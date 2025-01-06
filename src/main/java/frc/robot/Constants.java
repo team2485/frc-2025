@@ -87,6 +87,118 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0; // hi asdasdsa
   } 
+
+  public interface FieldConstants {
+    public Pose2d getPickupPos();
+    public Pose2d getSpeakerPos();
+    public Pose2d getSpeakerAnglePos();
+    public Pose2d getAmpPos();
+    public Pose2d[] getRingPositions();
+    public boolean isOnRed();
+  }
+
+  public static final class VisionConstants {
+    public static final String kCameraName = "photonvision";
+
+    // old constraints (might want to use again)
+
+    public static final TrapezoidProfile.Constraints kXConstraints = new TrapezoidProfile.Constraints(1, 2);
+    public static final TrapezoidProfile.Constraints kYConstraints = new TrapezoidProfile.Constraints(.5, 2);
+    public static final TrapezoidProfile.Constraints kOmegaConstraints = new TrapezoidProfile.Constraints(3, 8);
+
+    public static final double kTranslationTolerance = 0.02;
+    public static final double kThetaTolerance = Units.degreesToRadians(0);
+
+    // TODO: tune!
+    public static final TrapezoidProfile.Constraints kDefaultXYContraints = new TrapezoidProfile.Constraints(
+        Swerve.maxSpeed * 0.3,
+        Swerve.maxAngularVelocity);
+
+    public static final TrapezoidProfile.Constraints kDefaultOmegaConstraints = new TrapezoidProfile.Constraints(
+        Swerve.maxAngularVelocity * 0.2,
+        Swerve.maxAngularVelocity);
+
+    // TODO: tune!
+    public static final double X_kP = 1.25;
+    public static final double X_kI = 0.3;
+    public static final double X_kD = 0.0;
+
+    public static final double Y_kP = 1.25;
+    public static final double Y_kI = 0.3;
+    public static final double Y_kD = 0.0;  
+
+    public static final double THETA_kP = 1.5;
+    public static final double THETA_kI = 0.5;
+    public static final double THETA_kD = 0.15;
+
+    // TODO: ensure validity of measurements
+    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(.2921, 0, 0.24),
+        new Rotation3d(0,-.402,0)); 
+    //-0.698
+
+    public static final double kFieldLengthMeters = 17.55;
+    public static final double kFieldWidthMeters = 8.05;
+    // DOCS: https://firstfrc.blob.core.windows.net/frc2025/FieldAssets/2025FieldDrawings-FieldLayoutAndMarking.pdf
+    // Z-Rotation is Yaw, X-Rotation is Pitch
+    // Rotation3d has roll first, then pitch, then yaw
+  
+    public static final List<AprilTag> kBlueTagList = 
+                                        List.of(
+                                        new AprilTag(1, new Pose3d(6.5737, 0.2580, 0.5850, new Rotation3d(0,0,126))),
+                                        new AprilTag(2, new Pose3d(6.5737, 2.9120, 0.5850, new Rotation3d(0,0,234))),
+                                        new AprilTag(3, new Pose3d(4.5515, 3.1715, 0.5125, new Rotation3d(0,0,270))),
+                                        new AprilTag(4, new Pose3d(3.6520,2.4164, 0.7354, new Rotation3d(0,30,0))),
+                                        new AprilTag(5, new Pose3d(3.6520, 0.7539, 0.7354, new Rotation3d(0,30,0))),
+                                        new AprilTag(6, new Pose3d(5.3049, 1.3017, 0.1213, new Rotation3d(0,0,300))),
+                                        new AprilTag(7, new Pose3d(5.4687, 1.5850, 0.1213, new Rotation3d(0,0,0))),
+                                        new AprilTag(8, new Pose3d(5.3049, 1.8683, 0.1213, new Rotation3d(0,0,60))),
+                                        new AprilTag(9, new Pose3d(4.9777, 1.8683, 0.1213, new Rotation3d(0,0,120))),
+                                        new AprilTag(10, new Pose3d(4.8139, 1.5850, 0.1213, new Rotation3d(0,0,180))),
+                                        new AprilTag(11, new Pose3d( 4.9777,1.3017, 0.1213, new Rotation3d(0,0,240))),
+                                        new AprilTag(12, new Pose3d(0.3351, 0.2580, 0.5850, new Rotation3d(0,0,54))),
+                                        new AprilTag(13, new Pose3d(0.3351, 2.9120, 0.5850, new Rotation3d(0,0,306))),
+                                        new AprilTag(14, new Pose3d(3.2568, 2.4164, 0.7354, new Rotation3d(0,30,180))),
+                                        new AprilTag(15, new Pose3d(3.2568, 0.7539, 0.7354, new Rotation3d(0,30,180))),
+                                        new AprilTag(16, new Pose3d(2.3573, -0.0015, 0.5125, new Rotation3d(0,0,90))),
+                                        new AprilTag(17, new Pose3d(1.6039, 1.3017, 0.1213, new Rotation3d(0,0,240))),
+                                        new AprilTag(18, new Pose3d(1.4400, 1.5850, 0.1213, new Rotation3d(0,0,180))),
+                                        new AprilTag(19, new Pose3d(1.6039, 1.8683, 0.1213, new Rotation3d(0,0,120))),
+                                        new AprilTag(20, new Pose3d(1.9310, 1.8683, 0.1213, new Rotation3d(0,0,60))),
+                                        new AprilTag(21, new Pose3d(2.0949, 1.5850, 0.1213, new Rotation3d(0,0,0))),
+                                        new AprilTag(22, new Pose3d(1.9310, 1.3017, 0.1213, new Rotation3d(0,0,300)))
+                                    
+                                        );                                    
+
+  }
+
+  public static final class RedFieldConstants implements FieldConstants {
+    public Pose2d getPickupPos() { return new Pose2d(10, 2, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(16.579342, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(16.559342, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getAmpPos() { return new Pose2d(14.700757999999999, 8.5, new Rotation2d()); }
+    public Pose2d[] getRingPositions() {
+        return new Pose2d[] {
+            new Pose2d(13.5, 7, new Rotation2d()),
+            new Pose2d(13.5, 5, new Rotation2d()),
+        };
+    }
+    public boolean isOnRed() {return true;}
+  }
+  public static final class BlueFieldConstants implements FieldConstants {
+    public Pose2d getPickupPos() { return new Pose2d(15, 2, new Rotation2d()); }
+    public Pose2d getSpeakerPos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getSpeakerAnglePos() { return new Pose2d(-0.038099999999999995, 5.547867999999999, new Rotation2d()); }
+    public Pose2d getAmpPos() { return new Pose2d(1.8415, 8.5, new Rotation2d()); }
+    public Pose2d[] getRingPositions() {
+        return new Pose2d[] {
+            new Pose2d(),
+            new Pose2d(),
+        };
+    }
+    public boolean isOnRed() {return false;}
+  }
+
+
   public static final class AutoConstants {
     public static final double kAutoMaxSpeedMetersPerSecond = 1.5;
     public static final double kAutoMaxAccelerationMetersPerSecondSquared = 2;
@@ -167,6 +279,10 @@ public final class Constants {
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
   
+
+ 
+
+
     /*
      * Swerve Kinematics
      * No need to ever change this unless you are not doing a traditional
