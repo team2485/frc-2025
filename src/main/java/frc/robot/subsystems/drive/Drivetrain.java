@@ -1,31 +1,27 @@
 package frc.robot.subsystems.drive;
 
-import frc.robot.Constants;
-
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.*;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.config.RobotConfig;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.MedianFilter;
+import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase {
     public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drive");
     GenericEntry absoluteGyroPos;
     GenericEntry currentGyroPos;
+    public RobotConfig pathplannerConfig;
 
     private double absoluteGyroPosition = 0;
 
@@ -47,7 +43,12 @@ public class Drivetrain extends SubsystemBase {
         gyro.reset();
         if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
             absoluteGyroPosition = 180;
-
+        try{
+          pathplannerConfig = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
         // mSwerveMods = new SwerveModule[] {
         //     new SwerveModule(0, Constants.Swerve.Mod0.constants),
         //     new SwerveModule(1, Constants.Swerve.Mod1.constants),

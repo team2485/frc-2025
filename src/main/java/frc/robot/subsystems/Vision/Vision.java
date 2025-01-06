@@ -39,7 +39,7 @@ public class Vision implements Runnable {
     private final PhotonPoseEstimator m_estimatorWithError;
     // creates new PhotonCamera object for camera
     private final PhotonCamera m_camera; // initialize with a USEFUL name;
-    private final PhotonCamera m_noteCamera;
+
     // creates a thread-safe object reference since mutliple robot poses could be reported concurrently and conflict
     // lowkey an interesting read, the atomic library gaslights machine instruction algos like compare-and-swap
     // that are instrinsically atomic into working for concurrency
@@ -47,10 +47,9 @@ public class Vision implements Runnable {
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedBadRobotPose = new AtomicReference<EstimatedRobotPose>();
 
-    private double notePitch = 0;
-    private double noteYaw = 0;
+
     private Pose3d m_badPose;
-    private boolean noteExists = false;
+  
 
     public Vision(String cameraName) {
         PhotonPoseEstimator photonPoseEstimator = null;
@@ -59,7 +58,7 @@ public class Vision implements Runnable {
     
 
         this.m_camera = new PhotonCamera(cameraName);
-        this.m_noteCamera = new PhotonCamera("notecamera");
+
 
         try {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
@@ -132,35 +131,14 @@ public class Vision implements Runnable {
             }
             else SmartDashboard.putBoolean("Camera Positioned For Auto", false);
         }
-        if (m_noteCamera != null) {
-            var photonResults = m_noteCamera.getLatestResult();
-            if (photonResults.hasTargets()) {
-                photonResults.targets.removeIf(n -> (n.getPitch() > 0));
-                if (photonResults.targets.size() > 0) {
-                    noteExists = true;
-                    notePitch = photonResults.targets.get(0).getPitch();
-                    noteYaw = photonResults.targets.get(0).getYaw();
-                    cameraExists.setDouble(grabNoteYaw());
-                }
-                else noteExists = false;
-            }
-            else noteExists = false;
-        }
+        
     }
 
     public EstimatedRobotPose grabLatestEstimatedPose() {
         return m_atomicEstimatedRobotPose.get();
     }
 
-    public double grabNotePitch() {
-        return notePitch;
-    }
 
-    public double grabNoteYaw() {
-        return noteYaw;
-    }
 
-    public boolean getNoteExists() {
-        return noteExists && notePitch < 0;
-    }
+
 }

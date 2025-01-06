@@ -242,6 +242,9 @@ public final class Constants {
 
   public static final class Swerve 
   {
+
+
+
     public static final int pigeonID = 9;
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
@@ -253,7 +256,7 @@ public final class Constants {
     public static final double widthBetweenModules = 0.5842;
     public static final double driveRadius = 0.413091;
     public static final double wheelCircumference = chosenModule.wheelCircumference;
-
+    
     // public static RobotConfig pathplannerRobotConfig;
 
     //new RobotConfig(null, null, null, null)
@@ -263,7 +266,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-  
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(2,0,0),new PIDConstants(2,0,0));
 
  
 
