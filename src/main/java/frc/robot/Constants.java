@@ -4,47 +4,22 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import com.pathplanner.lib.config.PIDConstants;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-
-import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
-import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
-
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.*;
+
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
-import org.opencv.core.Mat;
-
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-
-
+import edu.wpi.first.math.util.Units;
 import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
@@ -239,7 +214,27 @@ public final class Constants {
     public static final double kRotationTolerance = 3;
   }
 
+  public static final class TelescopeConstants{
 
+    
+    public static final int kTelescopePort = 0; // TODO: placeholder port
+    public static final double kSTelescope = 0;
+    public static final double kVTelescope = 0;
+    public static final double kPTelescope = 0;
+    public static final double kITelescope = 0;
+    public static final double kDTelescope = 0;
+    public static final double kTelescopeCruiseVelocity = 0;
+    public static final double kTelescopeAcceleration = 0;
+    public static final double kTelescopeJerk = 0;
+
+    public static final boolean kTelescopeClockwisePositive = true;
+
+    public static final double kTelescopeErrorTolerance = 0;
+    
+
+
+
+  }
   public static final class Swerve 
   {
 
