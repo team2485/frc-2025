@@ -11,6 +11,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -53,7 +54,7 @@ public final class Constants {
   public static final double kNominalVoltage = 12.0;
   public static final int kCANTimeoutMs = 250;
   public static final double kTimestepSeconds = 0.02;
-
+  public static final double kInchesToMeters = 0.0254;
   public static final double kRIOLoopTime = 0.02;
 
   // motor constants
@@ -87,6 +88,8 @@ public final class Constants {
   public interface FieldConstants {
 
     public boolean isOnRed();
+    public Pose2d getUpperPickupPos();
+    public Pose2d getLowerPickupPos();
   }
 
   public static final class VisionConstants {
@@ -136,38 +139,56 @@ public final class Constants {
   
     public static final List<AprilTag> kBlueTagList = 
                                         List.of(
-                                        new AprilTag(1, new Pose3d(6.5737, 0.2580, 0.5850, new Rotation3d(0,0,126))),
-                                        new AprilTag(2, new Pose3d(6.5737, 2.9120, 0.5850, new Rotation3d(0,0,234))),
-                                        new AprilTag(3, new Pose3d(4.5515, 3.1715, 0.5125, new Rotation3d(0,0,270))),
-                                        new AprilTag(4, new Pose3d(3.6520,2.4164, 0.7354, new Rotation3d(0,30,0))),
-                                        new AprilTag(5, new Pose3d(3.6520, 0.7539, 0.7354, new Rotation3d(0,30,0))),
-                                        new AprilTag(6, new Pose3d(5.3049, 1.3017, 0.1213, new Rotation3d(0,0,300))),
-                                        new AprilTag(7, new Pose3d(5.4687, 1.5850, 0.1213, new Rotation3d(0,0,0))),
-                                        new AprilTag(8, new Pose3d(5.3049, 1.8683, 0.1213, new Rotation3d(0,0,60))),
-                                        new AprilTag(9, new Pose3d(4.9777, 1.8683, 0.1213, new Rotation3d(0,0,120))),
-                                        new AprilTag(10, new Pose3d(4.8139, 1.5850, 0.1213, new Rotation3d(0,0,180))),
-                                        new AprilTag(11, new Pose3d( 4.9777,1.3017, 0.1213, new Rotation3d(0,0,240))),
-                                        new AprilTag(12, new Pose3d(0.3351, 0.2580, 0.5850, new Rotation3d(0,0,54))),
-                                        new AprilTag(13, new Pose3d(0.3351, 2.9120, 0.5850, new Rotation3d(0,0,306))),
-                                        new AprilTag(14, new Pose3d(3.2568, 2.4164, 0.7354, new Rotation3d(0,30,180))),
-                                        new AprilTag(15, new Pose3d(3.2568, 0.7539, 0.7354, new Rotation3d(0,30,180))),
-                                        new AprilTag(16, new Pose3d(2.3573, -0.0015, 0.5125, new Rotation3d(0,0,90))),
-                                        new AprilTag(17, new Pose3d(1.6039, 1.3017, 0.1213, new Rotation3d(0,0,240))),
-                                        new AprilTag(18, new Pose3d(1.4400, 1.5850, 0.1213, new Rotation3d(0,0,180))),
-                                        new AprilTag(19, new Pose3d(1.6039, 1.8683, 0.1213, new Rotation3d(0,0,120))),
-                                        new AprilTag(20, new Pose3d(1.9310, 1.8683, 0.1213, new Rotation3d(0,0,60))),
-                                        new AprilTag(21, new Pose3d(2.0949, 1.5850, 0.1213, new Rotation3d(0,0,0))),
-                                        new AprilTag(22, new Pose3d(1.9310, 1.3017, 0.1213, new Rotation3d(0,0,300)))
+                                        new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126))),
+                                        new AprilTag(2, new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234))),
+                                        new AprilTag(3, new Pose3d(455.15*kInchesToMeters, 317.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,270))),
+                                        new AprilTag(4, new Pose3d(3.6520*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,0))),
+                                        new AprilTag(5, new Pose3d(365.20*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,0))),
+                                        new AprilTag(6, new Pose3d(530.49*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300))),
+                                        new AprilTag(7, new Pose3d(546.87*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
+                                        new AprilTag(8, new Pose3d(530.49*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60))),
+                                        new AprilTag(9, new Pose3d(497.77*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120))),
+                                        new AprilTag(10, new Pose3d(481.39*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180))),
+                                        new AprilTag(11, new Pose3d( 497.77*kInchesToMeters,130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240))),
+                                        new AprilTag(12, new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54))),
+                                        new AprilTag(13, new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306))),
+                                        new AprilTag(14, new Pose3d(325.68*kInchesToMeters, 241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,180))),
+                                        new AprilTag(15, new Pose3d(325.68*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,180))),
+                                        new AprilTag(16, new Pose3d(235.73*kInchesToMeters, -0.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,90))),
+                                        new AprilTag(17, new Pose3d(160.39*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240))),
+                                        new AprilTag(18, new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180))),
+                                        new AprilTag(19, new Pose3d(160.39*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120))),
+                                        new AprilTag(20, new Pose3d(193.10*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60))),
+                                        new AprilTag(21, new Pose3d(209.49*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
+                                        new AprilTag(22, new Pose3d(193.10*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300)))
                                     
                                         );                                    
 
   }
 
   public static final class RedFieldConstants implements FieldConstants {
+    public Pose2d getUpperPickupPos() {
+      return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
+      //2
+    }
+    public Pose2d getLowerPickupPos(){
 
+      return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
+    }
     public boolean isOnRed() {return true;}
   }
   public static final class BlueFieldConstants implements FieldConstants {
+    public Pose2d getUpperPickupPos(){
+
+      return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
+
+
+    }
+    public Pose2d getLowerPickupPos(){
+      return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
+
+
+    }
 
     public boolean isOnRed() {return false;}
   }
