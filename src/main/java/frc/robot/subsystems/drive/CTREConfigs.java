@@ -29,8 +29,8 @@ public final class CTREConfigs {
         swerveAngleFXConfig.Slot0.kP = angleKP;
         swerveAngleFXConfig.Slot0.kI = angleKI;
         swerveAngleFXConfig.Slot0.kD = angleKD;
-        swerveAngleFXConfig.Slot0.kS = .5;
-        swerveAngleFXConfig.Slot0.kV = 2;
+        swerveAngleFXConfig.Slot0.kS = 0;
+        swerveAngleFXConfig.Slot0.kV = angleKV;
         swerveAngleFXConfig.Slot0.kA = 0;
         
         

@@ -55,7 +55,7 @@ public class Vision implements Runnable {
         PhotonPoseEstimator photonPoseEstimator = null;
         PhotonPoseEstimator estimatorWithError = null;
 
-        cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
+        //cameraExists = Shuffleboard.getTab("Swerve").add("CameraExists", 0).getEntry();
     
 
         this.m_camera = new PhotonCamera(cameraName);
