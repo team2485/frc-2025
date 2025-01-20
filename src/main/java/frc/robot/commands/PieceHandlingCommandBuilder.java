@@ -6,12 +6,12 @@ import frc.robot.subsystems.PieceHandling.GeneralRoller.GeneralRollerStates;
 
 public class PieceHandlingCommandBuilder {
 
-    public static Command generalRollerRunForward(GeneralRoller generalRoller) {
-        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateForward), generalRoller);
+    public static Command generalRollerRunIntake(GeneralRoller generalRoller) {
+        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateIntake), generalRoller);
     }
     
-    public static Command generalRollerRunReverse(GeneralRoller generalRoller) {
-        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateReverse), generalRoller);
+    public static Command generalRollerRunOuttake(GeneralRoller generalRoller) {
+        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateOuttake), generalRoller);
     }
 
     public static Command generalRollerStop(GeneralRoller generalRoller) {
