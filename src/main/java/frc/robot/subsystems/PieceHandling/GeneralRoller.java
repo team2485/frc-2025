@@ -1,5 +1,5 @@
 // Import pkgs & classes
-package frc.robot.subsystems.NoteHandling;
+package frc.robot.subsystems.PieceHandling;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
