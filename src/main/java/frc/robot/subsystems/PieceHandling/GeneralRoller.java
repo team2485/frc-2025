@@ -1,3 +1,4 @@
+// Import pkgs & classes
 package frc.robot.subsystems.NoteHandling;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
@@ -10,33 +11,33 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+// GeneralRoller extends SubsystemBase
+// This class controls the roller in the robot
 public class GeneralRoller extends SubsystemBase {
 
   public enum GeneralRollerStates {
-    StateOff,
-    StateForward,
-    StateReverse,
+    StateOff, // Turned off, no voltage
+    StateForward, // Forward
+    StateReverse, // Reverse
   }
-  
-  public LinearFilter filter = LinearFilter.singlePoleIIR(0.5, 0.2);
 
   private final CANSparkMax m_spark;
   private double desiredVoltage = 0;
   private GeneralRollerStates currentState = GeneralRollerStates.StateOff;
 
+  // Constructor 
   public GeneralRoller(int port, boolean setInverted) {
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
-
-   
     m_spark.setInverted(setInverted);
     m_spark.setIdleMode(IdleMode.kBrake);
-    m_spark.setSmartCurrentLimit(40); 
+    m_spark.setSmartCurrentLimit(40);
     m_spark.enableVoltageCompensation(12);
-
   }
 
+  // Periodic function, checks the current state and sets the voltage based on the state
   @Override
   public void periodic() {
+
     switch (currentState) {
       case StateOff:
         desiredVoltage = 0;
@@ -50,19 +51,22 @@ public class GeneralRoller extends SubsystemBase {
       default:
         break;
     }
+
+    m_spark.setVoltage(desiredVoltage);
   }
 
+  // Gets the Current (in Amps) of the roller
   public double getCurrent() {
-    return m_spark.getOutputCurrent(); 
+    return m_spark.getOutputCurrent();
   }
   
+  // Sets the desired state of the roller
   public void requestState(GeneralRollerStates desiredState) {
     currentState = desiredState;
-    m_spark.set(desiredVoltage);
   }
 
-  public GeneralRollerStates getCurrentState() { 
+  // Gets the current state of the roller
+  public GeneralRollerStates getCurrentState() {
     return currentState;
   }
-
 }
