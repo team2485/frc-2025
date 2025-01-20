@@ -17,8 +17,8 @@ public class GeneralRoller extends SubsystemBase {
 
   public enum GeneralRollerStates {
     StateOff, // Turned off, no voltage
-    StateForward, // Forward
-    StateReverse, // Reverse
+    StateIntake, // Intake
+    StateOuttake, // Outtake
   }
 
   private final CANSparkMax m_spark;
@@ -42,10 +42,10 @@ public class GeneralRoller extends SubsystemBase {
       case StateOff:
         desiredVoltage = 0;
         break;
-      case StateForward:
+      case StateIntake:
         desiredVoltage = 6;
         break;
-      case StateReverse:
+      case StateOuttake:
         desiredVoltage = -6;
         break;
       default:
