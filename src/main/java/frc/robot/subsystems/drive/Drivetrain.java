@@ -1,5 +1,9 @@
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.Swerve.swerveKinematics;
+
+import org.opencv.objdetect.CascadeClassifier;
+
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.config.RobotConfig;
@@ -37,6 +41,8 @@ public class Drivetrain extends SubsystemBase {
     private MedianFilter filter = new MedianFilter(5);
 
     public Drivetrain() {
+        //Shuffleboard.getTab("Autos").addString("ChassisSpeedOut", ::toString);
+
         //gyro.configFactoryDefault();
         absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroPos", 0).getEntry();
         currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroPos", 0).getEntry();
@@ -45,8 +51,10 @@ public class Drivetrain extends SubsystemBase {
             absoluteGyroPosition = 180;
         try{
           pathplannerConfig = RobotConfig.fromGUISettings();
+          System.out.println("asdfadsfasdf" + pathplannerConfig.toString());
         } catch (Exception e) {
             // Handle exception as needed
+            
             e.printStackTrace();
         }
         // mSwerveMods = new SwerveModule[] {
@@ -83,7 +91,21 @@ public class Drivetrain extends SubsystemBase {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
     }
-    
+    public void driveRobotRelative(ChassisSpeeds speeds){
+
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        
+        SwerveModuleState[] targetStates = swerveKinematics.toSwerveModuleStates(targetSpeeds);
+
+        //SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, Constants.Swerve.maxSpeed);
+
+        for(SwerveModule mod : mSwerveMods)
+        {
+            mod.setDesiredState(targetStates[mod.moduleNumber], false);
+        }
+
+
+    }
     public void driveWithSuppliedRotation(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, Rotation2d absoluteRotation) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(

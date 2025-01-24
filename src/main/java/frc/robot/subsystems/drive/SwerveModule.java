@@ -43,7 +43,7 @@ public class SwerveModule {
     private TalonFX mDriveMotor;
     private CANcoder angleEncoder;
     private CANcoderConfigurator angleEncoderConfigurator;
-    private CANcoderConfiguration angleEncoderConfiguration;
+    //private CANcoderConfiguration angleEncoderConfiguration;
     final TrapezoidProfile m_profile = new TrapezoidProfile(
         new TrapezoidProfile.Constraints(8, 16)
     );
@@ -56,8 +56,8 @@ public class SwerveModule {
     private CANcoderConfiguration mCanCoderConfigs = new CANcoderConfiguration();
     private GenericEntry current;
 
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
-    PIDController angleContoller = new PIDController(1, 0, 0);
+    //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(driveKS, driveKV, driveKA); 
+    //PIDController angleContoller = new PIDController(1, 0, 0);
     
     
     private double absAngle = 0;

@@ -42,13 +42,13 @@ public class PoseEstimation extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDrivePoseEstimator noVisionPoseEstimator;
   private final Field2d field2d = new Field2d();
-  private final Vision photonEstimator = new Vision("placeholder"); // TODO: Replace Camera Name here!
-  private final Vision multiCamTest = new Vision("anotherCamera"); // TODO: See if this would work for multicamera localization.
-  private final Notifier photonNotifier = new Notifier(photonEstimator);
+ // private final Vision photonEstimator = new Vision("placeholder"); // TODO: Replace Camera Name here!
+ // private final Vision multiCamTest = new Vision("anotherCamera"); // TODO: See if this would work for multicamera localization.
+  //private final Notifier photonNotifier = new Notifier(photonEstimator);
   private final WL_CommandXboxController m_driver;
     private final WL_CommandXboxController m_operator;
 
-  private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
+ // private OriginPosition originPosition = OriginPosition.kRedAllianceWallRightSide;
   private boolean sawTag = false;
   private double angleToTags = 0;
   Supplier<ChassisSpeeds> speeds;
@@ -87,14 +87,18 @@ public class PoseEstimation extends SubsystemBase {
 
     this.m_drivetrain = m_drivetrain;
 
-    photonNotifier.setName("PhotonRunnable");
-    photonNotifier.startPeriodic(0.02);
+    // photonNotifier.setName("PhotonRunnable");
+    // photonNotifier.startPeriodic(0.02);
 
     isOnRed = getFieldConstants().isOnRed();
   }
+  public void test_set(){
 
+    this.setCurrentPose(new Pose2d(7.169, 2.664, Rotation2d.fromDegrees(-171)));
+
+  }
   public void addDashboardWidgets(ShuffleboardTab tab) {
-    tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
+    tab.add("Field", field2d);//.withPosition(0, 0).withSize(6, 4);
     tab.addString("Pose", this::getFormattedPose).withPosition(6, 2).withSize(2, 1);
   }
 
@@ -103,27 +107,28 @@ public class PoseEstimation extends SubsystemBase {
     poseEstimator.update(rotation.get(), modulePosition.get());
     noVisionPoseEstimator.update(rotation.get(), modulePosition.get());
     // TODO: For loop over cameras here
-    var visionPose = photonEstimator.grabLatestEstimatedPose();
-    var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
-    if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4
-      var pose2d = visionPose.estimatedPose.toPose2d();
+    // var visionPose = photonEstimator.grabLatestEstimatedPose();
+    // var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
+    // if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4
+    //   var pose2d = visionPose.estimatedPose.toPose2d();
    
-      poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
+    //   poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
       
-    }
-    if(theoreticalOtherCamPose != null){
+    // }
+    // if(theoreticalOtherCamPose != null){
 
-      var pose2d = theoreticalOtherCamPose.estimatedPose.toPose2d();
-      poseEstimator.addVisionMeasurement(pose2d, theoreticalOtherCamPose.timestampSeconds);
+    //   var pose2d = theoreticalOtherCamPose.estimatedPose.toPose2d();
+    //   poseEstimator.addVisionMeasurement(pose2d, theoreticalOtherCamPose.timestampSeconds);
 
-    }
+    // }
 
     var dashboardPose = poseEstimator.getEstimatedPosition();
     // if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
     //   dashboardPose = flipAlliance(dashboardPose);
     // }
       
-    field2d.setRobotPose(dashboardPose);
+    field2d.setRobotPose(noVisionPoseEstimator.getEstimatedPosition());
+   // Shuffleboard.getTab("Autos").add(field2d);
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(speeds.get().vyMetersPerSecond);
     xSped.setDouble((isOnRed?-1:1));
@@ -164,6 +169,7 @@ public class PoseEstimation extends SubsystemBase {
 
   public void setCurrentPose(Pose2d newPose) {
     poseEstimator.resetPosition(rotation.get(), modulePosition.get(), newPose);
+    noVisionPoseEstimator.resetPosition(rotation.get(), modulePosition.get(), newPose);;
   }
 
   public void resetFieldPosition() {

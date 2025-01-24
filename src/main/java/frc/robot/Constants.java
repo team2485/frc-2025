@@ -72,7 +72,7 @@ public final class Constants {
   public static final double k775FreeSpeedRotationsPerSecond = 18730.0 / 60.0;
 
   public static final COTSFalconSwerveConstants chosenModule =
-  COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L1);
+  COTSFalconSwerveConstants.SDSMK4i(7.13);
 
   public static final class OIConstants {
     public static final int kDriverPort = 0;
@@ -195,19 +195,19 @@ public final class Constants {
 
 
   public static final class AutoConstants {
-    public static final double kAutoMaxSpeedMetersPerSecond = 1.5;
-    public static final double kAutoMaxAccelerationMetersPerSecondSquared = 2;
+    //public static final double kAutoMaxSpeedMetersPerSecond = 4.481;
+    //public static final double kAutoMaxAccelerationMetersPerSecondSquared = 11.8;
 
     public static final double kAutoMaxAngularSpeedRadiansPerSecond =
         1.5 / DriveConstants.kTurningRadiusMeters;
-    public static final double kAutoMaxAngularAccelerationRadiansPerSecondSquared = 1 * Math.PI;
+    public static final double kAutoMaxAngularAccelerationRadiansPerSecondSquared = 36.86135;
 
     public static final double kPAutoXController = 5;
-    public static final double kIAutoXController = 0;
-    public static final double kDAutoXController = 0;
+    public static final double kIAutoXController = 1;
+    public static final double kDAutoXController = 1;
     public static final double kPAutoYController = 5;
-    public static final double kIAutoYController = 0;
-    public static final double kDAutoYController = 0;
+    public static final double kIAutoYController = 1;
+    public static final double kDAutoYController = 1;
 
     public static final double kAutoXYIntegratorMaxMetersPerSecond = 0.5;
     public static final double kPAutoThetaController = 1;
@@ -285,7 +285,7 @@ public final class Constants {
     public static final double lengthBetweenModules = 0.813;
     public static final double widthBetweenModules = 0.686;
     public static final double driveRadius = 0.413091;
-    public static final double wheelCircumference = chosenModule.wheelCircumference;
+    public static final double wheelCircumference = 2*Math.PI * 0.0508;
     
     // public static RobotConfig pathplannerRobotConfig;
 
@@ -296,7 +296,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(2,0,0),new PIDConstants(2,0,0));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(10,0.01,0),new PIDConstants(10,0,0));
 
  
 
@@ -314,8 +314,8 @@ public final class Constants {
 
     
     /* Module Gear Ratios */
-    public static final double driveGearRatio = chosenModule.driveGearRatio;
-    public static final double angleGearRatio = chosenModule.angleGearRatio;
+    public static final double driveGearRatio = 7.13;
+    public static final double angleGearRatio = 18.75;
 
     /* Motor Inverts */
     public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
@@ -349,9 +349,9 @@ public final class Constants {
     // public static final double angleKD = chosenModule.angleKD;
     // public static final double angleKF = chosenModule.angleKF;
 
-    public static final double angleKP = 100;
-    public static final double angleKI = 0;
-    public static final double angleKD = 0.5;
+    public static final double angleKP = 40;
+    public static final double angleKI = 0.0;
+    public static final double angleKD = 0.05;
     public static final double angleKF = 0;
     public static final double angleKV = 0;
     /* Drive Motor PID Values */
@@ -367,7 +367,7 @@ public final class Constants {
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxSpeed = 6; // TODO: This must be tuned to specific robot
+    public static final double maxSpeed = 4.481 * 3; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 
@@ -391,7 +391,7 @@ public final class Constants {
       public static final int driveMotorID = 2;
       public static final int angleMotorID = 1;
       public static final int canCoderID = 11;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.134033203125);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.130033203125);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
