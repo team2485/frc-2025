@@ -202,7 +202,7 @@ public final class Constants {
         1.5 / DriveConstants.kTurningRadiusMeters;
     public static final double kAutoMaxAngularAccelerationRadiansPerSecondSquared = 36.86135;
 
-    public static final double kPAutoXController = 5;
+    public static final double kPAutoXController = 5; //5, 1, 1, 5, 1, 1
     public static final double kIAutoXController = 1;
     public static final double kDAutoXController = 1;
     public static final double kPAutoYController = 5;

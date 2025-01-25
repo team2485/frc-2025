@@ -182,7 +182,8 @@ public class Drivetrain extends SubsystemBase {
     }
     
     public ChassisSpeeds getChassisSpeeds() {
-        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
+        return Constants.Swerve.swerveKinematics.toChassisSpeeds
+        (getModuleStates());
     }
 
     public void zeroGyro(){

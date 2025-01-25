@@ -1,5 +1,7 @@
 package frc.util;
 
+import static frc.robot.Constants.Swerve.wheelCircumference;
+
 import edu.wpi.first.math.util.Units;
 
 /* Contains values and required settings for common COTS swerve modules. */
@@ -84,6 +86,28 @@ public class COTSFalconSwerveConstants {
         return new COTSFalconSwerveConstants(wheelDiameter, angleGearRatio, driveGearRatio, angleKP, angleKI, angleKD, angleKF, driveMotorInvert, angleMotorInvert, canCoderInvert);
     }
 
+    /** Swerve Drive Specialties - MK4n Module */
+    public static COTSFalconSwerveConstants SDSMK4n(double driveGearRatio){
+        double wheelDiameter = Units.inchesToMeters(4.0);
+
+        double angleGearRatio = (18.75 / 1.0);
+
+        double angleKP = 0.3;
+        double angleKI = 0.0;
+        double angleKD = 0.0;
+        double angleKF = 0.0;
+
+        boolean driveMotorInvert = false;
+        boolean angleMotorInvert = true;
+        boolean canCoderInvert = false;
+        return new COTSFalconSwerveConstants(wheelDiameter, angleGearRatio, driveGearRatio, angleKP, angleKI, angleKD, angleKF, driveMotorInvert, angleMotorInvert, canCoderInvert);
+    }
+
+
+
+
+
+
     /* Drive Gear Ratios for all supported modules */
     public class driveGearRatios{
         /* SDS MK3 */
@@ -109,6 +133,14 @@ public class COTSFalconSwerveConstants {
         public static final double SDSMK4i_L2 = (6.75 / 1.0);
         /** SDS MK4i - 6.12 : 1 */
         public static final double SDSMK4i_L3 = (6.12 / 1.0);
+
+        /*SDS MK4n */
+         /** SDS MK4n - 7.13 : 1 */
+         public static final double SDSMK4n_L1 = (7.13 / 1.0);
+         /** SDS MK4n - 5.90 : 1 */
+         public static final double SDSMK4n_L2 = (5.9 / 1.0);
+         /** SDS MK4n - 5.36 : 1 */
+         public static final double SDSMK4n_L3 = (5.36 / 1.0);
     }
 }
 
