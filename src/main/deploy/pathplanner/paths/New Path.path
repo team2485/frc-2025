@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 2.781778133611177,
+        "y": 6.397170951191188
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 3.8025,
+        "y": 5.2145
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 6.0
+        "x": 3.6525356833332188,
+        "y": 5.453886448507189
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -60.01836063115069
   },
   "reversed": false,
-  "folder": "Test Paths",
+  "folder": "Trainees",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

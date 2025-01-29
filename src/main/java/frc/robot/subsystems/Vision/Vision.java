@@ -59,7 +59,12 @@ public class Vision implements Runnable {
     
 
         this.m_camera = new PhotonCamera(cameraName);
+        var offset = kRobotToCameraLeft;
+        if(cameraName.equals("cameraFrontRight")){
+            offset = kRobotToCameraRight;
 
+
+        }
 
         try {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
@@ -69,9 +74,10 @@ public class Vision implements Runnable {
             if (m_camera != null) {
                
                 photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                        kRobotToCamera); // MULTI_TAG_PNP uses all cameras in view for positioning
+                offset); // MULTI_TAG_PNP uses all cameras in view for positioning
                 estimatorWithError = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                        kRobotToCamera);
+                offset
+                );
                 }
         } catch (Exception e) {
             DriverStation.reportError("Path: ", e.getStackTrace()); // can't estimate poses without known tag positions
@@ -137,7 +143,7 @@ public class Vision implements Runnable {
     }
 
     public EstimatedRobotPose grabLatestEstimatedPose() {
-        return m_atomicEstimatedRobotPose.get();
+        return m_atomicEstimatedBadRobotPose.get();
     }
 
 

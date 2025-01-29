@@ -25,6 +25,7 @@ import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.Swerve.angleGearRatio;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
@@ -72,7 +73,7 @@ public final class Constants {
   public static final double k775FreeSpeedRotationsPerSecond = 18730.0 / 60.0;
 
   public static final COTSFalconSwerveConstants chosenModule =
-  COTSFalconSwerveConstants.SDSMK4i(7.13);
+  COTSFalconSwerveConstants.SDSMK4n(COTSFalconSwerveConstants.driveGearRatios.SDSMK4n_L1); //TODO: get this to the right number!!
 
   public static final class OIConstants {
     public static final int kDriverPort = 0;
@@ -127,8 +128,10 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCamera = new Transform3d(new Translation3d(.2921, 0, 0.24),
-        new Rotation3d(0,-.402,0)); 
+    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(.406, 0.2667, 0.1556),
+        new Rotation3d(-0.037,.1745,0)); 
+    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(.406, -0.2667, 0.1556),
+        new Rotation3d(0,.1745,0)); 
     //-0.698
 
     public static final double kFieldLengthMeters = 17.55;
@@ -139,28 +142,28 @@ public final class Constants {
   
     public static final List<AprilTag> kBlueTagList = 
                                         List.of(
-                                        new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126))),
-                                        new AprilTag(2, new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234))),
-                                        new AprilTag(3, new Pose3d(455.15*kInchesToMeters, 317.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,270))),
-                                        new AprilTag(4, new Pose3d(3.6520*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,0))),
-                                        new AprilTag(5, new Pose3d(365.20*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,0))),
-                                        new AprilTag(6, new Pose3d(530.49*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300))),
+                                        new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126*Math.PI/180.0))),
+                                        new AprilTag(2, new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234*Math.PI/180.0))),
+                                        new AprilTag(3, new Pose3d(455.15*kInchesToMeters, 317.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,270*Math.PI/180.0))),
+                                        new AprilTag(4, new Pose3d(3.6520*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
+                                        new AprilTag(5, new Pose3d(365.20*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
+                                        new AprilTag(6, new Pose3d(530.49*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300*Math.PI/180.0))),
                                         new AprilTag(7, new Pose3d(546.87*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
-                                        new AprilTag(8, new Pose3d(530.49*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60))),
-                                        new AprilTag(9, new Pose3d(497.77*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120))),
-                                        new AprilTag(10, new Pose3d(481.39*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180))),
-                                        new AprilTag(11, new Pose3d( 497.77*kInchesToMeters,130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240))),
-                                        new AprilTag(12, new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54))),
-                                        new AprilTag(13, new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306))),
-                                        new AprilTag(14, new Pose3d(325.68*kInchesToMeters, 241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,180))),
-                                        new AprilTag(15, new Pose3d(325.68*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30,180))),
-                                        new AprilTag(16, new Pose3d(235.73*kInchesToMeters, -0.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,90))),
-                                        new AprilTag(17, new Pose3d(160.39*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240))),
-                                        new AprilTag(18, new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180))),
-                                        new AprilTag(19, new Pose3d(160.39*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120))),
-                                        new AprilTag(20, new Pose3d(193.10*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60))),
+                                        new AprilTag(8, new Pose3d(530.49*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60*Math.PI/180.0))),
+                                        new AprilTag(9, new Pose3d(497.77*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120*Math.PI/180.0))),
+                                        new AprilTag(10, new Pose3d(481.39*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0))),
+                                        new AprilTag(11, new Pose3d( 497.77*kInchesToMeters,130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240*Math.PI/180.0))),
+                                        new AprilTag(12, new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54*Math.PI/180.0))),
+                                        new AprilTag(13, new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306*Math.PI/180.0))),
+                                        new AprilTag(14, new Pose3d(325.68*kInchesToMeters, 241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,180*Math.PI/180.0))),
+                                        new AprilTag(15, new Pose3d(325.68*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,180*Math.PI/180.0))),
+                                        new AprilTag(16, new Pose3d(235.73*kInchesToMeters, -0.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,90*Math.PI/180.0))),
+                                        new AprilTag(17, new Pose3d(160.39*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240*Math.PI/180.0))),
+                                        new AprilTag(18, new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0))),
+                                        new AprilTag(19, new Pose3d(160.39*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120*Math.PI/180.0))),
+                                        new AprilTag(20, new Pose3d(193.10*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60*Math.PI/180.0))),
                                         new AprilTag(21, new Pose3d(209.49*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
-                                        new AprilTag(22, new Pose3d(193.10*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300)))
+                                        new AprilTag(22, new Pose3d(193.10*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300*Math.PI/180.0)))
                                     
                                         );                                    
 
@@ -278,8 +281,8 @@ public final class Constants {
     public static final int pigeonID = 22;
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
-    public static final COTSFalconSwerveConstants chosenModule = // TODO: This must be tuned to specific robot
-        COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L1);
+    public static final COTSFalconSwerveConstants chosenModule = 
+        COTSFalconSwerveConstants.SDSMK4n(COTSFalconSwerveConstants.driveGearRatios.SDSMK4n_L1);
 
     /* Drivetrain Constants */
     public static final double lengthBetweenModules = 0.813;
@@ -296,7 +299,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(10,0.01,0),new PIDConstants(10,0,0));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(1,0.00,0),new PIDConstants(0.1,0,0));
 
  
 
@@ -314,8 +317,8 @@ public final class Constants {
 
     
     /* Module Gear Ratios */
-    public static final double driveGearRatio = 7.13;
-    public static final double angleGearRatio = 18.75;
+    public static final double driveGearRatio = chosenModule.driveGearRatio;
+    public static final double angleGearRatio = chosenModule.angleGearRatio;
 
     /* Motor Inverts */
     public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
@@ -355,7 +358,7 @@ public final class Constants {
     public static final double angleKF = 0;
     public static final double angleKV = 0;
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.1;
+    public static final double driveKP = 0.2;
     public static final double driveKI = 0;
     public static final double driveKD = 0.0;
     public static final double driveKF = 0.0;
@@ -367,7 +370,7 @@ public final class Constants {
 
     /* Swerve Profiling Values */
     /** Meters per Second */
-    public static final double maxSpeed = 4.481 * 3; // TODO: This must be tuned to specific robot
+    public static final double maxSpeed = 4.481 ; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 

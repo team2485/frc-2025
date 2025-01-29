@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L"
+            "pathName": "Square"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Test Autos",
   "choreoAuto": false
 }

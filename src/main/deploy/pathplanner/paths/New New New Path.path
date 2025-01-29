@@ -3,73 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 1.3357500000000004,
+        "y": 6.872000000000001
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 1.8243288121927956,
+        "y": 6.042932767281541
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.500409836065574,
-        "y": 7.0
+        "x": 2.6812499999939092,
+        "y": 4.083500000004326
       },
       "prevControl": {
-        "x": 3.241700819672132,
-        "y": 7.0
+        "x": 2.3270381018026347,
+        "y": 4.710388796412378
       },
       "nextControl": {
-        "x": 3.7591188524590153,
-        "y": 7.0
+        "x": 3.0354618981851837,
+        "y": 3.4566112035962746
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5,
-        "y": 5.0
+        "x": 3.353999999993909,
+        "y": 4.268750000004327
       },
       "prevControl": {
-        "x": 3.25,
-        "y": 5.0
-      },
-      "nextControl": {
-        "x": 3.75,
-        "y": 5.0
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.0,
-        "y": 5.0
-      },
-      "prevControl": {
-        "x": 1.6927310128476971,
-        "y": 5.0
-      },
-      "nextControl": {
-        "x": 2.25,
-        "y": 5.0
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.0,
-        "y": 7.0
-      },
-      "prevControl": {
-        "x": 1.6475012792509687,
-        "y": 7.0
+        "x": 3.1947309490895464,
+        "y": 3.862680601800301
       },
       "nextControl": null,
       "isLocked": false,
@@ -93,10 +61,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Test Paths",
+  "folder": "Trainees",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -84.47184534390352
+    "rotation": 125.67640822215881
   },
   "useDefaultConstraints": true
 }

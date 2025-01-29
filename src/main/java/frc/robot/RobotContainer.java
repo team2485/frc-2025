@@ -40,7 +40,7 @@ public class RobotContainer {
 
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositions, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
+  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
 
@@ -98,6 +98,6 @@ public class RobotContainer {
     // An example command will be run in autonomous
     //
     return autoChooser.getSelected();
-
+   // return AutoBuilder.buildAuto("SquarePauseAuto");
   }
 }

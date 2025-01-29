@@ -42,9 +42,11 @@ public class PoseEstimation extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private final SwerveDrivePoseEstimator noVisionPoseEstimator;
   private final Field2d field2d = new Field2d();
- // private final Vision photonEstimator = new Vision("placeholder"); // TODO: Replace Camera Name here!
- // private final Vision multiCamTest = new Vision("anotherCamera"); // TODO: See if this would work for multicamera localization.
-  //private final Notifier photonNotifier = new Notifier(photonEstimator);
+ private final Vision frontLeftPhoton = new Vision("cameraFrontLeft"); // TODO: Replace Camera Name here!
+ private final Vision frontRightPhoton = new Vision("cameraFrontRight"); // TODO: See if this would work for multicamera localization.
+  private final Notifier photonNotifier = new Notifier(frontLeftPhoton);
+ 
+  private final Notifier photonNotifier2 = new Notifier(frontRightPhoton);
   private final WL_CommandXboxController m_driver;
     private final WL_CommandXboxController m_operator;
 
@@ -87,8 +89,10 @@ public class PoseEstimation extends SubsystemBase {
 
     this.m_drivetrain = m_drivetrain;
 
-    // photonNotifier.setName("PhotonRunnable");
-    // photonNotifier.startPeriodic(0.02);
+    photonNotifier.setName("PhotonRunnable");
+    photonNotifier.startPeriodic(0.02);
+    photonNotifier2.setName("PhotonRunnable");
+    photonNotifier2.startPeriodic(0.02);
 
     isOnRed = getFieldConstants().isOnRed();
   }
@@ -107,6 +111,22 @@ public class PoseEstimation extends SubsystemBase {
     poseEstimator.update(rotation.get(), modulePosition.get());
     noVisionPoseEstimator.update(rotation.get(), modulePosition.get());
     // TODO: For loop over cameras here
+
+    var visionPoseFrontLeft = frontLeftPhoton.grabLatestEstimatedPose();
+    var visionPoseFrontRight = frontRightPhoton.grabLatestEstimatedPose();
+    if(visionPoseFrontLeft != null){
+
+      var pose2d = visionPoseFrontLeft.estimatedPose.toPose2d();
+      poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontLeft.timestampSeconds);
+
+
+    }
+    if(visionPoseFrontRight != null){
+
+      var pose2d = visionPoseFrontRight.estimatedPose.toPose2d();
+      poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
+     
+    }
     // var visionPose = photonEstimator.grabLatestEstimatedPose();
     // var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
     // if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4
@@ -122,12 +142,10 @@ public class PoseEstimation extends SubsystemBase {
 
     // }
 
-    var dashboardPose = poseEstimator.getEstimatedPosition();
     // if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
     //   dashboardPose = flipAlliance(dashboardPose);
     // }
       
-    field2d.setRobotPose(noVisionPoseEstimator.getEstimatedPosition());
    // Shuffleboard.getTab("Autos").add(field2d);
     angleToTags = getCurrentPose().getRotation().getDegrees();
     visionTest.setDouble(speeds.get().vyMetersPerSecond);
@@ -136,7 +154,9 @@ public class PoseEstimation extends SubsystemBase {
     //if (getNoteDetected()) m_operator.setRumble(RumbleType.kLeftRumble, 1);
     //else m_operator.setRumble(RumbleType.kLeftRumble, 0);
     
-    
+    var dashboardPose = getCurrentPose();
+      
+    field2d.setRobotPose(dashboardPose);
 
    // if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
     //else m_driver.setRumble(RumbleType.kLeftRumble, 0);

@@ -38,10 +38,10 @@ public class DriveCommandBuilder {
     public DriveCommandBuilder(PoseEstimation m_poseEstimation, Drivetrain m_drivetrain) {
 
         AutoBuilder.configure(
-        m_poseEstimation::getCurrentPoseNoVision,
+        m_poseEstimation::getCurrentPose,
         m_poseEstimation::setCurrentPose,
         m_drivetrain::getChassisSpeeds,
-        m_drivetrain::driveRobotRelative, 
+        m_drivetrain::driveAuto, 
         kDriveController,
         m_drivetrain.pathplannerConfig, 
         () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 

@@ -36,8 +36,8 @@ public final class CTREConfigs {
         
         // swerveAngleFXConfig.Slot0.kF = angleKF;
         swerveAngleFXConfig.CurrentLimits.StatorCurrentLimitEnable = false;
-        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimit = angleContinuousCurrentLimit;
-        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLowerLimit = anglePeakCurrentLimit;
+        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimit = anglePeakCurrentLimit;
+        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLowerLimit = angleContinuousCurrentLimit; 
         swerveAngleFXConfig.CurrentLimits.SupplyCurrentLowerTime = anglePeakCurrentDuration;
 
         swerveAngleFXConfig.Feedback.SensorToMechanismRatio = angleGearRatio;
@@ -58,8 +58,8 @@ public final class CTREConfigs {
         // swerveDriveFXConfig.openloopRamp = openLoopRamp;
         // swerveDriveFXConfig.closedloopRamp = closedLoopRamp;
         swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimit = driveContinuousCurrentLimit;
-        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLowerLimit = drivePeakCurrentLimit;
+        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimit = drivePeakCurrentLimit;
+        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLowerLimit = driveContinuousCurrentLimit; 
         swerveDriveFXConfig.CurrentLimits.SupplyCurrentLowerTime = drivePeakCurrentDuration;
         
         swerveDriveFXConfig.Feedback.SensorToMechanismRatio = driveGearRatio;
