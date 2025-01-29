@@ -9,6 +9,12 @@
           "data": {
             "pathName": "B_R_B4"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ZeroGyro"
+          }
         }
       ]
     }
