@@ -31,6 +31,7 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.subsystems.drive.Drivetrain;
 
 public class PoseEstimation extends SubsystemBase {
@@ -61,13 +62,14 @@ public class PoseEstimation extends SubsystemBase {
   GenericEntry visionTest;
   GenericEntry xSped;
   GenericEntry xLog;
-
+  GenericEntry attemptedNavPosition;
   boolean isOnRed;
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator, Drivetrain m_drivetrain) {
     visionTest = Shuffleboard.getTab("Swerve").add("YSped", 10).getEntry();
     xSped = Shuffleboard.getTab("Swerve").add("XSped", 10).getEntry();
     xLog = Shuffleboard.getTab("Swerve").add("YDist", 0).getEntry();
+    //attemptedNavPosition = Shuffleboard.getTab("Swerve").add("TargetPos", getFormattedPose(Pose2d.kZero)).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
     this.speeds = chassisSpeeds;
@@ -111,7 +113,7 @@ public class PoseEstimation extends SubsystemBase {
     poseEstimator.update(rotation.get(), modulePosition.get());
     noVisionPoseEstimator.update(rotation.get(), modulePosition.get());
     // TODO: For loop over cameras here
-
+    //attemptedNavPosition.setValue(getFormattedPose(DriveCommandBuilder.alignToSource(m_drivetrain, this)));
     var visionPoseFrontLeft = frontLeftPhoton.grabLatestEstimatedPose();
     var visionPoseFrontRight = frontRightPhoton.grabLatestEstimatedPose();
     if(visionPoseFrontLeft != null){
@@ -166,7 +168,10 @@ public class PoseEstimation extends SubsystemBase {
     var pose = getCurrentPose();
     return String.format("(%.3f, %.3f) %.2f radians", pose.getX(), pose.getY(), pose.getRotation().getRadians());
   }
-
+  private String getFormattedPose(Pose2d toConv) {
+    var pose = toConv;
+    return String.format("(%.3f, %.3f) %.2f radians", pose.getX(), pose.getY(), pose.getRotation().getRadians());
+  }
   public Pose2d getCurrentVisionlessPose() {
     var pos = noVisionPoseEstimator.getEstimatedPosition();
     return pos;

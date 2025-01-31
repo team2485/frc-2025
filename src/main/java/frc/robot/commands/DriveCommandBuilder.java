@@ -11,6 +11,7 @@ import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -18,11 +19,14 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -46,6 +50,7 @@ public class DriveCommandBuilder {
         m_drivetrain.pathplannerConfig, 
         () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
         m_drivetrain);
+
     }
 
     
@@ -84,4 +89,47 @@ public class DriveCommandBuilder {
             0);
         return pathfindingCommand;
     }
+    static Pose2d closestSourcePose;
+    public static Command alignToSource (Drivetrain m_dDrivetrain, PoseEstimation m_poseEstimation){
+
+        
+        var constants = m_poseEstimation.getFieldConstants();
+        closestSourcePose=  constants.getLowerPickupPos();
+
+        
+
+        Pose2d topSourcePos = constants.getUpperPickupPos();
+
+        Pose2d lowerSourcePos = constants.getLowerPickupPos();
+        double distToLower = m_poseEstimation.getCurrentPose().getTranslation().getDistance(lowerSourcePos.getTranslation());
+        double distToUpper = m_poseEstimation.getCurrentPose().getTranslation().getDistance(topSourcePos.getTranslation());
+        
+        if(distToLower < distToUpper) {
+            closestSourcePose = lowerSourcePos;
+            
+            Translation2d basePos = closestSourcePose.getTranslation();
+            Rotation2d originalRotation = closestSourcePose.getRotation();
+            double xMultiplier = originalRotation.getCos();
+            double yMultiplier = originalRotation.getSin();
+            Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
+            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero);
+            closestSourcePose = closestSourcePose.transformBy(converted);
+
+        };
+
+        if(distToUpper <= distToLower) {
+            closestSourcePose = topSourcePos;
+            Translation2d basePos = closestSourcePose.getTranslation();
+            Rotation2d originalRotation = closestSourcePose.getRotation();
+            double xMultiplier = originalRotation.getCos();
+            double yMultiplier = originalRotation.getSin();
+            Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
+            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero);
+            closestSourcePose = closestSourcePose.transformBy(converted);
+        };
+        //return closestSourcePose;
+        return driveToPosition(m_dDrivetrain, m_poseEstimation, () -> closestSourcePose);
+        
+    }
+
 }

@@ -128,9 +128,9 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(.406, 0.2667, 0.1556),
-        new Rotation3d(-0.037,.1745,0)); 
-    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(.406, -0.2667, 0.1556),
+    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3429, 0.27305, 0.187325),
+        new Rotation3d(0,.1745,0)); 
+    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3429, -0.27305, 0.187325),
         new Rotation3d(0,.1745,0)); 
     //-0.698
 
@@ -152,7 +152,7 @@ public final class Constants {
                                         new AprilTag(8, new Pose3d(530.49*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,60*Math.PI/180.0))),
                                         new AprilTag(9, new Pose3d(497.77*kInchesToMeters, 186.83*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,120*Math.PI/180.0))),
                                         new AprilTag(10, new Pose3d(481.39*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0))),
-                                        new AprilTag(11, new Pose3d( 497.77*kInchesToMeters,130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240*Math.PI/180.0))),
+                                        new AprilTag(11, new Pose3d(497.77*kInchesToMeters,130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,240*Math.PI/180.0))),
                                         new AprilTag(12, new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54*Math.PI/180.0))),
                                         new AprilTag(13, new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306*Math.PI/180.0))),
                                         new AprilTag(14, new Pose3d(325.68*kInchesToMeters, 241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,180*Math.PI/180.0))),
@@ -178,7 +178,18 @@ public final class Constants {
 
       return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
     }
+
+    public Pose2d getFrontMiddlePlacementPos() {
+      return new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0)).toPose2d();
+    }
+
     public boolean isOnRed() {return true;}
+
+
+
+
+
+
   }
   public static final class BlueFieldConstants implements FieldConstants {
     public Pose2d getUpperPickupPos(){
