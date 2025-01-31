@@ -118,6 +118,7 @@ public class Vision implements Runnable {
                         );
             }
               photonResults = m_camera.getLatestResult();
+              //SmartDashboard.putString("Visible Tag", String.format("(%.3f, %.3f) %.2f radians", photonResults.targets.get(0).getBestCameraToTarget().getX(), photonResults.targets.get(0).getBestCameraToTarget().getY(), photonResults.targets.get(0).getBestCameraToTarget().getRotation()));
             if (photonResults.hasTargets()
                     && ((photonResults.targets.size() > 1) || (photonResults.targets.get(0).getBestCameraToTarget().getX() < 1.75 && photonResults.targets.get(0).getPoseAmbiguity() < .2))) { // need accurate readings   
                 photonResults.targets.removeIf(n->(n.getFiducialId() != 3 && n.getFiducialId() != 4 && n.getFiducialId() != 7 && n.getFiducialId() != 8)); 

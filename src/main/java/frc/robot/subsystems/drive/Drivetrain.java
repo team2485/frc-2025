@@ -1,9 +1,6 @@
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.Rotation;
 import static frc.robot.Constants.Swerve.swerveKinematics;
-
-import java.util.function.Supplier;
 
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -28,17 +25,10 @@ public class Drivetrain extends SubsystemBase {
     public Pigeon2 gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drive");
     GenericEntry absoluteGyroPos;
     GenericEntry currentGyroPos;
-    GenericEntry allModuleRotPos;
-    GenericEntry rot0;
-    GenericEntry rot1;
-    GenericEntry rot2;
-    GenericEntry rot3;
-
     public RobotConfig pathplannerConfig;
 
     private double absoluteGyroPosition = 0;
-    ///private Supplier<double[]> rotArray =  {0,0,0,0};
-    
+
     public SwerveModule[] mSwerveMods = new SwerveModule[] {
         new SwerveModule(0, Constants.Swerve.Mod0.constants),
         new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -54,20 +44,14 @@ public class Drivetrain extends SubsystemBase {
         //Shuffleboard.getTab("Autos").addString("ChassisSpeedOut", ::toString);
 
         //gyro.configFactoryDefault();
-        rot0 = Shuffleboard.getTab("Swerve").add("rot0", 0).getEntry();
-        rot1 = Shuffleboard.getTab("Swerve").add("rot1", 0).getEntry();
-        rot2 = Shuffleboard.getTab("Swerve").add("rot2", 0).getEntry();
-        rot3 = Shuffleboard.getTab("Swerve").add("rot3", 0).getEntry();
-
-
         absoluteGyroPos = Shuffleboard.getTab("Swerve").add("AbsoluteGyroPos", 0).getEntry();
         currentGyroPos = Shuffleboard.getTab("Swerve").add("CurrentGyroPos", 0).getEntry();
-       // allModuleRotPos = Shuffleboard.getTab("Swerve").addDoubleArray("All Modules: ",  rotArray);
         gyro.reset();
         if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
             absoluteGyroPosition = 180;
         try{
           pathplannerConfig = RobotConfig.fromGUISettings();
+          System.out.println("asdfadsfasdf" + pathplannerConfig.toString());
         } catch (Exception e) {
             // Handle exception as needed
             
@@ -107,27 +91,18 @@ public class Drivetrain extends SubsystemBase {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
     }
-    public void driveRobotRelative(ChassisSpeeds speeds){ // DEPRECATED: USE DRIVEAUTO(). THIS METHOD IS ONLY TO BE USED FOR TESTING "straight line" AUTOS!!
+    public void driveRobotRelative(ChassisSpeeds speeds){
 
-        SwerveModuleState[] testStates = swerveKinematics.toSwerveModuleStates(speeds);
-            
-        rot0.setDouble(testStates[0].angle.getDegrees());
-        rot1.setDouble(testStates[1].angle.getDegrees());
-        rot2.setDouble(testStates[2].angle.getDegrees());
-        rot3.setDouble(testStates[3].angle.getDegrees());
-        
-        ChassisSpeeds targetSpeeds = speeds; //ChassisSpeeds.discretize(speeds, 0.02);
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
         
         SwerveModuleState[] targetStates = swerveKinematics.toSwerveModuleStates(targetSpeeds);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, Constants.Swerve.maxSpeed);
+        //SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, Constants.Swerve.maxSpeed);
 
         for(SwerveModule mod : mSwerveMods)
         {
-
-            mod.setDesiredState(targetStates[mod.moduleNumber], true);
+            mod.setDesiredState(targetStates[mod.moduleNumber], false);
         }
-
 
     }
     public void driveWithSuppliedRotation(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, Rotation2d absoluteRotation) {
@@ -162,7 +137,7 @@ public class Drivetrain extends SubsystemBase {
     // }
 
     public void driveAuto(ChassisSpeeds speeds) {
-        driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, true, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+        driveWithSuppliedRotation(new Translation2d(speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, false, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -170,7 +145,7 @@ public class Drivetrain extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         
         for(SwerveModule mod : mSwerveMods){
-            mod.setDesiredState(desiredStates[mod.moduleNumber], true);
+            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
         }
     }    
 
