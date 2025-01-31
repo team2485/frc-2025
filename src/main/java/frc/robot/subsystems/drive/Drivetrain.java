@@ -162,7 +162,7 @@ public class Drivetrain extends SubsystemBase {
     // }
 
     public void driveAuto(ChassisSpeeds speeds) {
-        driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, true, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
+        driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, true, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));
     }
 
     /* Used by SwerveControllerCommand in Auto */
