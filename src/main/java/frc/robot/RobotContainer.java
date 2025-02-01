@@ -98,7 +98,14 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //
-    return autoChooser.getSelected();
+
+    return autoChooser.getSelected(); // DEPRECATED!!
+    
    // return AutoBuilder.buildAuto("SquarePauseAuto");
   }
+
+
+
+
+
 }

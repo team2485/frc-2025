@@ -11,6 +11,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoCommandBuilder;
 import frc.robot.subsystems.drive.CTREConfigs;
 
 /**
@@ -62,18 +63,22 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    //m_autonomousCommand =  new PathPlannerAuto("StraitAuto");// autoChooser.getSelected();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // //m_autonomousCommand =  new PathPlannerAuto("StraitAuto");// autoChooser.getSelected();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    // // // schedule the autonomous command (example)
+    // if (m_autonomousCommand != null) {
+    //   m_autonomousCommand.schedule();
+    // }
+    AutoCommandBuilder.reset();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+    AutoCommandBuilder.autoControlLoop();
+  }
 
   @Override
   public void teleopInit() {
