@@ -69,7 +69,7 @@ public class PoseEstimation extends SubsystemBase {
     visionTest = Shuffleboard.getTab("Swerve").add("YSped", 10).getEntry();
     xSped = Shuffleboard.getTab("Swerve").add("XSped", 10).getEntry();
     xLog = Shuffleboard.getTab("Swerve").add("YDist", 0).getEntry();
-    //attemptedNavPosition = Shuffleboard.getTab("Swerve").add("TargetPos", getFormattedPose(Pose2d.kZero)).getEntry();
+    attemptedNavPosition = Shuffleboard.getTab("Swerve").add("TargetPos", getFormattedPose(Pose2d.kZero)).getEntry();
     this.rotation = rotation;
     this.modulePosition = modulePosition;
     this.speeds = chassisSpeeds;

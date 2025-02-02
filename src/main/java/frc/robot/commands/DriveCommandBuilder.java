@@ -48,7 +48,7 @@ public class DriveCommandBuilder {
         m_drivetrain::driveAuto, 
         kDriveController,
         m_drivetrain.pathplannerConfig, 
-        () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
+        () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Red, 
         m_drivetrain);
 
     }
@@ -63,7 +63,7 @@ public class DriveCommandBuilder {
         
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
+                1, 1,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision

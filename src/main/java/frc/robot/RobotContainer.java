@@ -100,7 +100,7 @@ public class RobotContainer {
     //
 
     return autoChooser.getSelected(); // DEPRECATED!!
-    
+
    // return AutoBuilder.buildAuto("SquarePauseAuto");
   }
 

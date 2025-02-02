@@ -106,6 +106,7 @@ public class AutoCommandBuilder {
                             // doneso
                             m_lineAutoRequestedState = lineAutoStates.StateIdle;
                         }
+                    
                         break;
                         
                     
