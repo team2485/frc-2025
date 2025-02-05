@@ -48,7 +48,7 @@ public class DriveCommandBuilder {
         m_drivetrain::driveAuto, 
         kDriveController,
         m_drivetrain.pathplannerConfig, 
-        () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Red, 
+        () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
         m_drivetrain);
 
     }
@@ -63,7 +63,7 @@ public class DriveCommandBuilder {
         
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                1, 1,
+                kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
@@ -107,24 +107,24 @@ public class DriveCommandBuilder {
         if(distToLower < distToUpper) {
             closestSourcePose = lowerSourcePos;
             
-            Translation2d basePos = closestSourcePose.getTranslation();
+            //Translation2d basePos = closestSourcePose.getTranslation();
             Rotation2d originalRotation = closestSourcePose.getRotation();
             double xMultiplier = originalRotation.getCos();
             double yMultiplier = originalRotation.getSin();
             Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
-            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero);
+            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
             closestSourcePose = closestSourcePose.transformBy(converted);
 
         };
 
         if(distToUpper <= distToLower) {
             closestSourcePose = topSourcePos;
-            Translation2d basePos = closestSourcePose.getTranslation();
+            //Translation2d basePos = closestSourcePose.getTranslation();
             Rotation2d originalRotation = closestSourcePose.getRotation();
             double xMultiplier = originalRotation.getCos();
             double yMultiplier = originalRotation.getSin();
             Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
-            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero);
+            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
             closestSourcePose = closestSourcePose.transformBy(converted);
         };
         //return closestSourcePose;
