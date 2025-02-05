@@ -263,6 +263,29 @@ public final class Constants {
     public static final double kRotationTolerance = 3;
   }
 
+  public static final class ElevatorConstants{
+
+    public static final int kElevator1CanID = 0;
+    public static final int kElevator2CANID = 0;
+    
+
+    public static final int kElevator1Port = 0; // TODO: placeholder port
+    public static final int kElevator2Port = 0;
+    public static final double kSElevator = 0;
+    public static final double kVElevator = 0;
+    public static final double kPElevator = 0;
+    public static final double kIElevator = 0;
+    public static final double kDElevator = 0;
+    public static final double kElevatorCruiseVelocity = 0;
+    public static final double kElevatorAcceleration = 0;
+    public static final double kElevatorJerk = 0;
+
+    public static final boolean kElevatorClockwisePositive = true;
+
+    public static final double kElevatorErrorTolerance = 0;
+
+  }
+
   public static final class TelescopeConstants{
 
     
