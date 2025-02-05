@@ -272,9 +272,9 @@ public final class Constants {
     public static final int kElevator1Port = 0; // TODO: placeholder port
     public static final int kElevator2Port = 0;
     public static final double kSElevator = 0;
-    public static final double kVElevator = 3.01;
-    public static final double kAElevator = 0.02;
-    public static final double kGElevator = 0.13;
+    public static final double kVElevator = 7.52;
+    public static final double kAElevator = 0.01;
+    public static final double kGElevator = 0.04;
     public static final double kPElevator = 0;
     public static final double kIElevator = 0;
     public static final double kDElevator = 0;
