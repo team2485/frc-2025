@@ -52,7 +52,9 @@ public class Elevator extends SubsystemBase {
     // kD outputs n volts when the velocity error is 1 rotation per second
     var slot0Configs = talonFXConfigs.Slot0;
     slot0Configs.kS = kSElevator;
+    slot0Configs.kG = kGElevator;
     slot0Configs.kV = kVElevator;
+    slot0Configs.kA = kAElevator;
     slot0Configs.kP = kPElevator;
     slot0Configs.kI = kIElevator;
     slot0Configs.kD = kDElevator;
@@ -69,15 +71,17 @@ public class Elevator extends SubsystemBase {
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     else motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
 
-    m_talon.getConfigurator().apply(talonFXConfigs);
-
+    m_elevatorTalon1.getConfigurator().apply(talonFXConfigs);
+    m_elevatorTalon2.getConfigurator().apply(talonFXConfigs);
     m_ElevatorCurrentState = ElevatorStates.StateInit;
     m_ElevatorRequestedState = ElevatorStates.StateInit;
 
     // if we design the robot with a proper resting position in mind
     // this should be the only initilization necessary
     // no firstTime2 :)
-    m_talon.setPosition(0);
+    m_elevatorTalon1.setPosition(0);
+    
+    m_elevatorTalon2.setPosition(0);
   }
 
   @Override
@@ -123,15 +127,16 @@ public class Elevator extends SubsystemBase {
     if (getError() < kElevatorErrorTolerance)
       m_ElevatorCurrentState = m_ElevatorRequestedState;
     else
-      m_ElevatorCurrentState = ElevatorStates.StateMovingToRequestedState;  
+      m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
     }
 
     public void runControlLoop() {
-    m_talon.setControl(request.withPosition(desiredPosition));
+    m_elevatorTalon1.setControl(request.withPosition(desiredPosition));
+    m_elevatorTalon2.setControl(request.withPosition(desiredPosition));
   }
 
   private double getPosition() {
-    return m_talon.getPosition().getValueAsDouble();
+    return m_elevatorTalon1.getPosition().getValueAsDouble();
   }
 
   public double getError() {
