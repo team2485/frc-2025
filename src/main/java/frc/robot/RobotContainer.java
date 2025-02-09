@@ -7,6 +7,8 @@ package frc.robot;
 import static frc.robot.Constants.OIConstants.kDriverPort;
 import static frc.robot.Constants.OIConstants.kOperatorPort;
 
+import java.lang.annotation.ElementType;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -22,6 +24,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
+import frc.robot.subsystems.PieceHandling.Elevator;
+import frc.robot.subsystems.PieceHandling.Pivot;
+import frc.robot.subsystems.PieceHandling.Wrist;
+import frc.robot.subsystems.PieceHandling.Elevator.ElevatorStates;
+import frc.robot.subsystems.PieceHandling.Pivot.PivotStates;
+import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
 
@@ -37,7 +45,9 @@ public class RobotContainer {
 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final SendableChooser<Command> autoChooser;
-
+  private final Elevator m_elevator = new Elevator();
+  private final Pivot m_pivot = new Pivot();
+  private final Wrist m_wrist = new Wrist();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
@@ -87,7 +97,9 @@ public class RobotContainer {
           () -> true,
           m_drivetrain, m_poseEstimation));
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro).alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
-    m_driver.a().onTrue(DriveCommandBuilder.alignToSource(m_drivetrain, m_poseEstimation));
+    //m_driver.a().onTrue(DriveCommandBuilder.alignToSource(m_drivetrain, m_poseEstimation));
+    m_driver.b().onTrue(new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateL1), m_elevator));
+    m_driver.a().onTrue(new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateL2),  m_elevator));//m_elevator.requestState(ElevatorStates.StateL2), m_elevator));
   } 
 
   /**

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.ElevatorConstants.*;
+import static frc.robot.Constants.WristConstants.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -16,11 +16,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-public class Elevator extends SubsystemBase {
+import static frc.robot.Constants.WristConstants.*;
+public class Wrist extends SubsystemBase {
   // Misc variables for specific subsystem go here
 
   // Enum representing all of the states the subsystem can be in
-  public enum ElevatorStates { // positive voltage moves downwards
+  public enum WristStates { // positive voltage moves downwards
     StateInit,
     StateZero, //intake position / default position 
     StateL1,
@@ -35,19 +36,19 @@ public class Elevator extends SubsystemBase {
     StateMoveToRequestedState,
   }
 
-  public static ElevatorStates m_ElevatorCurrentState;
-  public static ElevatorStates m_ElevatorRequestedState;
+  public static WristStates m_WristCurrentState;
+  public static WristStates m_WristRequestedState;
   // You may need more than one motor
-  private final TalonFX m_elevatorTalon1 = new TalonFX(kElevator1Port, "Mast");
+  private final TalonFX m_talon = new TalonFX(kWrist1Port, "Mast");
   private final MotionMagicVoltage request = new MotionMagicVoltage(0).withSlot(0);
- // private final TalonFX m_elevatorTalon2 = new TalonFX(kElevator2Port,"Mast");
+//  private final TalonFX m_WristTalon2 = new TalonFX(kWrist2Port,"Mast");
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
  // private DoubleSupplier supplier = new DoubleSupplier() 
-  public static GenericEntry motorVelo = Shuffleboard.getTab("Elevator").add("Velocity", 0.0).getEntry();
-  public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Elevator").add("position", 0).getEntry();
+  public static GenericEntry motorVoltage = Shuffleboard.getTab("Wrist").add("Volts", 0.0).getEntry();
+  public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
 
-  public Elevator() {
+  public Wrist() {
     // Misc setup goes here
 
     var talonFXConfigs = new TalonFXConfiguration();
@@ -59,44 +60,43 @@ public class Elevator extends SubsystemBase {
     // kI adds n volts per second when the positional error is 1 rotation
     // kD outputs n volts when the velocity error is 1 rotation per second
     var slot0Configs = talonFXConfigs.Slot0;
-    slot0Configs.kS = kSElevator;
-    slot0Configs.kG =0;// kGElevator;
+    slot0Configs.kS = kSWrist;
+    slot0Configs.kG = kGWrist;// kGWrist;
 
-    slot0Configs.kV =4 ;
-    slot0Configs.kA = .02;
-    slot0Configs.kP = 16;// kPElevator;
-    slot0Configs.kI = kIElevator;
-    slot0Configs.kD = .16;//kDElevator;
+    slot0Configs.kV = kVWrist;
+    slot0Configs.kA = kAWrist;
+    slot0Configs.kP = kPWrist;// kPWrist;
+    slot0Configs.kI = kIWrist;
+    slot0Configs.kD = kDWrist;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 18;//kElevatorCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = kWristCruiseVelocity;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 90;//kElevatorAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = kWristAcceleration;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 120;
+    motionMagicConfigs.MotionMagicJerk = 0;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
-    if (kElevatorClockwisePositive)
+    if (kWristClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     else motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
-    talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-    m_elevatorTalon1.getConfigurator().apply(talonFXConfigs);
-    // m_elevatorTalon2.getConfigurator().apply(talonFXConfigs);
-    m_ElevatorCurrentState = ElevatorStates.StateInit;
-    m_ElevatorRequestedState = ElevatorStates.StateInit;
+    talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    m_talon.getConfigurator().apply(talonFXConfigs);
+    //m_WristTalon2.getConfigurator().apply(talonFXConfigs);
+    m_WristCurrentState = WristStates.StateInit;
+    m_WristRequestedState = WristStates.StateInit;
 
     // if we design the robot with a proper resting position in mind
     // this should be the only initilization necessary
     // no firstTime2 :)
-    m_elevatorTalon1.setPosition(0);
+    m_talon.setPosition(0);
     
-    // m_elevatorTalon2.setPosition(0);
+   // m_WristTalon2.setPosition(0);
   }
 
   @Override
   public void periodic() {
-    switch (m_ElevatorRequestedState) {
+    switch (m_WristRequestedState) {
       case StateInit:
         desiredPosition = 0;
 
@@ -105,54 +105,53 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateL1:
-        desiredPosition = 1;
+        desiredPosition = 0.1;
         break;
       case StateL2:
-        desiredPosition = 20;
-        break;
-      case StateL3:
-        desiredPosition = 3;
-        break;
-      case StateL4:
-        desiredPosition = 4;
-        break;
-      case StateProcessor:
         desiredPosition = 0.25;
         break;
+      case StateL3:
+        desiredPosition = 0.1;
+        break;
+      case StateL4:
+        desiredPosition = 0.1;
+        break;
+      case StateProcessor:
+        desiredPosition = 0.1;
+        break;
       case StateBarge:
-        desiredPosition = 6;
+        desiredPosition = 0.1;
         break;
       case StateLowAlgae:
-        desiredPosition = 1.5;
+        desiredPosition = 0.1;
         break;
       case StateHighAlgae:
-        desiredPosition = 2.5;
+        desiredPosition = 0.1;
         break;
       case StateLollipop:
-        desiredPosition = 0.35;
+        desiredPosition = 0.1;
         break;
     }
-    desiredPosition*=kELevatorInchesToOutput;
+    desiredPosition*=kWristGearRatio;
     runControlLoop();
 
-    // if (getError() < kElevatorErrorTolerance)
-    m_ElevatorCurrentState = m_ElevatorRequestedState;
+    // if (getError() < kWristErrorTolerance)
+    m_WristCurrentState = m_WristRequestedState;
     // else
-    // m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
+    // m_WristCurrentState = WristStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {
    // MotionMagicVoltage voltage = request.withPosition(desiredPosition);
     
-    m_elevatorTalon1.setControl(request.withPosition(desiredPosition));
-    //motorVoltage.setDouble(m_elevatorTalon1.getMotorVoltage().getValueAsDouble());
-    motorVelo.setDouble(m_elevatorTalon1.getVelocity().getValueAsDouble());
-    desiredPositionLog.setDouble(m_elevatorTalon1.getPosition().getValueAsDouble());
-    // m_elevatorTalon2.setControl(request.withPosition(desiredPosition));
+    m_talon.setControl(request.withPosition(desiredPosition));
+    motorVoltage.setDouble(m_talon.getMotorVoltage().getValueAsDouble());
+    desiredPositionLog.setDouble(desiredPosition);
+  //  m_WristTalon2.setControl(request.withPosition(desiredPosition));
   }
 
   private double getPosition() {
-    return m_elevatorTalon1.getPosition().getValueAsDouble();
+    return m_talon.getPosition().getValueAsDouble();
   }
 
   public double getError() {
@@ -160,13 +159,13 @@ public class Elevator extends SubsystemBase {
   }
  
   // example of a "setter" method
-  public void requestState(ElevatorStates requestedState) {
-    m_ElevatorRequestedState = requestedState;
+  public void requestState(WristStates requestedState) {
+    m_WristRequestedState = requestedState;
   }
  
   // example of a "getter" method
-  public ElevatorStates getCurrentState() {
-    return m_ElevatorCurrentState;
+  public WristStates getCurrentState() {
+    return m_WristCurrentState;
   }
 
   // misc methods go here, getters and setters should follow above format

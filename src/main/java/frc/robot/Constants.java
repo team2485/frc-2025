@@ -263,19 +263,74 @@ public final class Constants {
     public static final double kRotationTolerance = 3;
   }
 
+  public static final class PivotConstants{
+    public static final double kPivotGearRatio = 27*3; // 60:12 
+    //public static final double kPivotSprocketCircumference = 1.432*Math.PI; // INCHES
+    //public static final double kPivotInchesToOutput = (kPivotGearRatio)/(kPivotSprocketCircumference);
+    public static final int kPivot1Port = 12;
+
+
+
+    public static final double kSPivot = 0;
+    public static final double kVPivot = 0.53;
+    public static final double kAPivot = 0.04;
+    public static final double kGPivot = 0.89;
+    public static final double kPPivot = 2;
+    public static final double kIPivot = 0;
+    public static final double kDPivot = 0;
+    public static final double kPivotCruiseVelocity = 40;
+    public static final double kPivotAcceleration =8;
+    public static final double kPivotJerk = 0;
+
+    public static final boolean kPivotClockwisePositive = true;
+
+    public static final double kPivotErrorTolerance = 0;
+
+
+
+  }
+  public static final class WristConstants{
+    public static final double kWristGearRatio = 36; // reductions 
+    //public static final double kPivotSprocketCircumference = 1.432*Math.PI; // INCHES
+    //public static final double kPivotInchesToOutput = (kPivotGearRatio)/(kPivotSprocketCircumference);
+    public static final int kWrist1Port = 9;
+
+
+
+    public static final double kSWrist = 0;
+    public static final double kVWrist = 0.53;
+    public static final double kAWrist = 0.04;
+    public static final double kGWrist = 0.89;
+    public static final double kPWrist = 1;
+    public static final double kIWrist = 0;
+    public static final double kDWrist = 0;
+    public static final double kWristCruiseVelocity = 40;
+    public static final double kWristAcceleration =8;
+    public static final double kWristJerk = 0;
+
+    public static final boolean kWristClockwisePositive = true;
+
+    public static final double kWristErrorTolerance = 0;
+
+
+
+  }
   public static final class ElevatorConstants{
 
-    public static final int kElevator1CanID = 0;
-    public static final int kElevator2CANID = 0;
+    public static final double kElevatorGearRatio = 5; // 60:12 
+    public static final double kElevatorSprocketCircumference = 1.432*Math.PI; // INCHES
+    public static final double kELevatorInchesToOutput = (kElevatorGearRatio)/(kElevatorSprocketCircumference);
+    public static final int kElevator1CanID = 10;
+    public static final int kElevator2CANID = 11;
 
 
-    public static final int kElevator1Port = 0; // TODO: placeholder port
-    public static final int kElevator2Port = 0;
+    public static final int kElevator1Port = 10; // TODO: placeholder port
+    public static final int kElevator2Port = 11;
     public static final double kSElevator = 0;
     public static final double kVElevator = 7.52;
     public static final double kAElevator = 0.01;
     public static final double kGElevator = 0.04;
-    public static final double kPElevator = 0;
+    public static final double kPElevator = 0.01;
     public static final double kIElevator = 0;
     public static final double kDElevator = 0;
     public static final double kElevatorCruiseVelocity = 0;
