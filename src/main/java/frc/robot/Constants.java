@@ -272,15 +272,15 @@ public final class Constants {
 
 
     public static final double kSPivot = 0;
-    public static final double kVPivot = 0.53;
-    public static final double kAPivot = 0.04;
+    public static final double kVPivot = 0.35;//0.53;
+    public static final double kAPivot = 0.02; // 0.04
     public static final double kGPivot = 0.89;
     public static final double kPPivot = 2;
     public static final double kIPivot = 0;
     public static final double kDPivot = 0;
-    public static final double kPivotCruiseVelocity = 40;
-    public static final double kPivotAcceleration =8;
-    public static final double kPivotJerk = 0;
+    public static final double kPivotCruiseVelocity = 20;
+    public static final double kPivotAcceleration =64;
+    public static final double kPivotJerk = 100;
 
     public static final boolean kPivotClockwisePositive = true;
 

@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
+import frc.robot.commands.PieceHandlingCommandBuilder;
 import frc.robot.subsystems.PieceHandling.Elevator;
 import frc.robot.subsystems.PieceHandling.Pivot;
 import frc.robot.subsystems.PieceHandling.Wrist;
@@ -98,8 +99,10 @@ public class RobotContainer {
           m_drivetrain, m_poseEstimation));
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro).alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
     //m_driver.a().onTrue(DriveCommandBuilder.alignToSource(m_drivetrain, m_poseEstimation));
-    m_driver.b().onTrue(new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateL1), m_elevator));
-    m_driver.a().onTrue(new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateL2),  m_elevator));//m_elevator.requestState(ElevatorStates.StateL2), m_elevator));
+    m_driver.b().onTrue(PieceHandlingCommandBuilder.requestL1(m_wrist, m_elevator, m_pivot));
+   // m_driver.a().onTrue(new InstantCommand(()->m_pivot.requestState(PivotStates.StateL2),  m_pivot));//m_elevator.requestState(ElevatorStates.StateL2), m_elevator));
+    m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
+    
   } 
 
   /**

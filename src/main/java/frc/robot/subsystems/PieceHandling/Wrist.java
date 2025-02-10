@@ -105,10 +105,10 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateL1:
-        desiredPosition = 0.1;
+        desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.25;
+        desiredPosition = 0.3;
         break;
       case StateL3:
         desiredPosition = 0.1;

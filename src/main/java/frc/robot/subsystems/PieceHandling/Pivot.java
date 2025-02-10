@@ -45,7 +45,7 @@ public class Pivot extends SubsystemBase {
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
  // private DoubleSupplier supplier = new DoubleSupplier() 
-  public static GenericEntry motorVoltage = Shuffleboard.getTab("Pivot").add("Volts", 0.0).getEntry();
+  public static GenericEntry motorVoltage = Shuffleboard.getTab("Pivot").add("velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Pivot").add("desiredPos", 0).getEntry();
 
   public Pivot() {
@@ -108,7 +108,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.2;
+        desiredPosition = 0.3;
         break;
       case StateL3:
         desiredPosition = 0.1;
@@ -145,7 +145,7 @@ public class Pivot extends SubsystemBase {
    // MotionMagicVoltage voltage = request.withPosition(desiredPosition);
     
     m_talon.setControl(request.withPosition(desiredPosition));
-    motorVoltage.setDouble(m_talon.getMotorVoltage().getValueAsDouble());
+    motorVoltage.setDouble(m_talon.getVelocity().getValueAsDouble());
     desiredPositionLog.setDouble(desiredPosition);
   //  m_PivotTalon2.setControl(request.withPosition(desiredPosition));
   }
