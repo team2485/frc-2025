@@ -24,6 +24,7 @@ public class Pivot extends SubsystemBase {
   public enum PivotStates { // positive voltage moves downwards
     StateInit,
     StateZero, //intake position / default position 
+    StateCoralStation,
     StateL1,
     StateL2,
     StateL3,
@@ -105,6 +106,9 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateL1:
+        desiredPosition = 0.05;
+        break;
+      case StateCoralStation:
         desiredPosition = 0.05;
         break;
       case StateL2:

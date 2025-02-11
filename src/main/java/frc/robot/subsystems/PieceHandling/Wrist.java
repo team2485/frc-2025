@@ -34,6 +34,7 @@ public class Wrist extends SubsystemBase {
     StateHighAlgae,
     StateLollipop,
     StateMoveToRequestedState,
+    StateCoralStation,
   }
 
   public static WristStates m_WristCurrentState;
@@ -103,6 +104,9 @@ public class Wrist extends SubsystemBase {
         break;
       case StateZero:
         desiredPosition = 0;
+        break;
+      case StateCoralStation:
+        desiredPosition = 0.05;
         break;
       case StateL1:
         desiredPosition = 0.05;

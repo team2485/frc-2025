@@ -33,6 +33,7 @@ public class Elevator extends SubsystemBase {
     StateHighAlgae,
     StateLollipop,
     StateMoveToRequestedState,
+    StateCoralStation
   }
 
   public static ElevatorStates m_ElevatorCurrentState;
@@ -103,6 +104,9 @@ public class Elevator extends SubsystemBase {
         break;
       case StateZero:
         desiredPosition = 0;
+        break;
+      case StateCoralStation:
+        desiredPosition = 1;
         break;
       case StateL1:
         desiredPosition = 1;

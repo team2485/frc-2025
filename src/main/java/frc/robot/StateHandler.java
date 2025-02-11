@@ -35,6 +35,7 @@ public class StateHandler extends SubsystemBase{
 
     public enum RobotStates {
 
+        StateBetweenStates,
         StateInit,
         StateZero,
         StateCoralStation,
@@ -72,11 +73,21 @@ public class StateHandler extends SubsystemBase{
                 }
                 
                 break;
+            case StateCoralStation:
+                m_Wrist.requestState(WristStates.StateCoralStation); // just making the assumption that wrist must retract before the other subsystems 
+                if(m_Wrist.getCurrentState() == WristStates.StateCoralStation){ // the wrist is in movingtorquestedstate when NOT at goal...
+
+                    m_Elevator.requestState(ElevatorStates.StateCoralStation);
+                    m_Pivot.requestState(PivotStates.StateCoralStation);
+
+                }
+                
+                break;
             case StateL2:
-                m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite...
+                m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite as going to zero...
                 if(m_Elevator.getCurrentState() == ElevatorStates.StateL2 ){// the elevator is in movingtorquestedstate when NOT at goal...
-
-
+                    // GetCurrentState is better than directly checking for error because it ensures we're both within tolerance AND in the RIGHt state, so this if statement won't pass if we're in the right spot for L1 for example.
+                    // This approach is also sick if you want to use transitional states because you can call request to the transition, see if the transition is complete, and then execute the rest.
                     m_Wrist.requestState(WristStates.StateL2);
                     m_Pivot.requestState(PivotStates.StateL2);
 
@@ -91,7 +102,10 @@ public class StateHandler extends SubsystemBase{
             currentState=requestedState;
 
         }
+        else{
+            currentState = RobotStates.StateBetweenStates;
 
+        }
     }
     public void requesstRobotState(RobotStates changeTo){
 
