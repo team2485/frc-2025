@@ -135,10 +135,10 @@ public class Wrist extends SubsystemBase {
     desiredPosition*=kWristGearRatio;
     runControlLoop();
 
-    // if (getError() < kWristErrorTolerance)
-    m_WristCurrentState = m_WristRequestedState;
-    // else
-    // m_WristCurrentState = WristStates.StateMoveToRequestedState;  
+    if (getError() < kWristErrorTolerance)
+      m_WristCurrentState = m_WristRequestedState;
+    else
+      m_WristCurrentState = WristStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {
@@ -157,7 +157,7 @@ public class Wrist extends SubsystemBase {
   public double getError() {
     return Math.abs(getPosition() - desiredPosition);
   }
-  
+
  
   // example of a "setter" method
   public void requestState(WristStates requestedState) {

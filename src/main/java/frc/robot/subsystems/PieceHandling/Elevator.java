@@ -135,10 +135,10 @@ public class Elevator extends SubsystemBase {
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
 
-    // if (getError() < kElevatorErrorTolerance)
-    m_ElevatorCurrentState = m_ElevatorRequestedState;
-    // else
-    // m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
+    if (getError() < kElevatorErrorTolerance)
+      m_ElevatorCurrentState = m_ElevatorRequestedState;
+    else
+      m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {

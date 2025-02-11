@@ -135,10 +135,10 @@ public class Pivot extends SubsystemBase {
     desiredPosition*=kPivotGearRatio;
     runControlLoop();
 
-    // if (getError() < kPivotErrorTolerance)
-    m_PivotCurrentState = m_PivotRequestedState;
-    // else
-    // m_PivotCurrentState = PivotStates.StateMoveToRequestedState;  
+    if (getError() < kPivotErrorTolerance)
+      m_PivotCurrentState = m_PivotRequestedState;
+    else
+      m_PivotCurrentState = PivotStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {

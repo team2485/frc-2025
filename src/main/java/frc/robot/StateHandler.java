@@ -64,7 +64,7 @@ public class StateHandler extends SubsystemBase{
                 break;
             case StateZero:
                 m_Wrist.requestState(WristStates.StateZero); // just making the assumption that wrist must retract before the other subsystems 
-                if(m_Wrist.getError() < kWristErrorTolerance){
+                if(m_Wrist.getCurrentState() == WristStates.StateZero){ // the wrist is in movingtorquestedstate when NOT at goal...
 
                     m_Elevator.requestState(ElevatorStates.StateZero);
                     m_Pivot.requestState(PivotStates.StateZero);
@@ -74,7 +74,8 @@ public class StateHandler extends SubsystemBase{
                 break;
             case StateL2:
                 m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite...
-                if(m_Wrist.getError() < kWristErrorTolerance){
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateL2 ){// the elevator is in movingtorquestedstate when NOT at goal...
+
 
                     m_Wrist.requestState(WristStates.StateL2);
                     m_Pivot.requestState(PivotStates.StateL2);
