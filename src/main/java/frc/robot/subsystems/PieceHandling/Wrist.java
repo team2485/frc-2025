@@ -157,6 +157,7 @@ public class Wrist extends SubsystemBase {
   public double getError() {
     return Math.abs(getPosition() - desiredPosition);
   }
+  
  
   // example of a "setter" method
   public void requestState(WristStates requestedState) {
