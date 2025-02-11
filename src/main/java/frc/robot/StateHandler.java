@@ -63,10 +63,25 @@ public class StateHandler extends SubsystemBase{
                 requestedState=RobotStates.StateZero;
                 break;
             case StateZero:
-                m_Wrist.requestState(WristStates.StateZero);
-                m_Elevator.requestState(ElevatorStates.StateZero);
-                m_Pivot.requestState(PivotStates.StateZero);
+                m_Wrist.requestState(WristStates.StateZero); // just making the assumption that wrist must retract before the other subsystems 
+                if(m_Wrist.getError() < kWristErrorTolerance){
+
+                    m_Elevator.requestState(ElevatorStates.StateZero);
+                    m_Pivot.requestState(PivotStates.StateZero);
+
+                }
+                
                 break;
+            case StateL2:
+                m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite...
+                if(m_Wrist.getError() < kWristErrorTolerance){
+
+                    m_Wrist.requestState(WristStates.StateL2);
+                    m_Pivot.requestState(PivotStates.StateL2);
+
+                }
+                break;
+
         }
 
 
@@ -75,6 +90,11 @@ public class StateHandler extends SubsystemBase{
             currentState=requestedState;
 
         }
+
+    }
+    public void requesstRobotState(RobotStates changeTo){
+
+        requestedState=changeTo;
 
     }
 
