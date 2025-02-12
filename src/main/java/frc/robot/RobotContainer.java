@@ -30,6 +30,8 @@ import frc.robot.subsystems.PieceHandling.Pivot;
 import frc.robot.subsystems.PieceHandling.Wrist;
 import frc.robot.subsystems.PieceHandling.Elevator.ElevatorStates;
 import frc.robot.subsystems.PieceHandling.Pivot.PivotStates;
+import frc.robot.subsystems.PieceHandling.Roller;
+import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
 import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.Drivetrain;
@@ -49,6 +51,7 @@ public class RobotContainer {
   private final Elevator m_elevator = new Elevator();
   private final Pivot m_pivot = new Pivot();
   private final Wrist m_wrist = new Wrist();
+  private final Roller m_roller = new Roller();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
@@ -99,10 +102,12 @@ public class RobotContainer {
           m_drivetrain, m_poseEstimation));
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro).alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
     //m_driver.a().onTrue(DriveCommandBuilder.alignToSource(m_drivetrain, m_poseEstimation));
-    m_driver.b().onTrue(PieceHandlingCommandBuilder.requestL1(m_wrist, m_elevator, m_pivot));
+    m_driver.b().onTrue(PieceHandlingCommandBuilder.requestStationState(m_wrist, m_elevator, m_pivot));
    // m_driver.a().onTrue(new InstantCommand(()->m_pivot.requestState(PivotStates.StateL2),  m_pivot));//m_elevator.requestState(ElevatorStates.StateL2), m_elevator));
     m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
+    m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
     
+    m_driver.rightBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
   } 
 
   /**

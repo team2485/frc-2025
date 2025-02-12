@@ -34,6 +34,7 @@ public class Pivot extends SubsystemBase {
     StateHighAlgae,
     StateLollipop,
     StateMoveToRequestedState,
+    StateStation
   }
 
   public static PivotStates m_PivotCurrentState;
@@ -101,14 +102,18 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0;
 
         break;
+
       case StateZero:
         desiredPosition = 0;
+        break;
+      case StateStation:
+        desiredPosition = 0.02;
         break;
       case StateL1:
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.3;
+        desiredPosition = 0;
         break;
       case StateL3:
         desiredPosition = 0.1;

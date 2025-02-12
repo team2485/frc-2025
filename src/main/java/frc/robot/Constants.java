@@ -299,14 +299,14 @@ public final class Constants {
 
     public static final double kSWrist = 0;
     public static final double kVWrist = 0.53;
-    public static final double kAWrist = 0.04;
-    public static final double kGWrist = 0.89;
-    public static final double kPWrist = 1;
+    public static final double kAWrist = 0.06;
+    public static final double kGWrist = 0;
+    public static final double kPWrist = 5;
     public static final double kIWrist = 0;
     public static final double kDWrist = 0;
-    public static final double kWristCruiseVelocity = 40;
-    public static final double kWristAcceleration =8;
-    public static final double kWristJerk = 0;
+    public static final double kWristCruiseVelocity = 20;
+    public static final double kWristAcceleration = 40;
+    public static final double kWristJerk = 80;
 
     public static final boolean kWristClockwisePositive = true;
 
@@ -343,22 +343,17 @@ public final class Constants {
 
   }
 
-  public static final class TelescopeConstants{
+  public static final class RollerConstants{
 
     
-    public static final int kTelescopePort = 0; // TODO: placeholder port
-    public static final double kSTelescope = 0;
-    public static final double kVTelescope = 0;
-    public static final double kPTelescope = 0;
-    public static final double kITelescope = 0;
-    public static final double kDTelescope = 0;
-    public static final double kTelescopeCruiseVelocity = 0;
-    public static final double kTelescopeAcceleration = 0;
-    public static final double kTelescopeJerk = 0;
+    public static final int kRollerPort = 13; // TODO: placeholder port
+    public static final double kPRoller = 0;
+    public static final double kIRoller = 0;
+    public static final double kDRoller = 0;
 
-    public static final boolean kTelescopeClockwisePositive = true;
+    public static final boolean kRollerClockwisePositive = true;
 
-    public static final double kTelescopeErrorTolerance = 0;
+    public static final double kRollerErrorTolerance = 0;
     
 
 

@@ -50,11 +50,11 @@ public class PieceHandlingCommandBuilder {
 
 
     }
-    public static Command requestL1(Wrist m_wrist, Elevator m_elevator, Pivot m_Pivot){
-        Command wristCom = new InstantCommand(()->m_wrist.requestState(WristStates.StateL1),m_wrist);
-        Command elevatorCommand = new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateL1),m_elevator);
+    public static Command requestStationState(Wrist m_wrist, Elevator m_elevator, Pivot m_Pivot){
+        Command wristCom = new InstantCommand(()->m_wrist.requestState(WristStates.StateStation),m_wrist);
+        Command elevatorCommand = new InstantCommand(()->m_elevator.requestState(ElevatorStates.StateStation),m_elevator);
         
-        Command pivotCommand = new InstantCommand(()->m_Pivot.requestState(PivotStates.StateL1),m_Pivot);
+        Command pivotCommand = new InstantCommand(()->m_Pivot.requestState(PivotStates.StateStation),m_Pivot);
 
         
         

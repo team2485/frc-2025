@@ -34,6 +34,7 @@ public class Wrist extends SubsystemBase {
     StateHighAlgae,
     StateLollipop,
     StateMoveToRequestedState,
+    StateStation
   }
 
   public static WristStates m_WristCurrentState;
@@ -45,7 +46,7 @@ public class Wrist extends SubsystemBase {
   // Unit default for TalonFX libraries is rotations
   private double desiredPosition = 0;
  // private DoubleSupplier supplier = new DoubleSupplier() 
-  public static GenericEntry motorVoltage = Shuffleboard.getTab("Wrist").add("Volts", 0.0).getEntry();
+  public static GenericEntry motorVelocity = Shuffleboard.getTab("Wrist").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
 
   public Wrist() {
@@ -104,11 +105,15 @@ public class Wrist extends SubsystemBase {
       case StateZero:
         desiredPosition = 0;
         break;
+      case StateStation:
+        desiredPosition=0.02;
+        break;
       case StateL1:
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.3;
+        desiredPosition = 0.51
+        ;
         break;
       case StateL3:
         desiredPosition = 0.1;
@@ -145,7 +150,7 @@ public class Wrist extends SubsystemBase {
    // MotionMagicVoltage voltage = request.withPosition(desiredPosition);
     
     m_talon.setControl(request.withPosition(desiredPosition));
-    motorVoltage.setDouble(m_talon.getMotorVoltage().getValueAsDouble());
+    motorVelocity.setDouble(m_talon.getVelocity().getValueAsDouble());
     desiredPositionLog.setDouble(desiredPosition);
   //  m_WristTalon2.setControl(request.withPosition(desiredPosition));
   }

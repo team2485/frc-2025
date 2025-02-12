@@ -33,6 +33,7 @@ public class Elevator extends SubsystemBase {
     StateHighAlgae,
     StateLollipop,
     StateMoveToRequestedState,
+    StateStation
   }
 
   public static ElevatorStates m_ElevatorCurrentState;
@@ -79,7 +80,7 @@ public class Elevator extends SubsystemBase {
     if (kElevatorClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     else motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
-    talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     m_elevatorTalon1.getConfigurator().apply(talonFXConfigs);
     // m_elevatorTalon2.getConfigurator().apply(talonFXConfigs);
@@ -97,6 +98,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     switch (m_ElevatorRequestedState) {
+
       case StateInit:
         desiredPosition = 0;
 
@@ -104,11 +106,14 @@ public class Elevator extends SubsystemBase {
       case StateZero:
         desiredPosition = 0;
         break;
+      case StateStation:
+        desiredPosition = 0.5;
+        break;
       case StateL1:
         desiredPosition = 1;
         break;
       case StateL2:
-        desiredPosition = 25;
+        desiredPosition = 9;
         break;
       case StateL3:
         desiredPosition = 3;
