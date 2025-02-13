@@ -16,7 +16,11 @@ import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -62,6 +66,14 @@ public class DriveCommandBuilder {
         // Since we are using a holonomic drivetrain, the rotation component of this pose
         // represents the goal holonomic rotation
         Pose2d targetPose = fieldEndPos.get();
+
+        double dist =  m_poseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
+        if(dist < 0.5){
+
+            Command shortCommand = shortDriveToPose(m_drivetrain, m_poseEstimation, targetPose);
+            return shortCommand;
+
+        }
         
         // Create the constraints to use while pathfinding
         PathConstraints constraintsOld = new PathConstraints(
@@ -91,7 +103,15 @@ public class DriveCommandBuilder {
             0);
         return pathfindingCommand;
     }
+    public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
+        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5,0.5);
+
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(m_PoseEstimation.getCurrentPose(), endPos);
+        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, Rotation2d.kZero));
+        return AutoBuilder.followPath(path);
+
+    }
     public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
 
         var constants = m_poseEstimation.getFieldConstants();

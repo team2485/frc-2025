@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.WarlordsLib.WL_CommandXboxController;
-import frc.robot.StateHandler.RobotStates;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.PieceHandlingCommandBuilder;
@@ -37,7 +36,10 @@ import frc.robot.subsystems.PieceHandling.Roller;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
 import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.drive.AlignHandler;
 import frc.robot.subsystems.drive.Drivetrain;
+import frc.robot.subsystems.drive.AlignHandler.AlignStates;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,6 +63,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
   public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot);
+  public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver);
  
   public RobotContainer() { 
     // Configure the trigger bindings
@@ -97,13 +100,13 @@ public class RobotContainer {
    * 
    */
   private void configureBindings() {
-    m_drivetrain.setDefaultCommand(
-      new DriveWithController(
-          m_driver::getLeftY,
-          m_driver::getLeftX,
-          m_driver::getRightX,
-          () -> true,
-          m_drivetrain, m_poseEstimation));
+    // m_drivetrain.setDefaultCommand(
+    //   new DriveWithController(
+    //       m_driver::getLeftY,
+    //       m_driver::getLeftX,
+    //       m_driver::getRightX,
+    //       () -> true,
+    //       m_drivetrain, m_poseEstimation));
     m_driver.x().onTrue(new InstantCommand(m_drivetrain::zeroGyro).alongWith(new InstantCommand(m_drivetrain::resetToAbsolute)));
     //m_driver.a().onTrue(DriveCommandBuilder.alignToSource(m_drivetrain, m_poseEstimation));
     // m_driver.a().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateCoralStationInit), m_Handler));//
@@ -112,8 +115,7 @@ public class RobotContainer {
     //r.requestState(ElevatorStates.StateL2), m_elevator));
     // m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
     m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    m_driver.a().onTrue(DriveCommandBuilder.roughAlignToTag(21,1,0.3, m_drivetrain, m_poseEstimation));
-
+    m_driver.a().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignInit) ));
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
   } 
 

@@ -31,20 +31,13 @@ import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 public class StateHandler extends SubsystemBase{
     public RobotStates currentState = RobotStates.StateInit;
     public RobotStates requestedState = RobotStates.StateInit;
-    public AlignmentStates currentAlignmentState = AlignmentStates.StateTeleOp;
 
 
     private Elevator m_Elevator;
     private Wrist m_Wrist;
     private Pivot m_Pivot;
 
-    public enum AlignmentStates { 
 
-        StateTeleOp,
-        StatePathFollowing,
-        StateSmoothAligning
-
-    }
     public enum RobotStates {
 
         StateBetweenStates,
