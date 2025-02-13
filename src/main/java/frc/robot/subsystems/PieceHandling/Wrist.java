@@ -115,7 +115,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.51
+        desiredPosition = 0.57275
         ;
         break;
       case StateL3:
@@ -143,10 +143,10 @@ public class Wrist extends SubsystemBase {
     desiredPosition*=kWristGearRatio;
     runControlLoop();
 
-    // if (getError() < kWristErrorTolerance)
-    m_WristCurrentState = m_WristRequestedState;
-    // else
-    // m_WristCurrentState = WristStates.StateMoveToRequestedState;  
+    if (getError() < kWristErrorTolerance)
+      m_WristCurrentState = m_WristRequestedState;
+     else
+     m_WristCurrentState = WristStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {

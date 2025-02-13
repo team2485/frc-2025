@@ -87,7 +87,7 @@ public final class Constants {
   }
 
   public interface FieldConstants {
-
+    public List<AprilTag> getAprilTagList();
     public boolean isOnRed();
     public Pose2d getUpperPickupPos();
     public Pose2d getLowerPickupPos();
@@ -182,6 +182,9 @@ public final class Constants {
     public Pose2d getFrontMiddlePlacementPos() {
       return new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0)).toPose2d();
     }
+    public List<AprilTag> getAprilTagList(){
+      return VisionConstants.kBlueTagList;
+    }
 
     public boolean isOnRed() {return true;}
 
@@ -197,6 +200,9 @@ public final class Constants {
       return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
 
 
+    }
+    public List<AprilTag> getAprilTagList(){
+      return VisionConstants.kBlueTagList;
     }
     public Pose2d getLowerPickupPos(){
       return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
@@ -284,7 +290,7 @@ public final class Constants {
 
     public static final boolean kPivotClockwisePositive = true;
 
-    public static final double kPivotErrorTolerance = 0;
+    public static final double kPivotErrorTolerance = 5;
 
 
 
@@ -310,7 +316,7 @@ public final class Constants {
 
     public static final boolean kWristClockwisePositive = true;
 
-    public static final double kWristErrorTolerance = 0;
+    public static final double kWristErrorTolerance = 1;
 
 
 
@@ -339,7 +345,7 @@ public final class Constants {
 
     public static final boolean kElevatorClockwisePositive = true;
 
-    public static final double kElevatorErrorTolerance = 0;
+    public static final double kElevatorErrorTolerance = 0.5;
 
   }
 

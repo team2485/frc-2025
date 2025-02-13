@@ -8,6 +8,7 @@ import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRa
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -17,6 +18,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -38,7 +40,7 @@ import static frc.robot.Constants.Swerve.*;
 public class DriveCommandBuilder {
 
     static GenericEntry angleGetTest;
-
+    //public static GenericEntry targetPoseShuffleboard = Shuffleboard.getTab("Autos").add("DesiredPose", Pose2d.kZero ).getEntry();
     public DriveCommandBuilder(PoseEstimation m_poseEstimation, Drivetrain m_drivetrain) {
 
         AutoBuilder.configure(
@@ -52,7 +54,7 @@ public class DriveCommandBuilder {
         m_drivetrain);
 
     }
-
+    
     
     public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {
  
@@ -62,10 +64,10 @@ public class DriveCommandBuilder {
         Pose2d targetPose = fieldEndPos.get();
         
         // Create the constraints to use while pathfinding
-        PathConstraints constraints = new PathConstraints(
+        PathConstraints constraintsOld = new PathConstraints(
                 kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
-
+        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5,0.5);
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
         
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
@@ -89,6 +91,31 @@ public class DriveCommandBuilder {
             0);
         return pathfindingCommand;
     }
+
+    public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
+
+        var constants = m_poseEstimation.getFieldConstants();
+        List<AprilTag> aprilTagPositions = constants.getAprilTagList();
+        var desiredTag = aprilTagPositions.get(tagId-1);
+
+
+        Pose2d desiredPos = desiredTag.pose.toPose2d();
+
+        // Rotation2d originalRotation = desiredPos.getRotation(); // should be 0.0deg for 21
+        // double xMultiplier = originalRotation.getCos();
+        // double yMultiplier = originalRotation.getSin();
+        // Translation2d relativeOffset = new Translation2d(yMultiplier,-xMultiplier ); // make vector of direction
+        Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.k180deg); // are you kidding me
+        desiredPos = desiredPos.transformBy(converted);
+
+        final Pose2d endPos = desiredPos;
+        //return endPos;
+       // targetPoseShuffleboard.setValue(endPos);
+        return driveToPosition(m_Drivetrain, m_poseEstimation, () -> endPos);
+
+
+    }
+
     static Pose2d closestSourcePose;
     public static Command alignToSource (Drivetrain m_dDrivetrain, PoseEstimation m_poseEstimation){
 

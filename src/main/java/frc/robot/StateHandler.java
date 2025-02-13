@@ -4,6 +4,9 @@ import static frc.robot.Constants.WristConstants.*;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import static frc.robot.Constants.PivotConstants.*;
+
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.PieceHandling.Elevator;
 import frc.robot.subsystems.PieceHandling.Pivot;
@@ -28,21 +31,34 @@ import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 public class StateHandler extends SubsystemBase{
     public RobotStates currentState = RobotStates.StateInit;
     public RobotStates requestedState = RobotStates.StateInit;
+    public AlignmentStates currentAlignmentState = AlignmentStates.StateTeleOp;
+
 
     private Elevator m_Elevator;
     private Wrist m_Wrist;
     private Pivot m_Pivot;
 
+    public enum AlignmentStates { 
+
+        StateTeleOp,
+        StatePathFollowing,
+        StateSmoothAligning
+
+    }
     public enum RobotStates {
 
         StateBetweenStates,
         StateInit,
         StateZero,
-        StateCoralStation,
+        StateCoralStationInit,
+        StateCoralStationTransition,
+        StateCoralStationTransition2,
+        StateCoralStationFinal,
         StateL1,
         StateL2,
         StateL2Init,
         StateL2Finished,
+        StateL2Transition3,
         StateL2Transition,
         StateL2Transition2,
         StateL2WristTransition,
@@ -61,19 +77,19 @@ public class StateHandler extends SubsystemBase{
 
     }
     
-    
+    GenericEntry state = Shuffleboard.getTab("Elevator").add("state", "").getEntry();
     
     @Override
     public void periodic(){
 
-        switch(requestedState){
+        switch(currentState){
 
             case StateInit:
-                requestedState=RobotStates.StateZero;
+                currentState=RobotStates.StateCoralStationInit;
                 break;
             case StateZero:
                 m_Wrist.requestState(WristStates.StateZero); // just making the assumption that wrist must retract before the other subsystems 
-                if(m_Wrist.getCurrentState() == WristStates.StateZero){ // the wrist is in movingtorquestedstate when NOT at goal...
+                if(m_Wrist.getCurrentState() == WristStates.StateZero){ // the wrist is in movingToRequestedState when NOT at goal...
 
                     m_Elevator.requestState(ElevatorStates.StateZero);
                     m_Pivot.requestState(PivotStates.StateZero);
@@ -81,35 +97,58 @@ public class StateHandler extends SubsystemBase{
                 }
                 
                 break;
-            case StateCoralStation:
-                m_Wrist.requestState(WristStates.StateCoralStation); // just making the assumption that wrist must retract before the other subsystems 
-                if(m_Wrist.getCurrentState() == WristStates.StateCoralStation){ // the wrist is in movingtorquestedstate when NOT at goal...
-
-                    m_Elevator.requestState(ElevatorStates.StateCoralStation);
-                    m_Pivot.requestState(PivotStates.StateStation);
-
-                }
+            case StateCoralStationInit:
+                m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
+                currentState = RobotStates.StateCoralStationTransition;
+                break;
+            case StateCoralStationTransition:
                 
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateStation) { // the wrist is in movingToRequestedState when NOT at goal...
+
+                    m_Wrist.requestState(WristStates.StateStation);
+                    m_Pivot.requestState(PivotStates.StateStation);
+                    currentState = RobotStates.StateCoralStationTransition2;
+                }
+                break;
+            case StateCoralStationTransition2:
+                if(m_Wrist.getCurrentState() == WristStates.StateStation && m_Pivot.getCurrentState() == PivotStates.StateStation) {
+                    currentState = RobotStates.StateCoralStationFinal;
+                }
+                break;
+            case StateCoralStationFinal:
+                if(requestedState==RobotStates.StateL2Init) {
+                    currentState = RobotStates.StateL2Init;
+                }
                 break;
             case StateL2Init:
                 m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite as going to zero...
-                requestedState = RobotStates.StateL2Transition;
+                currentState = RobotStates.StateL2Transition;
                 break;  
             case StateL2Transition:
                 if(m_Elevator.getCurrentState() == ElevatorStates.StateL2){// the elevator is in movingToRequestedState when NOT at goal...
                     // GetCurrentState is better than directly checking for error because it ensures we're both within tolerance AND in the RIGHT state, so this if statement won't pass if we're in the right spot for L1 for example.
                     // This approach is also sick if you want to use transitional states because you can call request to the transition, see if the transition is complete, and then execute the rest.
                     m_Wrist.requestState(WristStates.StateL2);
-                    m_Pivot.requestState(PivotStates.StateL2);
-                    requestedState=RobotStates.StateL2Transition2;
+                    
+                    currentState=RobotStates.StateL2Transition2;
                 }
                 break;
             case StateL2Transition2:
-                if(m_Wrist.getCurrentState() == WristStates.StateL2 && m_Pivot.getCurrentState() == PivotStates.StateL2) {
-                    requestedState=RobotStates.StateL2Finished;
+                if(m_Wrist.getCurrentState() == WristStates.StateL2) {
+                    currentState=RobotStates.StateL2Transition3;
+                    m_Pivot.requestState(PivotStates.StateL2);
                 }
                 break;
+            case StateL2Transition3:
+                if(m_Wrist.getCurrentState() == WristStates.StateL2 && m_Pivot.getCurrentState() == PivotStates.StateL2){
+
+                    currentState=RobotStates.StateL2Finished;
+
+                }
             case StateL2Finished:
+                if(requestedState==RobotStates.StateCoralStationInit) {
+                    currentState = RobotStates.StateCoralStationInit;
+                }
                 break;
             case StateL3:
                 m_Elevator.requestState(ElevatorStates.StateL3);
@@ -147,30 +186,31 @@ public class StateHandler extends SubsystemBase{
         }
 
 
-        if(getStateReached()){
+        // if(getStateReached()){
 
-            currentState=requestedState;
+        //     currentState=requestedState;
 
-        }
-        else{
-            currentState = RobotStates.StateBetweenStates;
+        // }
+        // else{
+        //     currentState = RobotStates.StateBetweenStates;
 
-        }
+        // }
+        state.setString(currentState.toString());
     }
-    public void requesstRobotState(RobotStates changeTo){
+    public void requestRobotState(RobotStates changeTo){
 
         requestedState=changeTo;
 
     }
 
-    public boolean getStateReached(){
+    // public boolean getStateReached(){
 
-        if(m_Wrist.getRequestedState() == m_Wrist.getCurrentState() && m_Elevator.getRequestedState() == m_Elevator.getCurrentState() && m_Pivot.getCurrentState() == m_Pivot.getRequestedState()){
-            return true;
-        }
-        else {
-            return false;
-        }
+    //     if(m_Wrist.getRequestedState() == m_Wrist.getCurrentState() && m_Elevator.getRequestedState() == m_Elevator.getCurrentState() && m_Pivot.getCurrentState() == m_Pivot.getRequestedState()){
+    //         return true;
+    //     }
+    //     else {
+    //         return false;
+    //     }
 
-    }
+    // }
 }

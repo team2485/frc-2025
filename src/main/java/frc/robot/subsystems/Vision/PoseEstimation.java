@@ -46,7 +46,7 @@ public class PoseEstimation extends SubsystemBase {
  private final Vision frontLeftPhoton = new Vision("cameraFrontLeft"); // TODO: Replace Camera Name here!
  private final Vision frontRightPhoton = new Vision("cameraFrontRight"); // TODO: See if this would work for multicamera localization.
   private final Notifier photonNotifier = new Notifier(frontLeftPhoton);
- 
+  
   private final Notifier photonNotifier2 = new Notifier(frontRightPhoton);
   private final WL_CommandXboxController m_driver;
     private final WL_CommandXboxController m_operator;
@@ -157,9 +157,10 @@ public class PoseEstimation extends SubsystemBase {
     //else m_operator.setRumble(RumbleType.kLeftRumble, 0);
     
     var dashboardPose = getCurrentPose();
-      
+    // field2d.setRobotPose(DriveCommandBuilder.roughAlignToTag(21, m_drivetrain, this));
+    
     field2d.setRobotPose(dashboardPose);
-
+    
    // if (getNoteDetected()) m_driver.setRumble(RumbleType.kLeftRumble, 1);
     //else m_driver.setRumble(RumbleType.kLeftRumble, 0);
   }

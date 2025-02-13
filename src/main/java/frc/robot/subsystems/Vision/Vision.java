@@ -83,8 +83,8 @@ public class Vision implements Runnable {
             DriverStation.reportError("Path: ", e.getStackTrace()); // can't estimate poses without known tag positions
             photonPoseEstimator = null;
         }
-        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        estimatorWithError.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
+        estimatorWithError.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
         this.m_photonPoseEstimator = photonPoseEstimator;
         this.m_estimatorWithError = estimatorWithError;
     }
@@ -103,6 +103,8 @@ public class Vision implements Runnable {
             if(photonResults.hasTargets()){
 
                 
+                photonResults.targets.removeIf(n->(n.getPoseAmbiguity() >0.0)); 
+
                 m_estimatorWithError.update(photonResults).ifPresent(m_badPose -> {
                     var estimatedPose = m_badPose.estimatedPose;
 
@@ -113,6 +115,9 @@ public class Vision implements Runnable {
                     if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
                             && estimatedPose.getY() > 0.0
                             && estimatedPose.getY() <= kFieldWidthMeters) { // idiot check
+
+
+                                
                         m_atomicEstimatedBadRobotPose.set(m_badPose);
                     }}
                         );

@@ -114,7 +114,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0;
+        desiredPosition = 0.031432;
         break;
       case StateL3:
         desiredPosition = 0.1;
@@ -141,10 +141,10 @@ public class Pivot extends SubsystemBase {
     desiredPosition*=kPivotGearRatio;
     runControlLoop();
 
-    // if (getError() < kPivotErrorTolerance)
-    m_PivotCurrentState = m_PivotRequestedState;
-    // else
-    // m_PivotCurrentState = PivotStates.StateMoveToRequestedState;  
+    if (getError() < kPivotErrorTolerance)
+      m_PivotCurrentState = m_PivotRequestedState;
+    else
+      m_PivotCurrentState = PivotStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {

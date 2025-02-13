@@ -48,7 +48,7 @@ public class Elevator extends SubsystemBase {
  // private DoubleSupplier supplier = new DoubleSupplier() 
   public static GenericEntry motorVelo = Shuffleboard.getTab("Elevator").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Elevator").add("position", 0).getEntry();
-  public static GenericEntry motorPosition = Shuffleboard.getTab("Elevator").add("position", 0.0).getEntry();
+  public static GenericEntry motorPosition = Shuffleboard.getTab("Elevator").add("position2", 0.0).getEntry();
 
 
   public Elevator() {
@@ -104,7 +104,6 @@ public class Elevator extends SubsystemBase {
 
       case StateInit:
         desiredPosition = 0;
-
         break;
       case StateZero:
         desiredPosition = 0;
@@ -116,7 +115,7 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 1;
         break;
       case StateL2:
-        desiredPosition = 9;
+        desiredPosition = 8.2697;
         break;
       case StateL3:
         desiredPosition = 3;
@@ -143,10 +142,10 @@ public class Elevator extends SubsystemBase {
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
 
-    // if (getError() < kElevatorErrorTolerance)
-    m_ElevatorCurrentState = m_ElevatorRequestedState;
-    // else
-    // m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
+    if (getError() < kElevatorErrorTolerance)
+      m_ElevatorCurrentState = m_ElevatorRequestedState;
+    else
+      m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
   }
 
   public void runControlLoop() {
