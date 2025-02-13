@@ -48,6 +48,7 @@ public class Pivot extends SubsystemBase {
  // private DoubleSupplier supplier = new DoubleSupplier() 
   public static GenericEntry motorVoltage = Shuffleboard.getTab("Pivot").add("velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Pivot").add("desiredPos", 0).getEntry();
+  public static GenericEntry motorPosition = Shuffleboard.getTab("Pivot").add("position", 0.0).getEntry();
 
   public Pivot() {
     // Misc setup goes here
@@ -151,7 +152,8 @@ public class Pivot extends SubsystemBase {
     
     m_talon.setControl(request.withPosition(desiredPosition));
     motorVoltage.setDouble(m_talon.getVelocity().getValueAsDouble());
-    desiredPositionLog.setDouble(desiredPosition);
+    //desiredPositionLog.setDouble(desiredPosition);
+    motorPosition.setDouble(m_talon.getPosition().getValueAsDouble());
   //  m_PivotTalon2.setControl(request.withPosition(desiredPosition));
   }
 
@@ -172,6 +174,10 @@ public class Pivot extends SubsystemBase {
   public PivotStates getCurrentState() {
     return m_PivotCurrentState;
   }
+  public PivotStates getRequestedState(){
 
+    return m_PivotRequestedState;
+
+  }
   // misc methods go here, getters and setters should follow above format
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.PieceHandling.Pivot.PivotStates;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 
@@ -47,6 +48,8 @@ public class Elevator extends SubsystemBase {
  // private DoubleSupplier supplier = new DoubleSupplier() 
   public static GenericEntry motorVelo = Shuffleboard.getTab("Elevator").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Elevator").add("position", 0).getEntry();
+  public static GenericEntry motorPosition = Shuffleboard.getTab("Elevator").add("position", 0.0).getEntry();
+
 
   public Elevator() {
     // Misc setup goes here
@@ -153,6 +156,8 @@ public class Elevator extends SubsystemBase {
     //motorVoltage.setDouble(m_elevatorTalon1.getMotorVoltage().getValueAsDouble());
     motorVelo.setDouble(m_elevatorTalon1.getVelocity().getValueAsDouble());
     desiredPositionLog.setDouble(m_elevatorTalon1.getPosition().getValueAsDouble());
+    //motorPosition.setDouble(m_elevatorTalon.getPosition().getValueAsDouble());
+
     // m_elevatorTalon2.setControl(request.withPosition(desiredPosition));
   }
 
@@ -173,6 +178,10 @@ public class Elevator extends SubsystemBase {
   public ElevatorStates getCurrentState() {
     return m_ElevatorCurrentState;
   }
+  public ElevatorStates getRequestedState(){
 
+    return m_ElevatorRequestedState;
+
+  }
   // misc methods go here, getters and setters should follow above format
 }

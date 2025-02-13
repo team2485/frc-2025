@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.PieceHandling.Elevator.ElevatorStates;
 
 import static frc.robot.Constants.WristConstants.*;
 
@@ -48,7 +49,9 @@ public class Wrist extends SubsystemBase {
  // private DoubleSupplier supplier = new DoubleSupplier() 
   public static GenericEntry motorVelocity = Shuffleboard.getTab("Wrist").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
+  public static GenericEntry motorPosition = Shuffleboard.getTab("WRist").add("position", 0.0).getEntry();
 
+  
   public Wrist() {
     // Misc setup goes here
 
@@ -151,7 +154,9 @@ public class Wrist extends SubsystemBase {
     
     m_talon.setControl(request.withPosition(desiredPosition));
     motorVelocity.setDouble(m_talon.getVelocity().getValueAsDouble());
-    desiredPositionLog.setDouble(desiredPosition);
+    //desiredPositionLog.setDouble(desiredPosition);
+    motorPosition.setDouble(m_talon.getPosition().getValueAsDouble());
+
   //  m_WristTalon2.setControl(request.withPosition(desiredPosition));
   }
 
@@ -173,5 +178,10 @@ public class Wrist extends SubsystemBase {
     return m_WristCurrentState;
   }
 
+  public WristStates getRequestedState(){
+
+    return m_WristRequestedState;
+
+  }
   // misc methods go here, getters and setters should follow above format
 }
