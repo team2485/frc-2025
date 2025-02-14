@@ -3,6 +3,7 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Rotation;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAccelerationMetersPerSecondSquared;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRadiansPerSecondSquared;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -106,13 +108,26 @@ public class DriveCommandBuilder {
     public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
         PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5,0.5);
-
-        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(m_PoseEstimation.getCurrentPose(), endPos);
-        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, Rotation2d.kZero));
+       // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
+        var difference =endPos.minus( m_PoseEstimation.getCurrentPose() ) ;
+        var direction = difference.getRotation();
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),Rotation2d.kZero),
+            new Pose2d(endPos.getTranslation(), Rotation2d.fromDegrees(0))
+           // new Pose2d(0.75, 0.25, Rotation2d.fromDegrees(0)),
+            //new Pose2d(5.0*0.25, 3.0*0.25, Rotation2d.fromDegrees(90))
+        
+        
+       /// new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),direction),new Pose2d(6.35,2.54, Rotation2d.kZero)
+        
+        
+        );//Pose2d.kZero, new Pose2d(1, 0, Rotation2d.kZero));     //m_PoseEstimation.getCurrentPose(), endPos
+        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, endPos.getRotation()));
+        path.preventFlipping = true;
         return AutoBuilder.followPath(path);
 
     }
-    public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
+    public static Pose2d convertAprilTag(int tagId, double forwardOffset, double sideOffset,Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
 
         var constants = m_poseEstimation.getFieldConstants();
         List<AprilTag> aprilTagPositions = constants.getAprilTagList();
@@ -125,10 +140,15 @@ public class DriveCommandBuilder {
         // double xMultiplier = originalRotation.getCos();
         // double yMultiplier = originalRotation.getSin();
         // Translation2d relativeOffset = new Translation2d(yMultiplier,-xMultiplier ); // make vector of direction
-        Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.k180deg); // are you kidding me
+        Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.k180deg);
         desiredPos = desiredPos.transformBy(converted);
+        return desiredPos;
+        
+    }
+    public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
 
-        final Pose2d endPos = desiredPos;
+       
+        final Pose2d endPos = convertAprilTag(tagId, forwardOffset, sideOffset,m_Drivetrain,m_poseEstimation);
         //return endPos;
        // targetPoseShuffleboard.setValue(endPos);
         return driveToPosition(m_Drivetrain, m_poseEstimation, () -> endPos);
