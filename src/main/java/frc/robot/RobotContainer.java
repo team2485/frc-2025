@@ -16,6 +16,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.WarlordsLib.WL_CommandXboxController;
+import frc.robot.StateHandler.RobotStates;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.PieceHandlingCommandBuilder;
@@ -117,6 +119,9 @@ public class RobotContainer {
     m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
     m_driver.a().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignInit) ));
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+    
+    m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
+    
   } 
 
   /**

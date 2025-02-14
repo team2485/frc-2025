@@ -29,10 +29,10 @@ public class Wrist extends SubsystemBase {
     StateL2,
     StateL3,
     StateL4,
-    StateProcessor,
+    StateIntake,
     StateBarge,
-    StateLowAlgae,
-    StateHighAlgae,
+    StateL2Algae,
+    StateL3Algae,
     StateLollipop,
     StateMoveToRequestedState,
     StateStation
@@ -103,41 +103,39 @@ public class Wrist extends SubsystemBase {
     switch (m_WristRequestedState) {
       case StateInit:
         desiredPosition = 0;
-
         break;
       case StateZero:
         desiredPosition = 0;
         break;
       case StateStation:
-        desiredPosition=0.02;
+        desiredPosition = 0;
         break;
       case StateL1:
-        desiredPosition = 0.05;
+        desiredPosition = 0;
         break;
       case StateL2:
-        desiredPosition = 0.57275
-        ;
+        desiredPosition = 0.79166-0.21891;
         break;
       case StateL3:
-        desiredPosition = 0.1;
+        desiredPosition = 0.76388-0.21891;
         break;
       case StateL4:
-        desiredPosition = 0.1;
+        desiredPosition = 0.68750-0.21891;
         break;
-      case StateProcessor:
-        desiredPosition = 0.1;
+      case StateIntake:
+        desiredPosition = 0;
         break;
       case StateBarge:
-        desiredPosition = 0.1;
+        desiredPosition = 0.77777-0.21891;
         break;
-      case StateLowAlgae:
-        desiredPosition = 0.1;
+      case StateL2Algae:
+        desiredPosition = 0.55-0.21891;
         break;
-      case StateHighAlgae:
-        desiredPosition = 0.1;
+      case StateL3Algae:
+        desiredPosition = 0.52777-0.21891;
         break;
       case StateLollipop:
-        desiredPosition = 0.1;
+        desiredPosition = 0;
         break;
     }
     desiredPosition*=kWristGearRatio;

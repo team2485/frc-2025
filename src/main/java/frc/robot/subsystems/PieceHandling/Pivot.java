@@ -30,12 +30,15 @@ public class Pivot extends SubsystemBase {
     StateL4,
     StateProcessor,
     StateBarge,
-    StateLowAlgae,
-    StateHighAlgae,
+    StateL2Algae,
+    StateL3Algae,
     StateLollipop,
     StateMoveToRequestedState,
-    StateStation
+    StateStation,
+    StateIntake
   }
+
+
 
   public static PivotStates m_PivotCurrentState;
   public static PivotStates m_PivotRequestedState;
@@ -101,10 +104,13 @@ public class Pivot extends SubsystemBase {
     switch (m_PivotRequestedState) {
       case StateInit:
         desiredPosition = 0;
-
         break;
 
       case StateZero:
+        desiredPosition = 0;
+        break;
+
+      case StateIntake:
         desiredPosition = 0;
         break;
       case StateStation:
@@ -114,25 +120,25 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0.05;
         break;
       case StateL2:
-        desiredPosition = 0.031432;
+        desiredPosition = 0.083333;
         break;
       case StateL3:
-        desiredPosition = 0.1;
+        desiredPosition = 0;
         break;
       case StateL4:
-        desiredPosition = 0.1;
+        desiredPosition = 0.34027;
         break;
       case StateProcessor:
         desiredPosition = 0.1;
         break;
       case StateBarge:
-        desiredPosition = 0.1;
+        desiredPosition = 0.35416;
         break;
-      case StateLowAlgae:
-        desiredPosition = 0.1;
+      case StateL2Algae:
+        desiredPosition = 0.24027;
         break;
-      case StateHighAlgae:
-        desiredPosition = 0.1;
+      case StateL3Algae:
+        desiredPosition = 0.28472;
         break;
       case StateLollipop:
         desiredPosition = 0.1;
