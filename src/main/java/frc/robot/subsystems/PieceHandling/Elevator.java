@@ -30,8 +30,8 @@ public class Elevator extends SubsystemBase {
     StateL4,
     StateProcessor,
     StateBarge,
-    StateLowAlgae,
-    StateHighAlgae,
+    StateL2Algae,
+    StateL3Algae,
     StateLollipop,
     StateMoveToRequestedState,
     StateStation
@@ -108,35 +108,32 @@ public class Elevator extends SubsystemBase {
       case StateZero:
         desiredPosition = 0;
         break;
-      case StateStation:
-        desiredPosition = 0.5;
-        break;
       case StateL1:
-        desiredPosition = 1;
+        desiredPosition = 0;
         break;
       case StateL2:
-        desiredPosition = 8.2697;
+        desiredPosition = 0;
         break;
       case StateL3:
-        desiredPosition = 3;
+        desiredPosition = 22.75;
         break;
       case StateL4:
-        desiredPosition = 4;
+        desiredPosition = 27.625;
         break;
       case StateProcessor:
-        desiredPosition = 0.25;
+        desiredPosition = 2;
         break;
       case StateBarge:
-        desiredPosition = 6;
+        desiredPosition = 27.625;
         break;
-      case StateLowAlgae:
-        desiredPosition = 1.5;
+      case StateL2Algae:
+        desiredPosition = 0;
         break;
-      case StateHighAlgae:
-        desiredPosition = 2.5;
+      case StateL3Algae:
+        desiredPosition = 14.625;
         break;
       case StateLollipop:
-        desiredPosition = 0.35;
+        desiredPosition = 0;
         break;
     }
     desiredPosition*=kELevatorInchesToOutput;
