@@ -30,7 +30,7 @@ import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
 
 public class StateHandler extends SubsystemBase{
     public RobotStates currentState = RobotStates.StateInit;
-    public RobotStates requestedState = RobotStates.StateInit;
+    public RobotStates requestedState = RobotStates.StateCoralStationInit;
 
 
     private Elevator m_Elevator;
@@ -103,15 +103,15 @@ public class StateHandler extends SubsystemBase{
                 
                 break;
             case StateCoralStationInit:
-                //m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
+                m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
                 currentState = RobotStates.StateCoralStationTransition;
                 break;
             case StateCoralStationTransition:
                 
                 if(m_Elevator.getCurrentState() == ElevatorStates.StateStation) { // the wrist is in movingToRequestedState when NOT at goal...
 
-                    //m_Wrist.requestState(WristStates.StateStation);
-                    //m_Pivot.requestState(PivotStates.StateStation);
+                    m_Wrist.requestState(WristStates.StateStation);
+                    m_Pivot.requestState(PivotStates.StateStation);
                     currentState = RobotStates.StateCoralStationTransition2;
                 }
                 break;
@@ -121,8 +121,8 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateCoralStationFinal:
-                if(requestedState==RobotStates.StateL2Init) {
-                    currentState = RobotStates.StateL2Init;
+                if(requestedState != RobotStates.StateCoralStationInit){
+                    currentState=requestedState;
                 }
                 break;
             case StateL2Init:
@@ -150,6 +150,7 @@ public class StateHandler extends SubsystemBase{
                     currentState=RobotStates.StateL2Finished;
 
                 }
+                break;
             case StateL2Finished:
                 if(requestedState==RobotStates.StateCoralStationInit) {
                     currentState = RobotStates.StateCoralStationInit;
@@ -182,6 +183,7 @@ public class StateHandler extends SubsystemBase{
                     currentState=RobotStates.StateL3Finished;
 
                 }
+                break;
             case StateL3Finished:
                 if(requestedState==RobotStates.StateCoralStationInit) {
                     currentState = RobotStates.StateCoralStationInit;
@@ -214,6 +216,7 @@ public class StateHandler extends SubsystemBase{
                     currentState=RobotStates.StateL4Finished;
 
                 }
+                break;
             case StateL4Finished:
                 if(requestedState==RobotStates.StateCoralStationInit) {
                     currentState = RobotStates.StateCoralStationInit;
@@ -250,7 +253,7 @@ public class StateHandler extends SubsystemBase{
         //     currentState = RobotStates.StateBetweenStates;
 
         // }
-        state.setString(currentState.toString());
+        state.setString(requestedState.toString());
     }
     public void requestRobotState(RobotStates changeTo){
 

@@ -117,10 +117,12 @@ public class RobotContainer {
     //r.requestState(ElevatorStates.StateL2), m_elevator));
     // m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
     m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    m_driver.a().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignInit) ));
+    //m_driver.a().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignInit) ));
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
     
-    m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
+    m_operator.a().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
+    m_operator.b().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateCoralStationInit), m_Handler));
+
     
   } 
 

@@ -111,7 +111,7 @@ public class Elevator extends SubsystemBase {
       case StateL1:
         desiredPosition = 0;
         break;
-      case StateL2:
+      case StateL2
         desiredPosition = 0;
         break;
       case StateL3:
@@ -135,6 +135,8 @@ public class Elevator extends SubsystemBase {
       case StateLollipop:
         desiredPosition = 0;
         break;
+      case StateStation:
+        desiredPosition = 1.5;
     }
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
