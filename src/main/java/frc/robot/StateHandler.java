@@ -55,10 +55,22 @@ public class StateHandler extends SubsystemBase{
         StateL2Transition,
         StateL2Transition2,
         StateL2WristTransition,
+        StateL3Init,
+        StateL3Finished,
+        StateL3Transition3,
+        StateL3Transition,
+        StateL3Transition2,
+        StateL3WristTransition,
         StateL3,
+        StateL4Init,
+        StateL4Finished,
+        StateL4Transition3,
+        StateL4Transition,
+        StateL4Transition2,
+        StateL4WristTransition,
         StateL4,
-        StateLowAlgae,
-        StateHighAlgae,
+        StateL2Algae,
+        StateL3Algae,
         StateLollipop
     }
 
@@ -143,35 +155,85 @@ public class StateHandler extends SubsystemBase{
                     currentState = RobotStates.StateCoralStationInit;
                 }
                 break;
-            case StateL3:
-                m_Elevator.requestState(ElevatorStates.StateL3);
-                if (m_Elevator.getCurrentState() == ElevatorStates.StateL3){
-                    m_Wrist.requestState (WristStates.StateL3);
-                    //m_Pivot.requestState (PivotStates.StateL3); we might not need this lol but wtvr
-                }
+                
+            case StateL3Init:
+                m_Elevator.requestState(ElevatorStates.StateL3); // making the assumption it's the opposite as going to zero...
+                currentState = RobotStates.StateL3Transition;
                 break;
 
-            case StateL4:
-                m_Elevator.requestState(ElevatorStates.StateL4);
-                if (m_Elevator.getCurrentState() == ElevatorStates.StateL4){
+            case StateL3Transition:
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateL3){// the elevator is in movingToRequestedState when NOT at goal...
+                    // GetCurrentState is better than directly checking for error because it ensures we're both within tolerance AND in the RIGHT state, so this if statement won't pass if we're in the right spot for L1 for example.
+                    // This approach is also sick if you want to use transitional states because you can call request to the transition, see if the transition is complete, and then execute the rest.
+                    m_Wrist.requestState(WristStates.StateL3);
+                    
+                    currentState=RobotStates.StateL3Transition2;
+                }
+                break;
+            case StateL3Transition2:
+                if(m_Wrist.getCurrentState() == WristStates.StateL3) {
+                    currentState=RobotStates.StateL3Transition3;
+                    m_Pivot.requestState(PivotStates.StateL3);
+                }
+                break;
+            case StateL3Transition3:
+                if(m_Wrist.getCurrentState() == WristStates.StateL3 && m_Pivot.getCurrentState() == PivotStates.StateL3){
+
+                    currentState=RobotStates.StateL3Finished;
+
+                }
+            case StateL3Finished:
+                if(requestedState==RobotStates.StateCoralStationInit) {
+                    currentState = RobotStates.StateCoralStationInit;
+                }
+                break;
+            
+            case StateL4Init:
+                m_Elevator.requestState(ElevatorStates.StateL4); // making the assumption it's the opposite as going to zero...
+                currentState = RobotStates.StateL4Transition;
+                break;
+
+            case StateL4Transition:
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateL4){// the elevator is in movingToRequestedState when NOT at goal...
+                    // GetCurrentState is better than directly checking for error because it ensures we're both within tolerance AND in the RIGHT state, so this if statement won't pass if we're in the right spot for L1 for example.
+                    // This approach is also sick if you want to use transitional states because you can call request to the transition, see if the transition is complete, and then execute the rest.
                     m_Wrist.requestState(WristStates.StateL4);
-                    m_Pivot.requestState (PivotStates.StateL4);
+                    
+                    currentState=RobotStates.StateL4Transition2;
+                }
+                break;
+            case StateL4Transition2:
+                if(m_Wrist.getCurrentState() == WristStates.StateL4) {
+                    currentState=RobotStates.StateL4Transition3;
+                    m_Pivot.requestState(PivotStates.StateL4);
+                }
+                break;
+            case StateL4Transition3:
+                if(m_Wrist.getCurrentState() == WristStates.StateL4 && m_Pivot.getCurrentState() == PivotStates.StateL4){
+
+                    currentState=RobotStates.StateL4Finished;
+
+                }
+            case StateL4Finished:
+                if(requestedState==RobotStates.StateCoralStationInit) {
+                    currentState = RobotStates.StateCoralStationInit;
+                }
+                break;
+            
+
+            case StateL2Algae:
+                m_Elevator.requestState(ElevatorStates.StateL2Algae);
+                if (m_Elevator.getCurrentState() == ElevatorStates.StateL2Algae){
+                    m_Wrist.requestState(WristStates.StateL2Algae);
+                    m_Pivot.requestState (PivotStates.StateL2Algae);
                 }
                 break;
 
-            case StateLowAlgae:
-                m_Elevator.requestState(ElevatorStates.StateLowAlgae);
-                if (m_Elevator.getCurrentState() == ElevatorStates.StateLowAlgae){
-                    m_Wrist.requestState(WristStates.StateLowAlgae);
-                    m_Pivot.requestState (PivotStates.StateLowAlgae);
-                }
-                break;
-
-            case StateHighAlgae:
-                m_Elevator.requestState(ElevatorStates.StateHighAlgae);
-                if (m_Elevator.getCurrentState() == ElevatorStates.StateHighAlgae){
-                    m_Wrist.requestState(WristStates.StateHighAlgae);
-                    m_Pivot.requestState (PivotStates.StateHighAlgae);
+            case StateL3Algae:
+                m_Elevator.requestState(ElevatorStates.StateL3Algae);
+                if (m_Elevator.getCurrentState() == ElevatorStates.StateL3Algae){
+                    m_Wrist.requestState(WristStates.StateL3Algae);
+                    m_Pivot.requestState (PivotStates.StateL3Algae);
                 }
                 break;
             
