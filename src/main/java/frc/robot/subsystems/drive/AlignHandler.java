@@ -1,5 +1,10 @@
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Rotation;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -58,7 +63,7 @@ public class AlignHandler extends SubsystemBase{
             m_Drivetrain, m_PoseEstimation); 
     }
     
-    GenericEntry state = Shuffleboard.getTab("Elevator").add("state", "").getEntry();
+    GenericEntry state = Shuffleboard.getTab("Autos").add("alignerstate", "").getEntry();
     
     @Override
     public void periodic(){
@@ -78,15 +83,16 @@ public class AlignHandler extends SubsystemBase{
 
                 // temporarily removed below for testing;
 
-                // int tagToTarget = 21; // replace with find nearest scorable tag logic
+                int tagToTarget = 19; // replace with find nearest scorable tag logic
 
-                // m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(tagToTarget, 1, .25, m_Drivetrain, m_PoseEstimation);
-                // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                // currentState = AlignStates.StateRoughAlign;
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(tagToTarget, 1, .25, m_Drivetrain, m_PoseEstimation);
+                CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                currentState = AlignStates.StateRoughAlign;
                 break;
             case StateRoughAlign:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
-
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    m_activeFollowCommand = null;
                     currentState = AlignStates.StateApproachInit;
 
 
@@ -94,16 +100,23 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateApproachInit:
                 // put in the command here that makes it go forward;
+                Pose2d forwardPos = DriveCommandBuilder.convertAprilTag(19, 0.5, .25, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPos);
+                
+                CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                
                 currentState = AlignStates.StateApproach;
                 break;
             case StateApproach:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     currentState = AlignStates.StateAlignFinished;
+                    m_activeFollowCommand=null;
                 }
                 break;        
             case StateAlignFinished:
+                requestedState=AlignStates.StateDriving;
                 currentState = requestedState; // get out of this state!
-
+                break;
         }
 
 

@@ -91,15 +91,15 @@ public class StateHandler extends SubsystemBase{
                 
                 break;
             case StateCoralStationInit:
-                m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
+                //m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
                 currentState = RobotStates.StateCoralStationTransition;
                 break;
             case StateCoralStationTransition:
                 
                 if(m_Elevator.getCurrentState() == ElevatorStates.StateStation) { // the wrist is in movingToRequestedState when NOT at goal...
 
-                    m_Wrist.requestState(WristStates.StateStation);
-                    m_Pivot.requestState(PivotStates.StateStation);
+                    //m_Wrist.requestState(WristStates.StateStation);
+                    //m_Pivot.requestState(PivotStates.StateStation);
                     currentState = RobotStates.StateCoralStationTransition2;
                 }
                 break;
