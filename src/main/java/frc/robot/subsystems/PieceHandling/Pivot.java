@@ -28,6 +28,7 @@ public class Pivot extends SubsystemBase {
     StateL2,
     StateL3,
     StateL4,
+    StateL4Transition,
     StateProcessor,
     StateBarge,
     StateL2Algae,
@@ -57,6 +58,11 @@ public class Pivot extends SubsystemBase {
     // Misc setup goes here
 
     var talonFXConfigs = new TalonFXConfiguration();
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 40;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimit = 20;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
     // These will be derived experimentally but in case you are wondering
     // How these terms are defined from the TalonFX docs
     // kS adds n volts to overcome static friction
@@ -66,21 +72,20 @@ public class Pivot extends SubsystemBase {
     // kD outputs n volts when the velocity error is 1 rotation per second
     var slot0Configs = talonFXConfigs.Slot0;
     slot0Configs.kS = kSPivot;
-    slot0Configs.kG = kGPivot;// kGPivot;
-
-    slot0Configs.kV = kVPivot;
-    slot0Configs.kA = kAPivot;
-    slot0Configs.kP = kPPivot;// kPPivot;
-    slot0Configs.kI = kIPivot;
+    slot0Configs.kG = 0;// kGPivot;
+    slot0Configs.kV = 0.25;
+    slot0Configs.kA = 0.01;
+    slot0Configs.kP = 1;// kPPivot;
+    slot0Configs.kI = 0;
     slot0Configs.kD = kDPivot;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = kPivotCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 30;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = kPivotAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 80;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 0;
-    
+    motionMagicConfigs.MotionMagicJerk = 500;
+
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kPivotClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -116,6 +121,8 @@ public class Pivot extends SubsystemBase {
       case StateStation:
         desiredPosition = 0.02;
         break;
+      case StateL4Transition:
+        desiredPosition = 0.125;
       case StateL1:
         desiredPosition = 0.05;
         break;
@@ -166,7 +173,10 @@ public class Pivot extends SubsystemBase {
   private double getPosition() {
     return m_talon.getPosition().getValueAsDouble();
   }
+  public double getPositionWithRatio(){
+    return m_talon.getPosition().getValueAsDouble()/kPivotGearRatio;
 
+  }
   public double getError() {
     return Math.abs(getPosition() - desiredPosition);
   }

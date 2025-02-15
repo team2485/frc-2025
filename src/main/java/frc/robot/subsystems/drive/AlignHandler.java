@@ -128,12 +128,12 @@ public class AlignHandler extends SubsystemBase{
 
                 m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                currentState = AlignStates.StateRoughAlign;+
+                currentState = AlignStates.StateRoughAlign; 
                 break;
             case StateRoughAlign:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-                    //m_activeFollowCommand = null;
+                    m_activeFollowCommand = null;
                     currentState = AlignStates.StateExtendL2Init;
 
 
@@ -150,7 +150,7 @@ public class AlignHandler extends SubsystemBase{
                     currentState = AlignStates.StateRightApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
-                   // m_activeFollowCommand = null;
+                   m_activeFollowCommand = null;
                 }
                 break;
             case StateRightApproachInit:
@@ -178,7 +178,7 @@ public class AlignHandler extends SubsystemBase{
             //     Pose2d forwardPos = DriveCommandBuilder.convertAprilTag(21, 0.4, .25, m_Drivetrain, m_PoseEstimation);
             //     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPos);
                 
-            //     CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+            //     //CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
             //     currentState = AlignStates.StateApproach;
             //     break;
@@ -187,13 +187,13 @@ public class AlignHandler extends SubsystemBase{
                     currentState = AlignStates.StateBackupInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
-                    //m_activeFollowCommand=null;
+                    m_activeFollowCommand=null;
                     m_roller.requestState(RollerStates.StateRollerOnBackward);
                 }
                 break;    
             case StateBackupInit:
-                Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseFast(m_Drivetrain, m_PoseEstimation, backPos);
+                Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
             
@@ -204,7 +204,7 @@ public class AlignHandler extends SubsystemBase{
                     currentState = AlignStates.StateLowerInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
-                   // m_activeFollowCommand=null;
+                   m_activeFollowCommand=null;
                 }
                 break; 
             case StateLowerInit:
@@ -223,9 +223,9 @@ public class AlignHandler extends SubsystemBase{
                 requestedState=AlignStates.StateDriving;
                 currentState = requestedState; // get out of this state!
                 
-                //if(m_activeFollowCommand !=null) m_activeFollowCommand=null;
+                //if(m_activeFollowCommand == null) m_activeFollowCommand=null;
                 CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-
+                m_activeFollowCommand=null;
                 break;
         }
 

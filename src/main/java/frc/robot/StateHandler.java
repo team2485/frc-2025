@@ -63,12 +63,22 @@ public class StateHandler extends SubsystemBase{
         StateL3WristTransition,
         StateL3,
         StateL4Init,
+
+        
+        StateL4RetractTransition1,
+        StateL4RetractInit2,
+        StateL4RetractTransition2,
+        StateL4RetractTransition3,
+        StateL4RetractInit3,
+        StateL4RetractFinal,
         StateL4Finished,
         StateL4Transition3,
         StateL4Transition,
         StateL4Transition2,
         StateL4WristTransition,
         StateL4,
+        StateL4RetractInit,
+
         StateL2Algae,
         StateL3Algae,
         StateLollipop
@@ -200,30 +210,78 @@ public class StateHandler extends SubsystemBase{
                     // GetCurrentState is better than directly checking for error because it ensures we're both within tolerance AND in the RIGHT state, so this if statement won't pass if we're in the right spot for L1 for example.
                     // This approach is also sick if you want to use transitional states because you can call request to the transition, see if the transition is complete, and then execute the rest.
                     m_Wrist.requestState(WristStates.StateL4);
+                    m_Pivot.requestState(PivotStates.StateL4);
                     
                     currentState=RobotStates.StateL4Transition2;
                 }
                 break;
             case StateL4Transition2:
-                if(m_Wrist.getCurrentState() == WristStates.StateL4) {
-                    currentState=RobotStates.StateL4Transition3;
-                    m_Pivot.requestState(PivotStates.StateL4);
-                }
-                break;
-            case StateL4Transition3:
                 if(m_Wrist.getCurrentState() == WristStates.StateL4 && m_Pivot.getCurrentState() == PivotStates.StateL4){
 
                     currentState=RobotStates.StateL4Finished;
 
                 }
                 break;
+               
+          
+            // case StateL4Transition3:
+            //     if(m_Wrist.getCurrentState() == WristStates.StateL4 && m_Pivot.getCurrentState() == PivotStates.StateL4){
+
+            //         currentState=RobotStates.StateL4Finished;
+
+            //     }
+            //     break;
             case StateL4Finished:
                 if(requestedState==RobotStates.StateCoralStationInit) {
-                    currentState = RobotStates.StateCoralStationInit;
+                    currentState = RobotStates.StateL4RetractInit;
                 }
                 break;
             
+            case StateL4RetractInit:
+                // tuck gripper
+                m_Wrist.requestState(WristStates.StateL4Tuck); // 25 rotor rotations
+                currentState=RobotStates.StateL4RetractTransition1;
+                // do some thing here :)
+                break;
+            case StateL4RetractTransition1:
+                if(m_Wrist.getCurrentState() == WristStates.StateL4Tuck){
+                    currentState =RobotStates.StateL4RetractInit2;
 
+                }
+                // blah
+                break;
+            case StateL4RetractInit2:
+                 // elevator return to bottom
+                 m_Elevator.requestState(ElevatorStates.StateStation); // then swing pivot
+                currentState=RobotStates.StateL4RetractTransition2;
+
+                //blah
+                break;
+            case StateL4RetractTransition2:
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateStation){
+                    currentState =RobotStates.StateL4RetractInit3;
+
+                }
+                break;
+            case StateL4RetractInit3:
+                // pivot
+                m_Pivot.requestState(PivotStates.StateL4Transition);
+                currentState = RobotStates.StateL4Transition3;
+                break;
+            case StateL4Transition3:
+                if(m_Pivot.getCurrentState() == PivotStates.StateL4Transition){ // 0.93
+                    m_Wrist.requestState(WristStates.StateStation);
+
+                }
+                if(m_Pivot.getCurrentState() == PivotStates.StateL4Transition && m_Wrist.getCurrentState() == WristStates.StateStation){
+                    m_Pivot.requestState(PivotStates.StateStation);
+                    currentState=RobotStates.StateL4RetractFinal;
+
+                } 
+                break;
+            case StateL4RetractFinal:
+                currentState = RobotStates.StateCoralStationInit;
+                break;
             case StateL2Algae:
                 m_Elevator.requestState(ElevatorStates.StateL2Algae);
                 if (m_Elevator.getCurrentState() == ElevatorStates.StateL2Algae){
