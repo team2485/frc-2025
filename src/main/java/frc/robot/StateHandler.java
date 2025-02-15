@@ -255,6 +255,10 @@ public class StateHandler extends SubsystemBase{
         // }
         state.setString(requestedState.toString());
     }
+    public RobotStates getCurrentState(){
+        return currentState;
+
+    }
     public void requestRobotState(RobotStates changeTo){
 
         requestedState=changeTo;
