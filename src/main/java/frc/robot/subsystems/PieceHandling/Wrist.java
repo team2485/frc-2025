@@ -49,7 +49,7 @@ public class Wrist extends SubsystemBase {
  // private DoubleSupplier supplier = new DoubleSupplier() 
   public static GenericEntry motorVelocity = Shuffleboard.getTab("Wrist").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
-  public static GenericEntry motorPosition = Shuffleboard.getTab("WRist").add("position", 0.0).getEntry();
+  public static GenericEntry motorPosition = Shuffleboard.getTab("Wrist").add("position", 0.0).getEntry();
 
   
   public Wrist() {
@@ -117,7 +117,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.8-0.21891;
         break;
       case StateL3:
-        desiredPosition = 0.76388-0.21891;
+        desiredPosition = 0.6036;//-0.21891;
         break;
       case StateL4:
         desiredPosition = 0.68750-0.21891;

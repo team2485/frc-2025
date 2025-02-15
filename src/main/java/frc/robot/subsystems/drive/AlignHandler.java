@@ -40,17 +40,18 @@ public class AlignHandler extends SubsystemBase{
     private Drivetrain m_Drivetrain;
     private PoseEstimation m_PoseEstimation;
     private Command m_activeFollowCommand = null;
-    private int currentTag =-1;
+    private int currentTag = -1;
     private Command kteleOpCommand;
     private WL_CommandXboxController m_driver;
     private WL_CommandXboxController m_operator;
     StateHandler m_Handler;
-
+    private double horizontalOffset;
     public enum AlignStates {
 
         StateInit,
         StateDriving,
-        StateAlignInit,
+        StateAlignRightInit,
+        StateAlignLeftInit,
         StateRoughAlign,
         StateApproachInit,
 
@@ -98,16 +99,30 @@ public class AlignHandler extends SubsystemBase{
             case StateDriving:
                 CommandScheduler.getInstance().schedule(kteleOpCommand);
 
-                if(requestedState == AlignStates.StateAlignInit ) currentState = requestedState;
+                if(requestedState == AlignStates.StateAlignRightInit || requestedState == AlignStates.StateAlignLeftInit ) currentState = requestedState;
                 break; // put stuff for when the controllers are active;
-            case StateAlignInit:
+            case StateAlignRightInit:
+                horizontalOffset = .25;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
                 // temporarily removed below for testing;
 
-                int tagToTarget = 21; // replace with find nearest scorable tag logic
+                // int tagToTarget = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(tagToTarget, 1, .25, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                currentState = AlignStates.StateRoughAlign;
+                break;
+
+            case StateAlignLeftInit:
+                horizontalOffset = -.08;
+                CommandScheduler.getInstance().cancel(kteleOpCommand);
+
+                // temporarily removed below for testing;
+
+                // int tagToTargetL = 21; // replace with find nearest scorable tag logic
+
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign;
                 break;
@@ -134,7 +149,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateRightApproachInit:
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(21, 0.4, .25, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -144,7 +159,7 @@ public class AlignHandler extends SubsystemBase{
 
             case StateLeftApproachInit:
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosLeft = DriveCommandBuilder.convertAprilTag(21, 0.4, -.25, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosLeft = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosLeft);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -168,7 +183,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;    
             case StateBackupInit:
-                Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, 1, .25, m_Drivetrain, m_PoseEstimation);
+                Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);

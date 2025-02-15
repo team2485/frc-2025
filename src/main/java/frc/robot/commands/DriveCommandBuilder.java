@@ -81,7 +81,7 @@ public class DriveCommandBuilder {
         PathConstraints constraintsOld = new PathConstraints(
                 kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
-        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5,0.5);
+        PathConstraints constraints = new PathConstraints(1, 0.5, 0.5,0.5);
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
         
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
