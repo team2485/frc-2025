@@ -65,7 +65,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
   public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot);
-  public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler);
+  public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller);
  
   public RobotContainer() { 
     // Configure the trigger bindings

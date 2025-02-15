@@ -71,17 +71,21 @@ public class DriveCommandBuilder {
 
         double dist =  m_poseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
         if(dist < 0.5){
-
-            Command shortCommand = shortDriveToPose(m_drivetrain, m_poseEstimation, targetPose);
+            // PathConstraints constraints = new PathConstraints(1, 1, 0.5,0.5);
+            Command shortCommand = shortDriveToPoseSlow(m_drivetrain, m_poseEstimation, targetPose);
+            //Command shortCommand = shortDriveToPose(m_drivetrain, m_poseEstimation, targetPose);
             return shortCommand;
 
         }
         
         // Create the constraints to use while pathfinding
-        PathConstraints constraintsOld = new PathConstraints(
-                kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
-                kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
-        PathConstraints constraints = new PathConstraints(1, 0.5, 0.5,0.5);
+        // PathConstraints constraintsOld = new PathConstraints(
+        //         kTeleopMaxSpeedMetersPerSecond, kTeleopMaxAccelerationMetersPerSecondSquared,
+        // //         kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
+         PathConstraints constraints = new PathConstraints(3, 3, 0.5,0.5);
+
+
+        
         // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
         
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
@@ -105,10 +109,33 @@ public class DriveCommandBuilder {
             0);
         return pathfindingCommand;
     }
-    public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
+    public static Command shortDriveToPoseSlow(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
-        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5,0.5);
+        PathConstraints constraints = new PathConstraints(1, 1, 0.5,0.5);
        // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
+        var difference =endPos.minus( m_PoseEstimation.getCurrentPose() ) ;
+        var direction = difference.getRotation();
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),Rotation2d.kZero),
+            new Pose2d(endPos.getTranslation(), Rotation2d.fromDegrees(0))
+           // new Pose2d(0.75, 0.25, Rotation2d.fromDegrees(0)),
+            //new Pose2d(5.0*0.25, 3.0*0.25, Rotation2d.fromDegrees(90))
+        
+        
+       /// new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),direction),new Pose2d(6.35,2.54, Rotation2d.kZero)
+        
+        
+        );//Pose2d.kZero, new Pose2d(1, 0, Rotation2d.kZero));     //m_PoseEstimation.getCurrentPose(), endPos
+        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, endPos.getRotation()));
+        path.preventFlipping = true;
+        return AutoBuilder.followPath(path);
+
+    }
+
+    public static Command shortDriveToPoseFast(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
+
+       // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
+       PathConstraints constraints = new PathConstraints(4, 3, 0.5,0.5);
         var difference =endPos.minus( m_PoseEstimation.getCurrentPose() ) ;
         var direction = difference.getRotation();
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(

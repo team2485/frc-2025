@@ -19,6 +19,8 @@ import frc.robot.StateHandler;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
+import frc.robot.subsystems.PieceHandling.Roller;
+import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
 
 /*
@@ -46,6 +48,7 @@ public class AlignHandler extends SubsystemBase{
     private WL_CommandXboxController m_operator;
     StateHandler m_Handler;
     private double horizontalOffset;
+    private Roller m_roller;
     public enum AlignStates {
 
         StateInit,
@@ -73,11 +76,12 @@ public class AlignHandler extends SubsystemBase{
         StateBackup
         
     }
-    public AlignHandler(Drivetrain drivetrain, PoseEstimation poseEst, WL_CommandXboxController driver, StateHandler handler){ // include subsystems as argument
+    public AlignHandler(Drivetrain drivetrain, PoseEstimation poseEst, WL_CommandXboxController driver, StateHandler handler, Roller rollers){ // include subsystems as argument
         m_driver = driver;
         m_Drivetrain = drivetrain;
         m_PoseEstimation = poseEst;
         m_Handler = handler;
+        m_roller=rollers;
         kteleOpCommand = new DriveWithController(
             m_driver::getLeftY,
             m_driver::getLeftX,
@@ -124,12 +128,12 @@ public class AlignHandler extends SubsystemBase{
 
                 m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                currentState = AlignStates.StateRoughAlign;
+                currentState = AlignStates.StateRoughAlign;+
                 break;
             case StateRoughAlign:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-                    m_activeFollowCommand = null;
+                    //m_activeFollowCommand = null;
                     currentState = AlignStates.StateExtendL2Init;
 
 
@@ -144,13 +148,15 @@ public class AlignHandler extends SubsystemBase{
                 if(m_Handler.getCurrentState() == RobotStates.StateL2Finished){
 
                     currentState = AlignStates.StateRightApproachInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
+                   // m_activeFollowCommand = null;
                 }
                 break;
             case StateRightApproachInit:
                 // put in the command here that makes it go forward;
                 Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
@@ -160,7 +166,7 @@ public class AlignHandler extends SubsystemBase{
             case StateLeftApproachInit:
                 // put in the command here that makes it go forward;
                 Pose2d forwardPosLeft = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosLeft);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosLeft);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
@@ -179,12 +185,15 @@ public class AlignHandler extends SubsystemBase{
             case StateApproach:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     currentState = AlignStates.StateBackupInit;
-                    m_activeFollowCommand=null;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    //m_activeFollowCommand=null;
+                    m_roller.requestState(RollerStates.StateRollerOnBackward);
                 }
                 break;    
             case StateBackupInit:
                 Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, backPos);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseFast(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
             
@@ -193,10 +202,14 @@ public class AlignHandler extends SubsystemBase{
             case StateBackup:
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     currentState = AlignStates.StateLowerInit;
-                    m_activeFollowCommand=null;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                   // m_activeFollowCommand=null;
                 }
                 break; 
             case StateLowerInit:
+                 m_roller.requestState(RollerStates.StateRollerOff);
+
                 m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
                 currentState = AlignStates.StateLower;
                 break;
@@ -209,6 +222,10 @@ public class AlignHandler extends SubsystemBase{
             case StateAlignFinished:
                 requestedState=AlignStates.StateDriving;
                 currentState = requestedState; // get out of this state!
+                
+                //if(m_activeFollowCommand !=null) m_activeFollowCommand=null;
+                CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
                 break;
         }
 

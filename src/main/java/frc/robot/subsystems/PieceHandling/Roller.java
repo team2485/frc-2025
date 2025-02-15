@@ -71,7 +71,7 @@ public class Roller extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateRollerOnForward:
-        desiredVoltage = 12;
+        desiredVoltage = 4;
         break;
       case StateRollerOnBackward:
         desiredVoltage = -4;
