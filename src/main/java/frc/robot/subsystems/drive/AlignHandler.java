@@ -84,9 +84,10 @@ public class AlignHandler extends SubsystemBase{
         StateAlignRightL3Init
         
     }
+    private double speedMult = 1.0;
     public double getSpeedMultiplier(){
 
-        return 1.0;
+        return speedMult;
 
     }
 
@@ -123,6 +124,11 @@ public class AlignHandler extends SubsystemBase{
                 currentState=requestedState;
                 break;
             case StateDriving:
+                // speedMult = 1;
+                if(speedMult < 1.0){
+                    speedMult+=0.003;
+
+                }
                 CommandScheduler.getInstance().schedule(kteleOpCommand);
 
                 if(requestedState == AlignStates.StateAlignRightL2Init || requestedState == AlignStates.StateAlignLeftL2Init || 
@@ -320,7 +326,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4 + 0.025, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -375,6 +381,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break; 
             case StateLowerInit:
+                speedMult = 0.2;
                 if(desiredExtension != AlignStates.StateExtendL2AlgaeInit){
                     m_roller.requestState(RollerStates.StateRollerOff);
 
@@ -389,7 +396,10 @@ public class AlignHandler extends SubsystemBase{
             case StateLower:
                 
                 CommandScheduler.getInstance().schedule(kteleOpCommand);
+                if(speedMult < 1.0){
+                    speedMult+=0.003;
 
+                }
                 if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
                     currentState = AlignStates.StateAlignFinished;
                 }
