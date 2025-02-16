@@ -78,7 +78,7 @@ public class StateHandler extends SubsystemBase{
         StateL4WristTransition,
         StateL4,
         StateL4RetractInit,
-
+        StateAbort,
         StateL2Algae,
         StateL3Algae,
         StateLollipop
@@ -297,7 +297,10 @@ public class StateHandler extends SubsystemBase{
                     m_Pivot.requestState (PivotStates.StateL3Algae);
                 }
                 break;
-            
+            case StateAbort:
+                currentState = RobotStates.StateCoralStationInit;
+                requestedState=RobotStates.StateCoralStationInit;
+                break;
 
         }
 
@@ -318,10 +321,12 @@ public class StateHandler extends SubsystemBase{
 
     }
     public void requestRobotState(RobotStates changeTo){
-
+        if(changeTo == RobotStates.StateAbort)
+            currentState=RobotStates.StateAbort;
         requestedState=changeTo;
 
     }
+
 
     // public boolean getStateReached(){
 

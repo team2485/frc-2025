@@ -117,10 +117,10 @@ public class RobotContainer {
     //r.requestState(ElevatorStates.StateL2), m_elevator));
     // m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
     m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    m_driver.rightPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignRightInit) ));
-    m_driver.leftPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignLeftInit) ));    
+    m_driver.rightPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init) ));
+    m_driver.leftPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init) ));    
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    
+    //m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.abortAlign()));
     m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
     m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Init), m_Handler));
     m_operator.leftPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));

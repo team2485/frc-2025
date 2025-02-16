@@ -1,15 +1,8 @@
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.Rotation;
-
-import java.util.logging.Handler;
-
-import com.ctre.phoenix6.signals.RobotEnableValue;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -49,15 +42,20 @@ public class AlignHandler extends SubsystemBase{
     StateHandler m_Handler;
     private double horizontalOffset;
     private Roller m_roller;
+    private AlignStates desiredExtension=AlignStates.StateInit;
     public enum AlignStates {
 
         StateInit,
         StateDriving,
         StateAlignRightInit,
         StateAlignLeftInit,
+        StateAlignRightL2Init,
+        StateAlignLeftL2Init,
+        StateAlignRightL4Init,
+        StateAlignLeftL4Init,
         StateRoughAlign,
         StateApproachInit,
-
+        StateAbort,
         StateExtendL2Init,
         StateExtendL3Init,
         StateExtendL4Init,
@@ -94,7 +92,11 @@ public class AlignHandler extends SubsystemBase{
     
     @Override
     public void periodic(){
+        if(m_driver.b().getAsBoolean()){
 
+            currentState=AlignStates.StateAbort;
+
+        }
         switch(currentState){
 
             case StateInit:
@@ -103,8 +105,35 @@ public class AlignHandler extends SubsystemBase{
             case StateDriving:
                 CommandScheduler.getInstance().schedule(kteleOpCommand);
 
-                if(requestedState == AlignStates.StateAlignRightInit || requestedState == AlignStates.StateAlignLeftInit ) currentState = requestedState;
+                if(requestedState == AlignStates.StateAlignRightL2Init || requestedState == AlignStates.StateAlignLeftL2Init || 
+                requestedState == AlignStates.StateAlignRightL4Init ||
+                requestedState == AlignStates.StateAlignLeftL4Init 
+                
+                
+                ) currentState = requestedState;
+
                 break; // put stuff for when the controllers are active;
+            case StateAlignLeftL2Init:
+
+                desiredExtension=AlignStates.StateExtendL2Init;
+                currentState=AlignStates.StateAlignLeftInit;
+                break;
+            case StateAlignLeftL4Init:
+
+                desiredExtension=AlignStates.StateExtendL4Init;
+                currentState=AlignStates.StateAlignLeftInit;
+                break;
+            case StateAlignRightL2Init:
+
+                desiredExtension=AlignStates.StateExtendL2Init;
+                currentState=AlignStates.StateAlignRightInit;
+                break;
+            case StateAlignRightL4Init:
+
+                desiredExtension=AlignStates.StateExtendL4Init;
+                currentState=AlignStates.StateAlignRightInit;
+                break;
+
             case StateAlignRightInit:
                 horizontalOffset = .25;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
@@ -113,9 +142,15 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(20, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign;
+                if(desiredExtension==AlignStates.StateExtendL2Init){
+
+                    m_Handler.requestRobotState(RobotStates.StateL2Init);
+                    //currentState = AlignStates.StateExtendL2;
+
+                }
                 break;
 
             case StateAlignLeftInit:
@@ -126,47 +161,65 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTargetL = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(21, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(20, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign; 
-                break;
-            case StateRoughAlign:
-                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
-                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-                    m_activeFollowCommand = null;
-                    currentState = AlignStates.StateExtendL2Init;
+                
+                if(desiredExtension==AlignStates.StateExtendL2Init){
 
+                    m_Handler.requestRobotState(RobotStates.StateL2Init);
+                    //currentState = AlignStates.StateExtendL2;
 
                 }
+
+                break;
+            case StateRoughAlign:
+
+                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension != AlignStates.StateExtendL2Init){
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    m_activeFollowCommand = null;
+                    
+                    currentState = desiredExtension;
+
+
+                } else if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension == AlignStates.StateExtendL2Init){
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    m_activeFollowCommand = null;
+                    currentState = AlignStates.StateExtendL2;
+                }
+
                 break;
             case StateExtendL2Init:
                 m_Handler.requestRobotState(RobotStates.StateL2Init);
                 currentState = AlignStates.StateExtendL2;
 
                 break;
+            case StateExtendL4Init:
+                m_Handler.requestRobotState(RobotStates.StateL4Init);
+                currentState=  AlignStates.StateExtendL4;
+                break;
+            case StateExtendL4:
+                if(m_Handler.getCurrentState() == RobotStates.StateL4Finished){
+
+                    currentState = AlignStates.StateApproachInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    m_activeFollowCommand = null;
+                }
+                break;
             case StateExtendL2:
                 if(m_Handler.getCurrentState() == RobotStates.StateL2Finished){
 
-                    currentState = AlignStates.StateRightApproachInit;
+                    currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                    m_activeFollowCommand = null;
                 }
                 break;
-            case StateRightApproachInit:
+            case StateApproachInit:
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(20, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
-                
-                CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                
-                currentState = AlignStates.StateApproach;
-                break;
-
-            case StateLeftApproachInit:
-                // put in the command here that makes it go forward;
-                Pose2d forwardPosLeft = DriveCommandBuilder.convertAprilTag(21, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosLeft);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
@@ -191,8 +244,8 @@ public class AlignHandler extends SubsystemBase{
                     m_roller.requestState(RollerStates.StateRollerOnBackward);
                 }
                 break;    
-            case StateBackupInit:
-                Pose2d backPos = DriveCommandBuilder.convertAprilTag(21, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+            case StateBackupInit: // .7 meters should be ok
+                Pose2d backPos = DriveCommandBuilder.convertAprilTag(20, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -227,6 +280,16 @@ public class AlignHandler extends SubsystemBase{
                 CommandScheduler.getInstance().cancel(m_activeFollowCommand);
                 m_activeFollowCommand=null;
                 break;
+            case StateAbort:
+                if(m_activeFollowCommand != null) {
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+
+                }
+                m_Handler.requestRobotState(RobotStates.StateAbort);
+                requestedState=AlignStates.StateDriving;
+                currentState=AlignStates.StateDriving;
+                break;
         }
 
 
@@ -240,6 +303,11 @@ public class AlignHandler extends SubsystemBase{
 
         // }
         state.setString(currentState.toString());
+    }
+    public void abortAlign(){
+
+        currentState = AlignStates.StateAbort;
+
     }
     public void requestAlignState(AlignStates changeTo){
 
