@@ -179,10 +179,10 @@ public class RobotContainer {
     // m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
     // m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Init), m_Handler));
     // m_operator.leftPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));
-    m_operator.upperPOV().onTrue(new InstantCommand(() -> extensionLevel = 4));
+    m_operator.upperPOV().onTrue(new InstantCommand(() -> extensionLevel = 4).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Prepare1))));;
     m_operator.lowerPOV().onTrue(new InstantCommand(() -> extensionLevel = 1));
-    m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel = 2));
-    m_operator.rightPOV().onTrue(new InstantCommand(() -> extensionLevel =3));
+    m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel = 2).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Prepare))));
+    m_operator.rightPOV().onTrue(new InstantCommand(() -> extensionLevel =3).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Prepare))));
     
 
 

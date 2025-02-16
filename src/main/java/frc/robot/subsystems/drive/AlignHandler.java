@@ -278,7 +278,7 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateExtendL3Algae;
                 break;
             case StateExtendL2Init:
-                m_Handler.requestRobotState(RobotStates.StateL2Init);
+                m_Handler.requestRobotState(RobotStates.StateL2Prepare);
                 currentState = AlignStates.StateExtendL2;
 
                 break;

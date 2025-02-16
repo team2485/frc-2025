@@ -34,7 +34,8 @@ public class Elevator extends SubsystemBase {
     StateL3Algae,
     StateLollipop,
     StateMoveToRequestedState,
-    StateStation
+    StateStation,
+    StateL4Half
   }
 
   public static ElevatorStates m_ElevatorCurrentState;
@@ -117,6 +118,9 @@ public class Elevator extends SubsystemBase {
       
       case StateL3:
         desiredPosition = 22.75;
+        break;
+      case StateL4Half:
+        desiredPosition = 5-.25;
         break;
       case StateL4:
         desiredPosition = 27.625-.25;
