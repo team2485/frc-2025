@@ -56,10 +56,16 @@ public class AlignHandler extends SubsystemBase{
         StateRoughAlign,
         StateApproachInit,
         StateAbort,
+        StateAlignMidInit,
+        StateAlignAlgaeL2Init,
         StateExtendL2Init,
+        StateExtendL2AlgaeInit,
+        StateAlignAlgaeL3Init,
+        StateExtendL3AlgaeInit,
         StateExtendL3Init,
         StateExtendL4Init,
         StateExtendL2,
+        StateExtendL2Algae,
         StateExtendL3,
         StateExtendL4,
         StateLower,
@@ -71,9 +77,19 @@ public class AlignHandler extends SubsystemBase{
         StateApproach,
         StateAlignFinished,
         StateBackupInit,
-        StateBackup
+        StateBackup,
+        StateExtendL3Algae,
+        StateAlignLeftL3Init,
+        
+        StateAlignRightL3Init
         
     }
+    public double getSpeedMultiplier(){
+
+        return 1.0;
+
+    }
+
     public AlignHandler(Drivetrain drivetrain, PoseEstimation poseEst, WL_CommandXboxController driver, StateHandler handler, Roller rollers){ // include subsystems as argument
         m_driver = driver;
         m_Drivetrain = drivetrain;
@@ -84,6 +100,7 @@ public class AlignHandler extends SubsystemBase{
             m_driver::getLeftY,
             m_driver::getLeftX,
             m_driver::getRightX,
+            this::getSpeedMultiplier,
             () -> true,
             m_Drivetrain, m_PoseEstimation); 
     }
@@ -111,7 +128,9 @@ public class AlignHandler extends SubsystemBase{
                 if(requestedState == AlignStates.StateAlignRightL2Init || requestedState == AlignStates.StateAlignLeftL2Init || 
                 requestedState == AlignStates.StateAlignRightL4Init ||
                 requestedState == AlignStates.StateAlignLeftL4Init 
-                
+                || requestedState == AlignStates.StateAlignAlgaeL2Init || 
+                requestedState == AlignStates.StateAlignLeftL3Init ||
+                requestedState == AlignStates.StateAlignRightL3Init
                 
                 ) currentState = requestedState;
 
@@ -131,10 +150,28 @@ public class AlignHandler extends SubsystemBase{
                 desiredExtension=AlignStates.StateExtendL2Init;
                 currentState=AlignStates.StateAlignRightInit;
                 break;
+            case StateAlignRightL3Init:
+
+                desiredExtension=AlignStates.StateExtendL3Init;
+                currentState=AlignStates.StateAlignRightInit;
+                break;
+            case StateAlignLeftL3Init:
+
+                desiredExtension=AlignStates.StateExtendL3Init;
+                currentState=AlignStates.StateAlignLeftInit;
+                break;
             case StateAlignRightL4Init:
 
                 desiredExtension=AlignStates.StateExtendL4Init;
                 currentState=AlignStates.StateAlignRightInit;
+                break;
+            case StateAlignAlgaeL2Init:
+                desiredExtension = AlignStates.StateExtendL2AlgaeInit;
+                currentState = AlignStates.StateAlignMidInit;
+                break;
+            case StateAlignAlgaeL3Init:
+                desiredExtension = AlignStates.StateExtendL3AlgaeInit;
+                currentState = AlignStates.StateAlignMidInit;
                 break;
 
             case StateAlignRightInit:
@@ -178,9 +215,30 @@ public class AlignHandler extends SubsystemBase{
                 }
 
                 break;
+            case StateAlignMidInit:
+                horizontalOffset = 0.05;
+                targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
+                CommandScheduler.getInstance().cancel(kteleOpCommand);
+
+                // temporarily removed below for testing;
+
+                // int tagToTargetL = 21; // replace with find nearest scorable tag logic
+
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, .8, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                currentState = AlignStates.StateRoughAlign; 
+                
+                if(desiredExtension==AlignStates.StateExtendL2AlgaeInit){
+
+                    m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit);
+                    //currentState = AlignStates.StateExtendL2;
+
+                }
+
+                break;
             case StateRoughAlign:
 
-                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension != AlignStates.StateExtendL2Init){
+                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension != AlignStates.StateExtendL2Init && desiredExtension != AlignStates.StateExtendL2AlgaeInit){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
                     m_activeFollowCommand = null;
                     
@@ -192,12 +250,44 @@ public class AlignHandler extends SubsystemBase{
                     m_activeFollowCommand = null;
                     currentState = AlignStates.StateExtendL2;
                 }
+                else if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension == AlignStates.StateExtendL2AlgaeInit){
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    m_activeFollowCommand = null;
+                    currentState = AlignStates.StateExtendL2Algae;
+                }
 
+                break;
+            case StateExtendL2Algae:
+                
+                if(m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal){
+
+                    currentState = AlignStates.StateApproachInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    m_activeFollowCommand = null;
+                }
+                break;
+            case StateExtendL3AlgaeInit:
+                m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
+                currentState = AlignStates.StateExtendL3Algae;
                 break;
             case StateExtendL2Init:
                 m_Handler.requestRobotState(RobotStates.StateL2Init);
                 currentState = AlignStates.StateExtendL2;
 
+                break;
+            case StateExtendL3Init:
+                m_Handler.requestRobotState(RobotStates.StateL3Init);
+                currentState = AlignStates.StateExtendL3;
+                break;
+            case StateExtendL3:
+                if(m_Handler.getCurrentState() == RobotStates.StateL3Finished){
+
+                    currentState = AlignStates.StateApproachInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    m_activeFollowCommand = null;
+                }
                 break;
             case StateExtendL4Init:
                 m_Handler.requestRobotState(RobotStates.StateL4Init);
@@ -222,6 +312,11 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;
             case StateApproachInit:
+                if(desiredExtension == AlignStates.StateExtendL2AlgaeInit){
+                    m_roller.requestState(RollerStates.StateAlgaeIntake);
+
+
+                }
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
@@ -248,13 +343,23 @@ public class AlignHandler extends SubsystemBase{
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                     m_activeFollowCommand=null;
-                    m_roller.requestState(RollerStates.StateRollerOnBackward);
+                    if(desiredExtension != AlignStates.StateExtendL2AlgaeInit){
+                        m_roller.requestState(RollerStates.StateRollerOnBackward);
+
+
+                    }
+                    
                 }
                 break;    
             case StateBackupInit: // .7 meters should be ok
+                double forwardOffset = .7;
+                if(desiredExtension == AlignStates.StateExtendL2AlgaeInit){
+                    forwardOffset=1.5;
+
+                }
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
-                Pose2d backPos = DriveCommandBuilder.convertAprilTag(targetID, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d backPos = DriveCommandBuilder.convertAprilTag(targetID, forwardOffset, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -270,12 +375,21 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break; 
             case StateLowerInit:
-                 m_roller.requestState(RollerStates.StateRollerOff);
+                if(desiredExtension != AlignStates.StateExtendL2AlgaeInit){
+                    m_roller.requestState(RollerStates.StateRollerOff);
+
+
+                }
+       
+                
 
                 m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
                 currentState = AlignStates.StateLower;
                 break;
             case StateLower:
+                
+                CommandScheduler.getInstance().schedule(kteleOpCommand);
+
                 if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
                     currentState = AlignStates.StateAlignFinished;
                 }
@@ -283,6 +397,7 @@ public class AlignHandler extends SubsystemBase{
                 
             case StateAlignFinished:
                 requestedState=AlignStates.StateDriving;
+
                 currentState = requestedState; // get out of this state!
                 
                 //if(m_activeFollowCommand == null) m_activeFollowCommand=null;

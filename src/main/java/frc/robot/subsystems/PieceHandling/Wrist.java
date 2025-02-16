@@ -134,10 +134,10 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.77777-0.21891;
         break;
       case StateL2Algae:
-        desiredPosition = 0.55-0.21891;
+        desiredPosition = 0.13;
         break;
       case StateL3Algae:
-        desiredPosition = 0.52777-0.21891;
+        desiredPosition = 0.16;
         break;
       case StateLollipop:
         desiredPosition = 0;
@@ -147,7 +147,7 @@ public class Wrist extends SubsystemBase {
     }
     desiredPosition*=kWristGearRatio;
     runControlLoop();
-
+ // 4.2 wrist 14 pivot
     if (getError() < kWristErrorTolerance)
       m_WristCurrentState = m_WristRequestedState;
      else

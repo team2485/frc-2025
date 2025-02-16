@@ -9,7 +9,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static frc.robot.Constants.RollerConstants.*;
 
+import java.util.Currency;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,7 +25,8 @@ public class Roller extends SubsystemBase {
     StateRollerOff,
     StateMovingToRequestedState,
     StateRollerOnForward,
-    StateRollerOnBackward
+    StateRollerOnBackward,
+    StateAlgaeIntake
   }
 
   public static RollerStates m_RollerCurrentState;
@@ -29,6 +34,10 @@ public class Roller extends SubsystemBase {
 
   // You may need more than one motor
   private final TalonFX m_talon = new TalonFX(kRollerPort,"Mast");
+  // private GenericEntry stateLog = Shuffleboard.getTab("Roller").addString("Roller State", "blah").;
+  public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of ROller", "init").getEntry();
+  public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of ROller", "init").getEntry();
+
   // Unit default for TalonFX libraries is rotations
   private double desiredVoltage = 0;
 
@@ -50,6 +59,11 @@ public class Roller extends SubsystemBase {
 
 
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLowerTime = 0;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable=true;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimit=70;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit=80;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable=true;
     if (kRollerClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
     else motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -76,9 +90,14 @@ public class Roller extends SubsystemBase {
       case StateRollerOnBackward:
         desiredVoltage = -4;
         break;
-    }
+      case StateAlgaeIntake:
+        desiredVoltage = 10;
+      }
+
  
     runControlLoop();
+    // state.setString(m_RollerCurrentState.toString());
+    stateRequested.setString(m_RollerRequestedState.toString());
   }
   public void runControlLoop() {
     m_talon.setVoltage(desiredVoltage);

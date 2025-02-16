@@ -40,11 +40,13 @@ public class DriveWithController extends Command {
   //.175, 0, .01
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
+  private double speedMultiplier;
 
   public DriveWithController(
       DoubleSupplier xSpeedSupplier,
       DoubleSupplier ySpeedSupplier,
       DoubleSupplier rotSpeedSupplier,
+      DoubleSupplier speedMultSupplier,
       BooleanSupplier fieldRelative,
       Drivetrain drivetrain,
       PoseEstimation poseEstimation) {

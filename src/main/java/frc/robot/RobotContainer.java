@@ -9,12 +9,14 @@ import static frc.robot.Constants.OIConstants.kOperatorPort;
 
 import java.lang.annotation.ElementType;
 
+import com.ctre.phoenix6.signals.RobotEnableValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -66,7 +68,7 @@ public class RobotContainer {
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
   public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot);
   public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller);
- 
+  private int extensionLevel = 2;
   public RobotContainer() { 
     // Configure the trigger bindings
     NamedCommands.registerCommand("ZeroGyro", new InstantCommand(m_poseEstimation::test_set));
@@ -101,6 +103,47 @@ public class RobotContainer {
    * 
    * 
    */
+  public void alignLeft(){
+
+    switch (extensionLevel) {
+      case 1:
+        
+        break;
+      case 2:
+        m_Aligner.requestAlignState(AlignStates.StateAlignLeftL2Init);
+        break;
+      case 3:
+        m_Aligner.requestAlignState(AlignStates.StateAlignLeftL3Init);
+        break;
+      case 4:
+        m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
+        break;
+      default:
+        break;
+    }
+
+  }
+  public void alignRight(){
+
+    switch (extensionLevel) {
+      case 1:
+        
+        break;
+      case 2:
+        m_Aligner.requestAlignState(AlignStates.StateAlignRightL2Init);
+        break;
+      case 3:
+        m_Aligner.requestAlignState(AlignStates.StateAlignRightL3Init);
+        break;
+      case 4:
+        m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+        break;
+
+      default:
+        break;
+    }
+
+  }
   private void configureBindings() {
     // m_drivetrain.setDefaultCommand(
     //   new DriveWithController(
@@ -116,15 +159,35 @@ public class RobotContainer {
     // m_driver.b().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));//
     //r.requestState(ElevatorStates.StateL2), m_elevator));
     // m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
+
+
     m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    m_driver.rightPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init) ));
-    m_driver.leftPOV().onTrue(new InstantCommand(() ->m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init) ));    
-    m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    //m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.abortAlign()));
-    m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
-    m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Init), m_Handler));
-    m_operator.leftPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));
+   
+  
+      m_driver.rightPOV().onTrue(new InstantCommand(() ->alignRight() ));
+      m_driver.leftPOV().onTrue(new InstantCommand(() ->alignLeft() ));   
+
+
     
+
+   
+    m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+    m_driver.upperPOV().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init)));
+   
+    m_driver.leftTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));//.onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+    //m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.abortAlign()));
+    // m_operator.upperPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Init), m_Handler));
+    // m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Init), m_Handler));
+    // m_operator.leftPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));
+    m_operator.upperPOV().onTrue(new InstantCommand(() -> extensionLevel = 4));
+    m_operator.lowerPOV().onTrue(new InstantCommand(() -> extensionLevel = 1));
+    m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel = 2));
+    m_operator.rightPOV().onTrue(new InstantCommand(() -> extensionLevel =3));
+    
+
+
+    m_operator.rightTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit), m_Handler));
+    m_operator.rightBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit), m_Handler));
     m_operator.x().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateCoralStationInit), m_Handler));
 
     

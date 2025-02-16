@@ -66,8 +66,12 @@ public class StateHandler extends SubsystemBase{
         StateL3WristTransition,
         StateL3,
         StateL4Init,
-
-        
+        StateL2AlgaeFinal,
+        StateL2AlgaeTransition,
+        StateL2AlgaeInit,
+        StateL3AlgaeFinal,
+        StateL3AlgaeTransition,
+        StateL3AlgaeInit,
         StateL4RetractTransition1,
         StateL4RetractInit2,
         StateL4RetractTransition2,
@@ -285,23 +289,43 @@ public class StateHandler extends SubsystemBase{
             case StateL4RetractFinal:
                 currentState = RobotStates.StateCoralStationInit;
                 break;
-            case StateL2Algae:
+            case StateL2AlgaeInit:
                 m_Elevator.requestState(ElevatorStates.StateL2Algae);
+                currentState = RobotStates.StateL2AlgaeTransition;
+                break;
+            case StateL3AlgaeInit:
+                m_Elevator.requestState(ElevatorStates.StateL3Algae);
+                currentState = RobotStates.StateL3AlgaeTransition;
+                break;
+            case StateL2AlgaeTransition:
                 if (m_Elevator.getCurrentState() == ElevatorStates.StateL2Algae){
                     m_Wrist.requestState(WristStates.StateL2Algae);
                     m_Pivot.requestState (PivotStates.StateL2Algae);
+                    currentState =  RobotStates.StateL2AlgaeFinal;
                 }
                 break;
-
-            case StateL3Algae:
-                m_Elevator.requestState(ElevatorStates.StateL3Algae);
+            case StateL3AlgaeTransition:
                 if (m_Elevator.getCurrentState() == ElevatorStates.StateL3Algae){
                     m_Wrist.requestState(WristStates.StateL3Algae);
                     m_Pivot.requestState (PivotStates.StateL3Algae);
+                    currentState =  RobotStates.StateL3AlgaeFinal;
                 }
                 break;
+            case StateL2AlgaeFinal:
+                if(requestedState==RobotStates.StateCoralStationInit) {
+                    currentState = RobotStates.StateCoralStationInit;
+                }
+                break;
+                
+
+            case StateL3AlgaeFinal:
+                if(requestedState==RobotStates.StateCoralStationInit) {
+                    currentState = RobotStates.StateCoralStationInit;
+                }
+                break;
+           
             case StateAbort:
-                if(currentState == RobotStates.StateL4Finished){
+                if(currentState == RobotStates.StateL4Finished ){
 
                     currentState = RobotStates.StateL4RetractInit;
                     requestedState = RobotStates.StateL4RetractInit;
