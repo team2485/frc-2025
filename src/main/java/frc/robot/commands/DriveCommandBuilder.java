@@ -133,6 +133,30 @@ public class DriveCommandBuilder {
         //     0);
         // return pathfindingCommand;
     }
+
+    public static int findNearestScoringTagId(PoseEstimation m_poseEstimation){
+
+        var constants = m_poseEstimation.getFieldConstants();
+        AprilTag[] tags = constants.getReefTags();
+        AprilTag nearestTag = tags[0];
+        double closestDistance = Double.MAX_VALUE;
+        Pose2d currestPose = m_poseEstimation.getCurrentPose();
+        for(AprilTag tag : tags){
+
+            Pose2d tagPose = tag.pose.toPose2d();
+            double thisDist = currestPose.getTranslation().getDistance(tagPose.getTranslation());
+            if(thisDist < closestDistance){
+                closestDistance=thisDist;
+                nearestTag = tag;
+
+            }
+
+        }
+        return nearestTag.ID;
+
+        
+    }
+
     public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos, PathConstraints constraints){
         var difference =endPos.minus( m_PoseEstimation.getCurrentPose() ) ;
         var direction = difference.getRotation();

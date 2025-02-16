@@ -89,9 +89,12 @@ public class AlignHandler extends SubsystemBase{
     }
     
     GenericEntry state = Shuffleboard.getTab("Autos").add("alignerstate", "").getEntry();
+    GenericEntry tagLog = Shuffleboard.getTab("Autos").add("tag log", -1).getEntry();
     
     @Override
+ 
     public void periodic(){
+        int targetID = -1;
         if(m_driver.b().getAsBoolean()){
 
             currentState=AlignStates.StateAbort;
@@ -135,6 +138,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignRightInit:
+                targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 horizontalOffset = .25;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
@@ -142,7 +146,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(20, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign;
                 if(desiredExtension==AlignStates.StateExtendL2Init){
@@ -155,13 +159,14 @@ public class AlignHandler extends SubsystemBase{
 
             case StateAlignLeftInit:
                 horizontalOffset = -.08;
+                targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
                 // temporarily removed below for testing;
 
                 // int tagToTargetL = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(20, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign; 
                 
@@ -217,8 +222,10 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;
             case StateApproachInit:
+                targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
+
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(20, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4 + 0.025, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -245,7 +252,9 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;    
             case StateBackupInit: // .7 meters should be ok
-                Pose2d backPos = DriveCommandBuilder.convertAprilTag(20, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
+
+                Pose2d backPos = DriveCommandBuilder.convertAprilTag(targetID, .7, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, backPos);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -302,6 +311,7 @@ public class AlignHandler extends SubsystemBase{
         //     currentState = RobotStates.StateBetweenStates;
 
         // }
+        tagLog.setInteger(targetID);
         state.setString(currentState.toString());
     }
     public void abortAlign(){

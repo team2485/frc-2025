@@ -1,6 +1,9 @@
 package frc.robot;
 
 import static frc.robot.Constants.WristConstants.*;
+
+import java.time.chrono.ChronoPeriod;
+
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import static frc.robot.Constants.PivotConstants.*;
@@ -298,6 +301,12 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateAbort:
+                if(currentState == RobotStates.StateL4Finished){
+
+                    currentState = RobotStates.StateL4RetractInit;
+                    requestedState = RobotStates.StateL4RetractInit;
+
+                }
                 currentState = RobotStates.StateCoralStationInit;
                 requestedState=RobotStates.StateCoralStationInit;
                 break;

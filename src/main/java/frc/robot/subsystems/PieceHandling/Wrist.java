@@ -57,6 +57,10 @@ public class Wrist extends SubsystemBase {
     // Misc setup goes here
 
     var talonFXConfigs = new TalonFXConfiguration();
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 60;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimit = 20;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
     // These will be derived experimentally but in case you are wondering
     // How these terms are defined from the TalonFX docs
     // kS adds n volts to overcome static friction
@@ -68,18 +72,18 @@ public class Wrist extends SubsystemBase {
     slot0Configs.kS = kSWrist;
     slot0Configs.kG = kGWrist;// kGWrist;
 
-    slot0Configs.kV = kVWrist;
-    slot0Configs.kA = kAWrist;
+    slot0Configs.kV = 0.6;
+    slot0Configs.kA = 0.1;
     slot0Configs.kP = kPWrist;// kPWrist;
     slot0Configs.kI = kIWrist;
     slot0Configs.kD = kDWrist;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = kWristCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 32;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = kWristAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 100;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 0;
+    motionMagicConfigs.MotionMagicJerk = 150;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kWristClockwisePositive)
