@@ -98,7 +98,11 @@ public class StateHandler extends SubsystemBase{
         StateL2Algae,
         StateL3Algae,
         StateLollipop,
-        StateProcessorInit
+        StateProcessorInit,
+        StateBargeInit,
+        StateBargeTransition,
+        StateBargeTransition2,
+        StateBargeFinal
     }
 
     public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot){ // include subsystems as argument
@@ -186,7 +190,7 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateL2Finished:
-                if(requestedState==RobotStates.StateCoralStationInit) {
+                if(requestedState==RobotStates.StateCoralStationInit ) {
                     currentState = RobotStates.StateCoralStationInit;
                 }
                 break;
@@ -383,17 +387,45 @@ public class StateHandler extends SubsystemBase{
                 }
             break;
             
+            case StateBargeInit:
+                m_Elevator.requestState(ElevatorStates.StateBarge);
+                currentState = RobotStates.StateBargeTransition;
+                break;
+            case StateBargeTransition:
+                if(m_Elevator.getCurrentState() == ElevatorStates.StateBarge){
 
+                    m_Wrist.requestState(WristStates.StateBarge);
+                    m_Pivot.requestState(PivotStates.StateBarge);
+                    currentState= RobotStates.StateBargeTransition2;
+                }
+                break;  
+            case StateBargeTransition2:
+                if(m_Wrist.getCurrentState() == WristStates.StateBarge && m_Pivot.getCurrentState() == PivotStates.StateBarge){
+
+                    currentState = RobotStates.StateBargeFinal;
+
+                }
+                break;
+            case StateBargeFinal:
+                if(requestedState == RobotStates.StateCoralStationInit){
+
+                    currentState = RobotStates.StateL4RetractInit;
+
+                }
+                break;
            
             case StateAbort:
                 if(currentState == RobotStates.StateL4Finished ){
 
                     currentState = RobotStates.StateL4RetractInit;
-                    requestedState = RobotStates.StateL4RetractInit;
+                    requestedState = RobotStates.StateCoralStationInit;
+
+                }else{
+                    currentState = RobotStates.StateCoralStationInit;
+                    requestedState=RobotStates.StateCoralStationInit;
+                    
 
                 }
-                currentState = RobotStates.StateCoralStationInit;
-                requestedState=RobotStates.StateCoralStationInit;
                 break;
 
         }

@@ -84,6 +84,14 @@ public class AlignHandler extends SubsystemBase{
         StateAlignRightL3Init
         
     }
+
+
+    private double speedLimit = 1.0;
+
+    public void requestSpeedLimit(double speedLimit){
+        this.speedLimit = speedLimit;
+    }
+
     private double speedMult = 1.0;
     public double getSpeedMultiplier(){
 
@@ -125,8 +133,12 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateDriving:
                 // speedMult = 1;
-                if(speedMult < 1.0){
+                if(speedMult < speedLimit){
                     speedMult+=0.003;
+
+                }
+                else{
+                    speedMult = speedLimit;
 
                 }
                 CommandScheduler.getInstance().schedule(kteleOpCommand); 
@@ -418,10 +430,15 @@ public class AlignHandler extends SubsystemBase{
             case StateLower:
                 
                 CommandScheduler.getInstance().schedule(kteleOpCommand);
-                if(speedMult < 1.0){
+                if(speedMult < speedLimit){
                     speedMult+=0.003;
 
                 }
+                else{
+                    speedMult = speedLimit;
+
+                }
+
                 if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
                     currentState = AlignStates.StateAlignFinished;
                 }
