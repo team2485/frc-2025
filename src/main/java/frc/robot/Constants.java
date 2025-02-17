@@ -87,6 +87,10 @@ public final class Constants {
   }
 
   public interface FieldConstants {
+    public int[] getProcessorId();
+    public int[] getReefTagIds();
+    public int[] getCoralStationTags();
+
     public List<AprilTag> getAprilTagList();
     public AprilTag[] getReefTags();
     public boolean isOnRed();
@@ -102,6 +106,8 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kXConstraints = new TrapezoidProfile.Constraints(1, 2);
     public static final TrapezoidProfile.Constraints kYConstraints = new TrapezoidProfile.Constraints(.5, 2);
     public static final TrapezoidProfile.Constraints kOmegaConstraints = new TrapezoidProfile.Constraints(3, 8);
+    
+    public static final double kVisionMaxDistanceMeters = 5;
 
     public static final double kTranslationTolerance = 0.02;
     public static final double kThetaTolerance = Units.degreesToRadians(0);
@@ -171,24 +177,53 @@ public final class Constants {
   }
 
   public static final class RedFieldConstants implements FieldConstants {
+      static final AprilTag[] reefTags = new AprilTag[] {
+
+      VisionConstants.kBlueTagList.get(5), // bc zero index
+      VisionConstants.kBlueTagList.get(6), // bc zero index
+      VisionConstants.kBlueTagList.get(7), // bc zero index
+      VisionConstants.kBlueTagList.get(8), // bc zero index
+      VisionConstants.kBlueTagList.get(9), // bc zero index
+      VisionConstants.kBlueTagList.get(10), // bc zero index
+     
+
+    };
+    static final int[] reefTagIds = new int[] {
+
+      6,7,8,9,10,11
+
+    };
+    static final int[] coralTags = new int[]{
+
+      1,2
+
+    };
+    public int[] getCoralStationTags(){
+      return coralTags;
+
+    }
+    public int[ ] getReefTagIds(){
+
+
+      return reefTagIds;
+  }
     public Pose2d getUpperPickupPos() {
       return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
       //2
     }
+    static final int[] procId = new int[] {
+
+      16
+
+    };
+    public int[] getProcessorId(){
+      
+      return procId;
+    }
     public AprilTag[] getReefTags(){
 
-      return(
-      new AprilTag[] {
-
-        VisionConstants.kBlueTagList.get(5), // bc zero index
-        VisionConstants.kBlueTagList.get(6), // bc zero index
-        VisionConstants.kBlueTagList.get(7), // bc zero index
-        VisionConstants.kBlueTagList.get(8), // bc zero index
-        VisionConstants.kBlueTagList.get(9), // bc zero index
-        VisionConstants.kBlueTagList.get(10), // bc zero index
-       
-
-      });
+      return(reefTags
+      );
       
 
     }
@@ -213,6 +248,46 @@ public final class Constants {
 
   }
   public static final class BlueFieldConstants implements FieldConstants {
+    
+    static final AprilTag[] reefTags =       new AprilTag[] {
+
+      VisionConstants.kBlueTagList.get(16), // bc zero index
+      VisionConstants.kBlueTagList.get(17), // bc zero index
+      VisionConstants.kBlueTagList.get(18), // bc zero index
+      VisionConstants.kBlueTagList.get(19), // bc zero index
+      VisionConstants.kBlueTagList.get(20), // bc zero index
+      VisionConstants.kBlueTagList.get(21), // bc zero index
+     
+
+    };
+    static final int[] coralTags = new int[]{
+
+      12,13
+
+    };
+    public int[] getCoralStationTags(){
+      return coralTags;
+
+    }
+    static final int[] reefTagIds = new int[] {
+
+      17,18,19,20,21,22
+
+    };
+    static final int[] procId = new int[] {
+
+      3
+
+    };
+    public int[] getProcessorId(){
+      
+      return procId;
+    }
+    public int[ ] getReefTagIds(){
+
+
+        return reefTagIds;
+    }
     public Pose2d getUpperPickupPos(){
 
       return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
@@ -221,18 +296,8 @@ public final class Constants {
     }
     public AprilTag[] getReefTags(){
 
-      return(
-      new AprilTag[] {
-
-        VisionConstants.kBlueTagList.get(16), // bc zero index
-        VisionConstants.kBlueTagList.get(17), // bc zero index
-        VisionConstants.kBlueTagList.get(18), // bc zero index
-        VisionConstants.kBlueTagList.get(19), // bc zero index
-        VisionConstants.kBlueTagList.get(20), // bc zero index
-        VisionConstants.kBlueTagList.get(21), // bc zero index
-       
-
-      });
+      return(reefTags
+        );
       
 
     }

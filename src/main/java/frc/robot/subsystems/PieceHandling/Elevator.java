@@ -128,7 +128,7 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 1;
         break;
       case StateBarge:
-        desiredPosition = 27.625;
+        desiredPosition = 27.625 ;
         break;
       case StateL2Algae:
         desiredPosition = 1;
@@ -139,6 +139,8 @@ public class Elevator extends SubsystemBase {
       case StateLollipop:
         desiredPosition = 0;
         break;
+ 
+        
       case StateStation:
         desiredPosition = 1;
     }

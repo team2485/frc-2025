@@ -230,7 +230,7 @@ public class PoseEstimation extends SubsystemBase {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   }
 
-  public FieldConstants getFieldConstants() {
+  public static FieldConstants getFieldConstants() {
     RedFieldConstants redFieldConstants = new RedFieldConstants();
     BlueFieldConstants blueFieldConstants = new BlueFieldConstants();
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
