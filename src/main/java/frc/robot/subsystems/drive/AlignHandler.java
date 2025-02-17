@@ -189,7 +189,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, .8, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign;
                 if(desiredExtension==AlignStates.StateExtendL2Init){
@@ -201,7 +201,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignLeftInit:
-                horizontalOffset = -.08;
+                horizontalOffset = -.06;
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
@@ -209,7 +209,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTargetL = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, .8, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign; 
                 
@@ -326,7 +326,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.43, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);

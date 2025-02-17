@@ -103,7 +103,7 @@ public class Vision implements Runnable {
             if(photonResults.hasTargets()){
 
                 
-                photonResults.targets.removeIf(n->(n.getPoseAmbiguity() >0.0)); 
+                photonResults.targets.removeIf(n->(n.getPoseAmbiguity() >0.0) ); 
 
                 m_estimatorWithError.update(photonResults).ifPresent(m_badPose -> {
                     var estimatedPose = m_badPose.estimatedPose;
