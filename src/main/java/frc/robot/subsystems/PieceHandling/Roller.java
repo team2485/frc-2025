@@ -91,7 +91,7 @@ public class Roller extends SubsystemBase {
         desiredVoltage = -4;
         break;
       case StateAlgaeIntake:
-        desiredVoltage = 10;
+        desiredVoltage = 8;
       }
 
  
