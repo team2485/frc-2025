@@ -360,8 +360,8 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.35, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
@@ -412,6 +412,7 @@ public class AlignHandler extends SubsystemBase{
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                    m_activeFollowCommand=null;
+                   
                 }
                 break; 
             case StateLowerInit:
