@@ -31,6 +31,7 @@ public class Wrist extends SubsystemBase {
     StateL4,
     StateIntake,
     StateBarge,
+    StateProcessor,
     StateL2Algae,
     StateL3Algae,
     StateLollipop,
@@ -132,6 +133,9 @@ public class Wrist extends SubsystemBase {
         break;
       case StateBarge:
         desiredPosition = 0.77777-0.21891;
+        break;
+      case StateProcessor:
+        desiredPosition = 0.13;
         break;
       case StateL2Algae:
         desiredPosition = 0.13;

@@ -71,6 +71,7 @@ public class StateHandler extends SubsystemBase{
         StateL4Init,
         StateL2AlgaeFinal,
         StateL2AlgaeTransition,
+        StateProcessorFinal,
         StateL2AlgaeInit,
         StateL3AlgaeFinal,
         StateL3AlgaeTransition,
@@ -96,7 +97,8 @@ public class StateHandler extends SubsystemBase{
         StateAbort,
         StateL2Algae,
         StateL3Algae,
-        StateLollipop
+        StateLollipop,
+        StateProcessorInit
     }
 
     public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot){ // include subsystems as argument
@@ -250,6 +252,7 @@ public class StateHandler extends SubsystemBase{
                 break;
             case StateL4Init:
                 m_Elevator.requestState(ElevatorStates.StateL4); // making the assumption it's the opposite as going to zero...
+                
                 currentState = RobotStates.StateL4Transition;
                 break;
             
@@ -366,6 +369,21 @@ public class StateHandler extends SubsystemBase{
                     currentState = RobotStates.StateCoralStationInit;
                 }
                 break;
+            
+            case StateProcessorInit:
+                m_Elevator.requestState(ElevatorStates.StateProcessor);
+                m_Wrist.requestState(WristStates.StateProcessor);
+                currentState = RobotStates.StateProcessorFinal;
+                break;
+            case StateProcessorFinal:
+                if(requestedState == RobotStates.StateCoralStationInit){
+
+                    currentState=requestedState;
+
+                }
+            break;
+            
+
            
             case StateAbort:
                 if(currentState == RobotStates.StateL4Finished ){

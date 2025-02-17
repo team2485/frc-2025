@@ -136,7 +136,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0.34027;
         break;
       case StateProcessor:
-        desiredPosition = 0.1;
+        desiredPosition = 0.02;
         break;
       case StateBarge:
         desiredPosition = 0.35416;

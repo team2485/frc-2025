@@ -123,6 +123,22 @@ public class RobotContainer {
     }
 
   }
+  public void alignMid(){
+
+    switch(extensionLevel){
+    
+      case 5:
+        m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init);
+        break;
+      case 6:
+        m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL3Init);
+        break;
+      default:
+        break;
+
+    }
+
+  }
   public void alignRight(){
 
     switch (extensionLevel) {
@@ -138,7 +154,12 @@ public class RobotContainer {
       case 4:
         m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
         break;
-
+      case 5:
+        m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init);
+        break;
+      case 6:
+        m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL3Init);
+        break;
       default:
         break;
     }
@@ -166,13 +187,14 @@ public class RobotContainer {
   
       m_driver.rightPOV().onTrue(new InstantCommand(() ->alignRight() ));
       m_driver.leftPOV().onTrue(new InstantCommand(() ->alignLeft() ));   
+      m_driver.upperPOV().onTrue(new InstantCommand(() ->alignMid() ));   
 
 
     
 
    
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
-    m_driver.upperPOV().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init)));
+    //m_driver.upperPOV().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init)));
    
     m_driver.leftTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));//.onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
     //m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.abortAlign()));
@@ -183,12 +205,16 @@ public class RobotContainer {
     m_operator.lowerPOV().onTrue(new InstantCommand(() -> extensionLevel = 1));
     m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel = 2).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Prepare))));
     m_operator.rightPOV().onTrue(new InstantCommand(() -> extensionLevel =3).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Prepare))));
+    m_operator.rightTrigger().onTrue(new InstantCommand(() -> extensionLevel =5).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit))));
+    m_operator.rightBumper().onTrue(new InstantCommand(() -> extensionLevel =6).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit))));
+
     
 
 
-    m_operator.rightTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit), m_Handler));
+    //m_operator.rightTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit), m_Handler));
     m_operator.rightBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit), m_Handler));
     m_operator.x().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateCoralStationInit), m_Handler));
+    m_operator.b().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateProcessorInit), m_Handler));
 
     
   } 
