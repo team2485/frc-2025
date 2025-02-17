@@ -185,7 +185,7 @@ public class AlignHandler extends SubsystemBase{
 
             case StateAlignRightInit:
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
-                horizontalOffset = .25;
+                horizontalOffset = .275;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
                 // temporarily removed below for testing;
@@ -348,7 +348,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.35, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);

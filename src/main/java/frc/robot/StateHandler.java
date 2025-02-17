@@ -98,7 +98,9 @@ public class StateHandler extends SubsystemBase{
         StateL2Algae,
         StateL3Algae,
         StateLollipop,
-        StateProcessorInit
+        StateProcessorInit,
+        StateBargeInit,
+        StateBargeFinal
     }
 
     public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot){ // include subsystems as argument
@@ -376,6 +378,21 @@ public class StateHandler extends SubsystemBase{
                 currentState = RobotStates.StateProcessorFinal;
                 break;
             case StateProcessorFinal:
+                if(requestedState == RobotStates.StateCoralStationInit){
+
+                    currentState=requestedState;
+
+                }
+            break;
+
+            case StateBargeInit:
+                m_Elevator.requestState(ElevatorStates.StateBarge);
+                m_Wrist.requestState(WristStates.StateBarge);
+                m_Pivot.requestState(PivotStates.StateBarge);
+                currentState = RobotStates.StateBargeFinal;
+                break;
+            
+            case StateBargeFinal:
                 if(requestedState == RobotStates.StateCoralStationInit){
 
                     currentState=requestedState;
