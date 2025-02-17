@@ -88,6 +88,8 @@ public class StateHandler extends SubsystemBase{
         StateL4Transition2,
         StateL4WristTransition,
         StateL4,
+        StateBargeInit,
+        StateBargeFinal,
         StateL4RetractInit,
         StateL2Prepare,
         StateL4Prepare1,
@@ -99,8 +101,7 @@ public class StateHandler extends SubsystemBase{
         StateL3Algae,
         StateLollipop,
         StateProcessorInit,
-        StateBargeInit,
-        StateBargeFinal
+    
     }
 
     public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot){ // include subsystems as argument
@@ -400,47 +401,47 @@ public class StateHandler extends SubsystemBase{
                 }
             break;
 
-            case StateBargeInit:
-                m_Elevator.requestState(ElevatorStates.StateBarge);
-                m_Wrist.requestState(WristStates.StateBarge);
-                m_Pivot.requestState(PivotStates.StateBarge);
-                currentState = RobotStates.StateBargeFinal;
-                break;
+            // case StateBargeInit:
+            //     m_Elevator.requestState(ElevatorStates.StateBarge);
+            //     m_Wrist.requestState(WristStates.StateBarge);
+            //     m_Pivot.requestState(PivotStates.StateBarge);
+            //     currentState = RobotStates.StateBargeFinal;
+            //     break;
             
-            case StateBargeFinal:
-                if(requestedState == RobotStates.StateCoralStationInit){
+            // case StateBargeFinal:
+            //     if(requestedState == RobotStates.StateCoralStationInit){
 
-                    currentState=requestedState;
+            //         currentState=requestedState;
 
-                }
-            break;
+            //     }
+            // break;
             
-            case StateBargeInit:
-                m_Elevator.requestState(ElevatorStates.StateBarge);
-                currentState = RobotStates.StateBargeTransition;
-                break;
-            case StateBargeTransition:
-                if(m_Elevator.getCurrentState() == ElevatorStates.StateBarge){
+            // case StateBargeInit:
+            //     m_Elevator.requestState(ElevatorStates.StateBarge);
+            //     currentState = RobotStates.StateBargeTransition;
+            //     break;
+            // case StateBargeTransition:
+            //     if(m_Elevator.getCurrentState() == ElevatorStates.StateBarge){
 
-                    m_Wrist.requestState(WristStates.StateBarge);
-                    m_Pivot.requestState(PivotStates.StateBarge);
-                    currentState= RobotStates.StateBargeTransition2;
-                }
-                break;  
-            case StateBargeTransition2:
-                if(m_Wrist.getCurrentState() == WristStates.StateBarge && m_Pivot.getCurrentState() == PivotStates.StateBarge){
+            //         m_Wrist.requestState(WristStates.StateBarge);
+            //         m_Pivot.requestState(PivotStates.StateBarge);
+            //         currentState= RobotStates.StateBargeTransition2;
+            //     }
+            //     break;  
+            // case StateBargeTransition2:
+            //     if(m_Wrist.getCurrentState() == WristStates.StateBarge && m_Pivot.getCurrentState() == PivotStates.StateBarge){
 
-                    currentState = RobotStates.StateBargeFinal;
+            //         currentState = RobotStates.StateBargeFinal;
 
-                }
-                break;
-            case StateBargeFinal:
-                if(requestedState == RobotStates.StateCoralStationInit){
+            //     }
+            //     break;
+            // case StateBargeFinal:
+            //     if(requestedState == RobotStates.StateCoralStationInit){
 
-                    currentState = RobotStates.StateL4RetractInit;
+            //         currentState = RobotStates.StateL4RetractInit;
 
-                }
-                break;
+            //     }
+            //     break;
            
             case StateAbort:
                 if(currentState == RobotStates.StateL4Finished ){
