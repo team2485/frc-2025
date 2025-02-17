@@ -33,22 +33,24 @@ public class DriveWithController extends Command {
   private final DoubleSupplier m_ySpeedSupplier;
   private final DoubleSupplier m_rotSpeedSupplier;
   private final BooleanSupplier m_fieldRelative;
-
+  private final DoubleSupplier m_speedMult; 
   private final Drivetrain m_drivetrain;
 
   private final PIDController rotationOverrideController = new PIDController(.1*.8, 0, .015*.75);
   //.175, 0, .01
   private final PIDController xOverrideController = new PIDController(5, 0, 0);
   private final PoseEstimation mPoseEstimation;
+  private double speedMultiplier;
 
   public DriveWithController(
       DoubleSupplier xSpeedSupplier,
       DoubleSupplier ySpeedSupplier,
       DoubleSupplier rotSpeedSupplier,
+      DoubleSupplier speedMultSupplier,
       BooleanSupplier fieldRelative,
       Drivetrain drivetrain,
       PoseEstimation poseEstimation) {
-
+        this.m_speedMult = speedMultSupplier;
     this.m_xSpeedSupplier = xSpeedSupplier;
     this.m_ySpeedSupplier = ySpeedSupplier;
     this.m_rotSpeedSupplier = rotSpeedSupplier;
@@ -68,7 +70,7 @@ public class DriveWithController extends Command {
     // SmartDashboard.putNumber("xbox right x", m_xSpeedSupplier.getAsDouble());
     // SmartDashboard.putNumber("xbox left x", m_ySpeedSupplier.getAsDouble());
     // SmartDashboard.putNumber("xbox left y", m_rotSpeedSupplier.getAsDouble());
-
+    double speedMult = m_speedMult.getAsDouble();
     final int xSign = (int)(Math.abs(m_xSpeedSupplier.getAsDouble())/m_xSpeedSupplier.getAsDouble());
     double xSpeed =
         map(-MathUtil.applyDeadband(Math.abs(m_xSpeedSupplier.getAsDouble()*m_xSpeedSupplier.getAsDouble()), kDriverLeftYDeadband)
@@ -91,7 +93,7 @@ public class DriveWithController extends Command {
     
     //Translation2d centerOfRotation = aimingAtSpeaker ? new Translation2d(-kPivotToRobot, 0) : new Translation2d();
 
-    m_drivetrain.drive(new Translation2d(xSpeed, ySpeed), rot, fieldRelative, true, new Translation2d());
+    m_drivetrain.drive(new Translation2d(xSpeed*speedMult, ySpeed*speedMult), rot, fieldRelative, true, new Translation2d());
 
     // System.out.println(m_driver.getRightTriggerAxis());
   }

@@ -8,12 +8,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.proto.Photon;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -28,12 +30,75 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Tracer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.VisionConstants.*;
 
+
+
+
 public class Vision implements Runnable {
+
+    class WhitelistFilter implements Predicate<PhotonTrackedTarget> {
+        int[] whitelist ;
+        public WhitelistFilter(int[] allowedTags){
+            whitelist = allowedTags;
+        }
+
+        @Override
+        public boolean test(PhotonTrackedTarget t) {
+            // TODO Auto-generated method stub
+           // throw new UnsupportedOperationException("Unimplemented method 'test'");
+            for (int i : whitelist){
+
+                if(t.getFiducialId() == i){
+                    return false;
+
+                }
+
+            }
+            return true;
+        
+        }
+
+    
+
+        
+
+    }
+    class TagFilter implements Predicate<PhotonTrackedTarget> {
+        double maxDist = 0;
+        public TagFilter(double maxDist){
+            this.maxDist = maxDist;
+        }
+
+        @Override
+        public boolean test(PhotonTrackedTarget t) {
+            // TODO Auto-generated method stub
+           // throw new UnsupportedOperationException("Unimplemented method 'test'");
+            if(t.getPoseAmbiguity() > 0.0){
+                return true;
+            }
+            Transform3d vector = t.getBestCameraToTarget();
+            if(vector.getTranslation().getNorm() > maxDist){
+
+                return true;
+
+            }
+            return false;
+        
+        
+        }
+
+    
+
+        
+
+    }
+    
+
     // PhotonVision class that takes vision measurements from camera and triangulates position on field
     private final PhotonPoseEstimator m_photonPoseEstimator;
     private final PhotonPoseEstimator m_estimatorWithError;
@@ -46,7 +111,7 @@ public class Vision implements Runnable {
     GenericEntry cameraExists;
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
     private final AtomicReference<EstimatedRobotPose> m_atomicEstimatedBadRobotPose = new AtomicReference<EstimatedRobotPose>();
-
+    private boolean isReefCamera;
 
     private Pose3d m_badPose;
   
@@ -62,7 +127,12 @@ public class Vision implements Runnable {
         var offset = kRobotToCameraLeft;
         if(cameraName.equals("cameraFrontRight")){
             offset = kRobotToCameraRight;
+            isReefCamera=true;
 
+        }
+        if(cameraName.equals("cameraFrontLeft")){
+
+            isReefCamera=true;
 
         }
 
@@ -83,8 +153,8 @@ public class Vision implements Runnable {
             DriverStation.reportError("Path: ", e.getStackTrace()); // can't estimate poses without known tag positions
             photonPoseEstimator = null;
         }
-        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        estimatorWithError.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
+        estimatorWithError.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
         this.m_photonPoseEstimator = photonPoseEstimator;
         this.m_estimatorWithError = estimatorWithError;
     }
@@ -103,6 +173,24 @@ public class Vision implements Runnable {
             if(photonResults.hasTargets()){
 
                 
+                //photonResults.targets.removeIf(n->(n.getPoseAmbiguity() >0.0) ); // old filter :(
+                
+                // new filter:
+                if(isReefCamera){
+
+                    photonResults.targets.removeIf(new TagFilter(kVisionMaxDistanceMeters));
+                    photonResults.targets.removeIf(new WhitelistFilter(PoseEstimation.getFieldConstants().getReefTagIds()));    
+
+                } else{
+
+                    photonResults.targets.removeIf(new TagFilter(kVisionMaxDistanceMeters));
+                    photonResults.targets.removeIf(new WhitelistFilter(PoseEstimation.getFieldConstants().getReefTagIds()));    
+
+                }
+               
+                
+                
+
                 m_estimatorWithError.update(photonResults).ifPresent(m_badPose -> {
                     var estimatedPose = m_badPose.estimatedPose;
 
@@ -113,6 +201,9 @@ public class Vision implements Runnable {
                     if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= kFieldLengthMeters
                             && estimatedPose.getY() > 0.0
                             && estimatedPose.getY() <= kFieldWidthMeters) { // idiot check
+
+
+                                
                         m_atomicEstimatedBadRobotPose.set(m_badPose);
                     }}
                         );

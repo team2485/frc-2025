@@ -87,7 +87,12 @@ public final class Constants {
   }
 
   public interface FieldConstants {
+    public int[] getProcessorId();
+    public int[] getReefTagIds();
+    public int[] getCoralStationTags();
 
+    public List<AprilTag> getAprilTagList();
+    public AprilTag[] getReefTags();
     public boolean isOnRed();
     public Pose2d getUpperPickupPos();
     public Pose2d getLowerPickupPos();
@@ -101,6 +106,8 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kXConstraints = new TrapezoidProfile.Constraints(1, 2);
     public static final TrapezoidProfile.Constraints kYConstraints = new TrapezoidProfile.Constraints(.5, 2);
     public static final TrapezoidProfile.Constraints kOmegaConstraints = new TrapezoidProfile.Constraints(3, 8);
+    
+    public static final double kVisionMaxDistanceMeters = 5;
 
     public static final double kTranslationTolerance = 0.02;
     public static final double kThetaTolerance = Units.degreesToRadians(0);
@@ -170,9 +177,55 @@ public final class Constants {
   }
 
   public static final class RedFieldConstants implements FieldConstants {
+      static final AprilTag[] reefTags = new AprilTag[] {
+
+      VisionConstants.kBlueTagList.get(5), // bc zero index
+      VisionConstants.kBlueTagList.get(6), // bc zero index
+      VisionConstants.kBlueTagList.get(7), // bc zero index
+      VisionConstants.kBlueTagList.get(8), // bc zero index
+      VisionConstants.kBlueTagList.get(9), // bc zero index
+      VisionConstants.kBlueTagList.get(10), // bc zero index
+     
+
+    };
+    static final int[] reefTagIds = new int[] {
+
+      6,7,8,9,10,11
+
+    };
+    static final int[] coralTags = new int[]{
+
+      1,2
+
+    };
+    public int[] getCoralStationTags(){
+      return coralTags;
+
+    }
+    public int[ ] getReefTagIds(){
+
+
+      return reefTagIds;
+  }
     public Pose2d getUpperPickupPos() {
       return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
       //2
+    }
+    static final int[] procId = new int[] {
+
+      16
+
+    };
+    public int[] getProcessorId(){
+      
+      return procId;
+    }
+    public AprilTag[] getReefTags(){
+
+      return(reefTags
+      );
+      
+
     }
     public Pose2d getLowerPickupPos(){
 
@@ -181,6 +234,9 @@ public final class Constants {
 
     public Pose2d getFrontMiddlePlacementPos() {
       return new Pose3d(144.00*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,180*Math.PI/180.0)).toPose2d();
+    }
+    public List<AprilTag> getAprilTagList(){
+      return VisionConstants.kBlueTagList;
     }
 
     public boolean isOnRed() {return true;}
@@ -192,11 +248,61 @@ public final class Constants {
 
   }
   public static final class BlueFieldConstants implements FieldConstants {
+    
+    static final AprilTag[] reefTags =       new AprilTag[] {
+
+      VisionConstants.kBlueTagList.get(16), // bc zero index
+      VisionConstants.kBlueTagList.get(17), // bc zero index
+      VisionConstants.kBlueTagList.get(18), // bc zero index
+      VisionConstants.kBlueTagList.get(19), // bc zero index
+      VisionConstants.kBlueTagList.get(20), // bc zero index
+      VisionConstants.kBlueTagList.get(21), // bc zero index
+     
+
+    };
+    static final int[] coralTags = new int[]{
+
+      12,13
+
+    };
+    public int[] getCoralStationTags(){
+      return coralTags;
+
+    }
+    static final int[] reefTagIds = new int[] {
+
+      17,18,19,20,21,22
+
+    };
+    static final int[] procId = new int[] {
+
+      3
+
+    };
+    public int[] getProcessorId(){
+      
+      return procId;
+    }
+    public int[ ] getReefTagIds(){
+
+
+        return reefTagIds;
+    }
     public Pose2d getUpperPickupPos(){
 
       return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
 
 
+    }
+    public AprilTag[] getReefTags(){
+
+      return(reefTags
+        );
+      
+
+    }
+    public List<AprilTag> getAprilTagList(){
+      return VisionConstants.kBlueTagList;
     }
     public Pose2d getLowerPickupPos(){
       return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
@@ -263,22 +369,97 @@ public final class Constants {
     public static final double kRotationTolerance = 3;
   }
 
-  public static final class TelescopeConstants{
+  public static final class PivotConstants{
+    public static final double kPivotGearRatio = 27*3; // 60:12 
+    //public static final double kPivotSprocketCircumference = 1.432*Math.PI; // INCHES
+    //public static final double kPivotInchesToOutput = (kPivotGearRatio)/(kPivotSprocketCircumference);
+    public static final int kPivot1Port = 12;
+
+
+
+    public static final double kSPivot = 0;
+    public static final double kVPivot = 0.35;//0.53;
+    public static final double kAPivot = 0.02; // 0.04
+    public static final double kGPivot = 0.89;
+    public static final double kPPivot = 2;
+    public static final double kIPivot = 0;
+    public static final double kDPivot = 0;
+    public static final double kPivotCruiseVelocity = 20;
+    public static final double kPivotAcceleration =64;
+    public static final double kPivotJerk = 100;
+
+    public static final boolean kPivotClockwisePositive = true;
+
+    public static final double kPivotErrorTolerance = 5;
+
+
+
+  }
+  public static final class WristConstants{
+    public static final double kWristGearRatio = 36; // reductions 
+    //public static final double kPivotSprocketCircumference = 1.432*Math.PI; // INCHES
+    //public static final double kPivotInchesToOutput = (kPivotGearRatio)/(kPivotSprocketCircumference);
+    public static final int kWrist1Port = 9;
+
+
+
+    public static final double kSWrist = 0;
+    public static final double kVWrist = 0.53;
+    public static final double kAWrist = 0.06;
+    public static final double kGWrist = 0;
+    public static final double kPWrist = 5;
+    public static final double kIWrist = 0;
+    public static final double kDWrist = 0;
+    public static final double kWristCruiseVelocity = 20;
+    public static final double kWristAcceleration = 40;
+    public static final double kWristJerk = 80;
+
+    public static final boolean kWristClockwisePositive = true;
+
+    public static final double kWristErrorTolerance = 1;
+
+
+
+  }
+  public static final class ElevatorConstants{
+
+    public static final double kElevatorGearRatio = 5; // 60:12 
+    public static final double kElevatorSprocketCircumference = 1.432*Math.PI; // INCHES
+    public static final double kELevatorInchesToOutput = (kElevatorGearRatio)/(kElevatorSprocketCircumference);
+    public static final int kElevator1CanID = 10;
+    public static final int kElevator2CANID = 11;
+
+
+    public static final int kElevator1Port = 10; // TODO: placeholder port
+    public static final int kElevator2Port = 11;
+    public static final double kSElevator = 0;
+    public static final double kVElevator = 7.52;
+    public static final double kAElevator = 0.01;
+    public static final double kGElevator = 0.04;
+    public static final double kPElevator = 0.01;
+    public static final double kIElevator = 0;
+    public static final double kDElevator = 0;
+    public static final double kElevatorCruiseVelocity = 0;
+    public static final double kElevatorAcceleration = 0;
+    public static final double kElevatorJerk = 0;
+
+    public static final boolean kElevatorClockwisePositive = true;
+
+    public static final double kElevatorErrorTolerance = 0.5;
+
+  }
+
+  public static final class RollerConstants{
 
     
-    public static final int kTelescopePort = 0; // TODO: placeholder port
-    public static final double kSTelescope = 0;
-    public static final double kVTelescope = 0;
-    public static final double kPTelescope = 0;
-    public static final double kITelescope = 0;
-    public static final double kDTelescope = 0;
-    public static final double kTelescopeCruiseVelocity = 0;
-    public static final double kTelescopeAcceleration = 0;
-    public static final double kTelescopeJerk = 0;
+    public static final int kRollerPort = 13; // TODO: placeholder port
+    public static final double kPRoller = 0;
+    public static final double kIRoller = 0;
+    public static final double kDRoller = 0;
 
-    public static final boolean kTelescopeClockwisePositive = true;
+    public static final boolean kRollerClockwisePositive = true;
 
-    public static final double kTelescopeErrorTolerance = 0;
+    public static final double kRollerErrorTolerance = 0;
     
 
 
@@ -310,7 +491,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(4,0.00,0),new PIDConstants(1,0,0));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(8,.05,0.4),new PIDConstants(1,0,0));
 
  
 
