@@ -135,9 +135,9 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3429, 0.27305, 0.187325),
+    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3429, -0.27305, 0.187325),
         new Rotation3d(0,.1745,0)); 
-    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3429, -0.27305, 0.187325),
+    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3429, 0.27305, 0.187325),
         new Rotation3d(0,.1745,0)); 
     //-0.698
 

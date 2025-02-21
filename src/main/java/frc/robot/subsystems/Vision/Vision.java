@@ -69,7 +69,7 @@ public class Vision implements Runnable {
 
     }
     class TagFilter implements Predicate<PhotonTrackedTarget> {
-        double maxDist = 0;
+        double maxDist = 2;
         public TagFilter(double maxDist){
             this.maxDist = maxDist;
         }
@@ -78,7 +78,7 @@ public class Vision implements Runnable {
         public boolean test(PhotonTrackedTarget t) {
             // TODO Auto-generated method stub
            // throw new UnsupportedOperationException("Unimplemented method 'test'");
-            if(t.getPoseAmbiguity() > 0.0){
+            if(t.getPoseAmbiguity() > 0.02){
                 return true;
             }
             Transform3d vector = t.getBestCameraToTarget();

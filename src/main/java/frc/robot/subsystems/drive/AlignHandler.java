@@ -237,7 +237,8 @@ public class AlignHandler extends SubsystemBase{
 
                 break;
             case StateAlignMidInit:
-                horizontalOffset = 0.05;
+                horizontalOffset = 0.1
+                ;
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 

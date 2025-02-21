@@ -126,7 +126,7 @@ public class PoseEstimation extends SubsystemBase {
     if(visionPoseFrontRight != null){
 
       var pose2d = visionPoseFrontRight.estimatedPose.toPose2d();
-      poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
+      //poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
      
     }
     // var visionPose = photonEstimator.grabLatestEstimatedPose();

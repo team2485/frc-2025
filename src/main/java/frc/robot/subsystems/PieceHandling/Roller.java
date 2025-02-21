@@ -36,7 +36,7 @@ public class Roller extends SubsystemBase {
   private final TalonFX m_talon = new TalonFX(kRollerPort,"Mast");
   // private GenericEntry stateLog = Shuffleboard.getTab("Roller").addString("Roller State", "blah").;
   public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of ROller", "init").getEntry();
-  public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of ROller", "init").getEntry();
+  public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of Roller", "init").getEntry();
 
   // Unit default for TalonFX libraries is rotations
   private double desiredVoltage = 0;
@@ -91,7 +91,7 @@ public class Roller extends SubsystemBase {
         desiredVoltage = -4;
         break;
       case StateAlgaeIntake:
-        desiredVoltage = 8;
+        desiredVoltage = 9;
       }
 
  
