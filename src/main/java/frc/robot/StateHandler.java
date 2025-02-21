@@ -53,7 +53,8 @@ public class StateHandler extends SubsystemBase{
         StateCoralStationTransition,
         StateCoralStationTransition2,
         StateCoralStationFinal,
-        StateL1,
+        StateL1Init,
+        StateL1Final,
         StateL2,
         StateL2Init,
         StateL2Finished,
@@ -99,7 +100,8 @@ public class StateHandler extends SubsystemBase{
         StateAbort,
         StateL2Algae,
         StateL3Algae,
-        StateLollipop,
+        StateLollipopInit,
+        StateLollipopFinal,
         StateProcessorInit,
     
     }
@@ -155,6 +157,20 @@ public class StateHandler extends SubsystemBase{
                     currentState=requestedState;
                 }
                 break;
+            case StateL1Init:
+                m_Wrist.requestState(WristStates.StateL1);
+                m_Pivot.requestState(PivotStates.StateL1);
+                currentState = RobotStates.StateL1Final;
+                break;
+
+            case StateL1Final:
+                if(requestedState == RobotStates.StateCoralStationInit){
+
+                    currentState=requestedState;
+
+                }
+                break;
+
             case StateL2Prepare:
                 m_Wrist.requestState(WristStates.StateL2);
                 m_Pivot.requestState(PivotStates.StateL2);
@@ -400,6 +416,20 @@ public class StateHandler extends SubsystemBase{
 
                 }
             break;
+
+            case StateLollipopInit:
+                m_Wrist.requestState(WristStates.StateLollipop);
+                m_Pivot.requestState(PivotStates.StateLollipop);
+                currentState = RobotStates.StateLollipopFinal;
+                break;
+
+            case StateLollipopFinal:
+                if(requestedState == RobotStates.StateCoralStationInit){
+
+                    currentState=requestedState;
+
+                }
+                break;
 
             // case StateBargeInit:
             //     m_Elevator.requestState(ElevatorStates.StateBarge);

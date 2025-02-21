@@ -202,7 +202,7 @@ public class RobotContainer {
     // m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Init), m_Handler));
     // m_operator.leftPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Init), m_Handler));
     m_operator.upperPOV().onTrue(new InstantCommand(() -> extensionLevel = 4).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL4Prepare1))));;
-    m_operator.rightPOV().onTrue(new InstantCommand(() -> extensionLevel = 1));
+    m_operator.rightPOV().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL1Init), m_Handler));
     m_operator.lowerPOV().onTrue(new InstantCommand(() -> extensionLevel = 2).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Prepare))));
     m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel =3).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Prepare))));
     m_operator.rightTrigger().onTrue(new InstantCommand(() -> extensionLevel =5).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit))));
@@ -212,10 +212,11 @@ public class RobotContainer {
 
 
     //m_operator.rightTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit), m_Handler));
-    m_operator.rightBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit), m_Handler));
+    //m_operator.rightBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit), m_Handler));
     m_operator.x().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateCoralStationInit), m_Handler));
     m_operator.b().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateProcessorInit), m_Handler));
     m_operator.y().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateBargeInit), m_Handler));
+    m_operator.a().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateLollipopInit), m_Handler));
 
     
   } 

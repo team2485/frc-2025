@@ -117,7 +117,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.25/kWristGearRatio;
         break;
       case StateL1:
-        desiredPosition = 0;
+        desiredPosition = .6;
         break;
       case StateL2:
         desiredPosition = 0.8-0.21891;
@@ -144,7 +144,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.16;
         break;
       case StateLollipop:
-        desiredPosition = 0;
+        desiredPosition = 0.2/kWristGearRatio;
         break;
       case StateL4Tuck:
         desiredPosition=(25/kWristGearRatio );
