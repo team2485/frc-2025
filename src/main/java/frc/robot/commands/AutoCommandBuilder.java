@@ -1,12 +1,19 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRadiansPerSecondSquared;
+import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
+
 import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
@@ -17,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 //import frc.robot.subsystems.SubsystemName2;
 //import frc.robot.subsystems.SubsystemName.SubsystemNameStates;
 //import frc.robot.subsystems.SubsystemName2.SubsystemName2States;
+import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.drive.Drivetrain;
 
 public class AutoCommandBuilder {
 
@@ -36,10 +45,28 @@ public class AutoCommandBuilder {
         }
         return AutoBuilder.followPath(followPath);
     }
+    public static Command pathfindCommand(Pose2d endPoint){ // SHOULD ONLY BE USED TO DRIVE TO DECISION PTS
+
+        // Since we are using a holonomic drivetrain, the rotation component of this pose
+        // represents the goal holonomic rotation
+
+        // Create the constraints to use while pathfinding
+        PathConstraints constraints = new PathConstraints(
+                1, 1,
+                kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
+
+        // PathFindHolonomic is confirmed functional without collisions avoidance, AutoBuilder must be used to avoid collision
+        
+        // Since AutoBuilder is configured, we can use it to build pathfinding commands
+        Command pathfindingCommand = AutoBuilder.pathfindToPose(endPoint, constraints, 0.0);
+        return pathfindingCommand;
+
+    }
 
     public enum autoPeriodicStates{
         StateInit,
         lineAuto,
+        BasicScoreAuto,
     }
     public enum lineAutoStates{
         StateInit,
@@ -49,10 +76,23 @@ public class AutoCommandBuilder {
         StateFollowLine2,
         StateFollowingLine2
     }
+    public enum BasicScoreAutoStates{
+
+        StateInit,
+        StateIdle,
+        StateTravelTopLeft,
+        StateTravellingTopLeft,
+        StateScoreTopLeft,
+        StateScoringTopLeft,
+        
+
+    }
 
     public static autoPeriodicStates m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
     public static autoPeriodicStates m_autoPeriodicRequestedState = autoPeriodicStates.StateInit;
-
+    public static BasicScoreAutoStates m_basicScoreAutoCurrentState = BasicScoreAutoStates.StateInit;
+    public static BasicScoreAutoStates m_basicScoreAutoRequestedtate = BasicScoreAutoStates.StateInit;
+    
     public static lineAutoStates m_lineAutoCurrentState = lineAutoStates.StateInit;
     public static lineAutoStates m_lineAutoRequestedState = lineAutoStates.StateInit;
     static GenericEntry dashEntry = Shuffleboard.getTab("Autos").add("auto state", m_lineAutoCurrentState.toString()).getEntry();
@@ -74,8 +114,9 @@ public class AutoCommandBuilder {
         System.out.println(m_activeFollowCommand);
         switch(m_autoPeriodicCurrentState){
             case StateInit:
-                m_autoPeriodicRequestedState = autoPeriodicStates.lineAuto;
+                m_autoPeriodicRequestedState = autoPeriodicStates.lineAuto; // desired auto can go here based on chooser :)
             case lineAuto:
+
                 switch(m_lineAutoCurrentState){
                     case StateInit:
                         m_lineAutoRequestedState = lineAutoStates.StateFollowLine;
@@ -84,7 +125,8 @@ public class AutoCommandBuilder {
                         break;
                     case StateFollowLine:
                         m_activeFollowCommand = createPathCommand("line");
-                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        m_activeFollowCommand.schedule();
+                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         m_lineAutoRequestedState = lineAutoStates.StateFollowingLine;
                         break;
                     case StateFollowingLine:
@@ -97,7 +139,7 @@ public class AutoCommandBuilder {
                         break;
                     case StateFollowLine2:
                         m_activeFollowCommand = createPathCommand("line2");
-                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        m_activeFollowCommand.schedule();
                         m_lineAutoRequestedState = lineAutoStates.StateFollowingLine2;
                         break;
                     case StateFollowingLine2:
@@ -112,7 +154,36 @@ public class AutoCommandBuilder {
                     
                 }
 
-        }
+            case BasicScoreAuto:
+                switch(m_basicScoreAutoCurrentState){
+
+                    case StateInit:
+                        m_basicScoreAutoCurrentState=BasicScoreAutoStates.StateTravelTopLeft;
+
+                        break;
+                    case StateIdle:
+                        break;  
+                    case StateTravelTopLeft:
+                        Pose2d topLeftPoint = new Pose2d(3,6,Rotation2d.fromDegrees(-60));
+                        m_activeFollowCommand = pathfindCommand(topLeftPoint);
+                        m_activeFollowCommand.schedule();;
+                        m_basicScoreAutoCurrentState=BasicScoreAutoStates.StateTravellingTopLeft;
+                    case StateTravellingTopLeft:
+                        if(m_activeFollowCommand.isFinished()){
+
+
+
+                        }
+                    case StateScoreTopLeft:
+                        
+                    
+
+
+
+                }
+                    
+
+            }
 
     }
 }

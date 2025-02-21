@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -58,6 +58,7 @@ public class DriveCommandBuilder {
         m_drivetrain.pathplannerConfig, 
         () -> DriverStation.getAlliance().get() == DriverStation.Alliance.Blue, 
         m_drivetrain);
+        PathfindingCommand.warmupCommand().schedule();
 
     }
     
