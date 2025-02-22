@@ -94,8 +94,8 @@ public final class Constants {
     public List<AprilTag> getAprilTagList();
     public AprilTag[] getReefTags();
     public boolean isOnRed();
-    public Pose2d getUpperPickupPos();
-    public Pose2d getLowerPickupPos();
+    public int getUpperPickupId();
+    public int getLowerPickupId();
   }
 
   public static final class VisionConstants {
@@ -207,8 +207,9 @@ public final class Constants {
 
       return reefTagIds;
   }
-    public Pose2d getUpperPickupPos() {
-      return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
+    public int getUpperPickupId() {
+      //return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
+        return 2;
       //2
     }
     static final int[] procId = new int[] {
@@ -227,9 +228,9 @@ public final class Constants {
       
 
     }
-    public Pose2d getLowerPickupPos(){
-
-      return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
+    public int getLowerPickupId(){
+      return 1;
+      //return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
     }
 
     public Pose2d getFrontMiddlePlacementPos() {
@@ -288,9 +289,9 @@ public final class Constants {
 
         return reefTagIds;
     }
-    public Pose2d getUpperPickupPos(){
-
-      return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
+    public int getUpperPickupId(){
+      return 13;
+      //return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
 
 
     }
@@ -304,9 +305,9 @@ public final class Constants {
     public List<AprilTag> getAprilTagList(){
       return VisionConstants.kBlueTagList;
     }
-    public Pose2d getLowerPickupPos(){
-      return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
-
+    public int getLowerPickupId(){
+      //return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
+      return 12;
 
     }
 

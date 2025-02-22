@@ -31,9 +31,10 @@ public class Robot extends TimedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    Pathfinding.setPathfinder(new LocalADStar());
+    // Pathfinding.setPathfinder(new LocalADStar());
     ctreConfigs = new CTREConfigs();
     m_robotContainer = new RobotContainer();
+    AutoCommandBuilder.setRobotContainer(m_robotContainer);
   }
 
 

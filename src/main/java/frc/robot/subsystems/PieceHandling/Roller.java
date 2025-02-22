@@ -37,6 +37,8 @@ public class Roller extends SubsystemBase {
   // private GenericEntry stateLog = Shuffleboard.getTab("Roller").addString("Roller State", "blah").;
   public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of ROller", "init").getEntry();
   public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of Roller", "init").getEntry();
+  public static GenericEntry currentLog = Shuffleboard.getTab("Roller").add("current",0.0).getEntry();
+  public static GenericEntry veloLog = Shuffleboard.getTab("Roller").add("velocity",0.0).getEntry();
 
   // Unit default for TalonFX libraries is rotations
   private double desiredVoltage = 0;
@@ -85,10 +87,10 @@ public class Roller extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateRollerOnForward:
-        desiredVoltage = 4;
+        desiredVoltage = 5;
         break;
       case StateRollerOnBackward:
-        desiredVoltage = -4;
+        desiredVoltage = -5;
         break;
       case StateAlgaeIntake:
         desiredVoltage = 9;
@@ -99,7 +101,22 @@ public class Roller extends SubsystemBase {
     // state.setString(m_RollerCurrentState.toString());
     stateRequested.setString(m_RollerRequestedState.toString());
   }
+
+  public boolean isStalling(){
+
+    if(m_talon.getVelocity().getValueAsDouble() < 1 && m_talon.getSupplyCurrent().getValueAsDouble() > 15){
+
+      return true;
+
+    }
+    return false;
+
+  }
+
   public void runControlLoop() {
+    currentLog.setDouble(m_talon.getSupplyCurrent().getValueAsDouble());
+    veloLog.setDouble(m_talon.getVelocity().getValueAsDouble());
+   
     m_talon.setVoltage(desiredVoltage);
   }
 

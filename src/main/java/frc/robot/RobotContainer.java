@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.WarlordsLib.WL_CommandXboxController;
 import frc.robot.StateHandler.RobotStates;
+import frc.robot.commands.AutoCommandBuilder;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.PieceHandlingCommandBuilder;
@@ -60,7 +61,7 @@ public class RobotContainer {
   private final Elevator m_elevator = new Elevator();
   private final Pivot m_pivot = new Pivot();
   private final Wrist m_wrist = new Wrist();
-  private final Roller m_roller = new Roller();
+  public final Roller m_roller = new Roller();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
   PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
@@ -69,6 +70,7 @@ public class RobotContainer {
   public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot);
   public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller);
   private int extensionLevel = 2;
+
   public RobotContainer() { 
     // Configure the trigger bindings
     NamedCommands.registerCommand("ZeroGyro", new InstantCommand(m_poseEstimation::test_set));
@@ -79,7 +81,6 @@ public class RobotContainer {
     Shuffleboard.getTab("Autos").add(autoChooser);
 
     configureBindings();
-
   }
 
   /**

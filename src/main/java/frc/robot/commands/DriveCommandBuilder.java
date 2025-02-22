@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.opencv.video.FarnebackOpticalFlow;
+
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -70,7 +72,7 @@ public class DriveCommandBuilder {
         Pose2d targetPose = fieldEndPos.get();
 
         double dist =  m_poseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
-        if(dist < .5){
+        if(dist < 1){ // TODO: revert tolerance to .5
             // PathConstraints constraints = new PathConstraints(1, 1, 0.5,0.5);
             Command shortCommand = shortDriveToPoseSlow(m_drivetrain, m_poseEstimation, targetPose);
             //Command shortCommand = shortDriveToPose(m_drivetrain, m_poseEstimation, targetPose);
@@ -203,7 +205,7 @@ public class DriveCommandBuilder {
       
 
     }
-    public static Pose2d convertAprilTag(int tagId, double forwardOffset, double sideOffset,Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
+    public static Pose2d convertAprilTag(int tagId, double forwardOffset, double sideOffset,Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation, boolean flip ){
 
         var constants = m_poseEstimation.getFieldConstants();
         List<AprilTag> aprilTagPositions = constants.getAprilTagList();
@@ -216,15 +218,35 @@ public class DriveCommandBuilder {
         // double xMultiplier = originalRotation.getCos();
         // double yMultiplier = originalRotation.getSin();
         // Translation2d relativeOffset = new Translation2d(yMultiplier,-xMultiplier ); // make vector of direction
-        Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.k180deg);
-        desiredPos = desiredPos.transformBy(converted);
-        return desiredPos;
+        if(!flip){
+
+            Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.k180deg);
+            desiredPos = desiredPos.transformBy(converted);
+            return desiredPos;
+
+        }else{
+
+            Transform2d converted = new Transform2d(forwardOffset,sideOffset, Rotation2d.kZero);
+            desiredPos = desiredPos.transformBy(converted);
+            return desiredPos;
+        }
+  
         
+    }
+    public static Pose2d convertAprilTag(int tagId, double forwardOffset, double sideOffset,Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation ){
+        return convertAprilTag(tagId, forwardOffset, sideOffset, m_Drivetrain, m_poseEstimation, false);
+
     }
     public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation){
 
+        return roughAlignToTag(tagId, forwardOffset, sideOffset, m_Drivetrain, m_poseEstimation,false);
+
+    }
+
+    public static Command roughAlignToTag(int tagId, double forwardOffset, double sideOffset, Drivetrain m_Drivetrain, PoseEstimation m_poseEstimation,boolean shouldFlip){
+
        
-        final Pose2d endPos = convertAprilTag(tagId, forwardOffset, sideOffset,m_Drivetrain,m_poseEstimation);
+        final Pose2d endPos = convertAprilTag(tagId, forwardOffset, sideOffset,m_Drivetrain,m_poseEstimation,shouldFlip);
         //return endPos;
        // targetPoseShuffleboard.setValue(endPos);
         return driveToPosition(m_Drivetrain, m_poseEstimation, () -> endPos);
@@ -232,47 +254,64 @@ public class DriveCommandBuilder {
 
     }
 
-    static Pose2d closestSourcePose;
-    public static Command alignToSource (Drivetrain m_dDrivetrain, PoseEstimation m_poseEstimation){
 
-        
+    public static int findNearestSourceId(PoseEstimation m_poseEstimation, Drivetrain m_Drivetrain){
+
         var constants = m_poseEstimation.getFieldConstants();
-        closestSourcePose=  constants.getLowerPickupPos();
-
+        Pose2d lowerSourcePos = convertAprilTag(constants.getLowerPickupId(),0.0,0.0,m_Drivetrain,m_poseEstimation);
+        Pose2d upperSourcePos = convertAprilTag(constants.getUpperPickupId(),0.0,0.0,m_Drivetrain,m_poseEstimation);
+        
+        //Pose2d upperSourcePos = convertAprilTag(constants.getUpperPickupId(),0,0,0,m_Drivetrain,m_poseEstimation);
+        double lowDist = m_poseEstimation.getCurrentPose().getTranslation().getDistance(lowerSourcePos.getTranslation());
+        double highDist = m_poseEstimation.getCurrentPose().getTranslation().getDistance(upperSourcePos.getTranslation());
         
 
-        Pose2d topSourcePos = constants.getUpperPickupPos();
 
-        Pose2d lowerSourcePos = constants.getLowerPickupPos();
-        double distToLower = m_poseEstimation.getCurrentPose().getTranslation().getDistance(lowerSourcePos.getTranslation());
-        double distToUpper = m_poseEstimation.getCurrentPose().getTranslation().getDistance(topSourcePos.getTranslation());
-        
-        if(distToLower < distToUpper) {
-            closestSourcePose = lowerSourcePos;
-            
-            //Translation2d basePos = closestSourcePose.getTranslation();
-            Rotation2d originalRotation = closestSourcePose.getRotation();
-            double xMultiplier = originalRotation.getCos();
-            double yMultiplier = originalRotation.getSin();
-            Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
-            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
-            closestSourcePose = closestSourcePose.transformBy(converted);
-
-        };
-
-        if(distToUpper <= distToLower) {
-            closestSourcePose = topSourcePos;
-            //Translation2d basePos = closestSourcePose.getTranslation();
-            Rotation2d originalRotation = closestSourcePose.getRotation();
-            double xMultiplier = originalRotation.getCos();
-            double yMultiplier = originalRotation.getSin();
-            Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
-            Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
-            closestSourcePose = closestSourcePose.transformBy(converted);
-        };
-        //return closestSourcePose;
-        return driveToPosition(m_dDrivetrain, m_poseEstimation, () -> closestSourcePose);
+        if(lowDist<highDist) return constants.getLowerPickupId();
+        else return constants.getUpperPickupId();
         
     }
+
+    // public static Command alignToSource (Drivetrain m_dDrivetrain, PoseEstimation m_poseEstimation){
+
+        
+    //     var constants = m_poseEstimation.getFieldConstants();
+    //     closestSourcePose=  constants.getLowerPickupPos();
+
+        
+
+    //     Pose2d topSourcePos = constants.getUpperPickupPos();
+
+    //     Pose2d lowerSourcePos = constants.getLowerPickupPos();
+    //     double distToLower = m_poseEstimation.getCurrentPose().getTranslation().getDistance(lowerSourcePos.getTranslation());
+    //     double distToUpper = m_poseEstimation.getCurrentPose().getTranslation().getDistance(topSourcePos.getTranslation());
+        
+    //     if(distToLower < distToUpper) {
+    //         closestSourcePose = lowerSourcePos;
+            
+    //         //Translation2d basePos = closestSourcePose.getTranslation();
+    //         Rotation2d originalRotation = closestSourcePose.getRotation();
+    //         double xMultiplier = originalRotation.getCos();
+    //         double yMultiplier = originalRotation.getSin();
+    //         Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
+    //         Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
+    //         closestSourcePose = closestSourcePose.transformBy(converted);
+
+    //     };
+
+    //     if(distToUpper <= distToLower) {
+    //         closestSourcePose = topSourcePos;
+    //         //Translation2d basePos = closestSourcePose.getTranslation();
+    //         Rotation2d originalRotation = closestSourcePose.getRotation();
+    //         double xMultiplier = originalRotation.getCos();
+    //         double yMultiplier = originalRotation.getSin();
+    //         Translation2d relativeOffset = new Translation2d(xMultiplier, yMultiplier);
+    //         Transform2d converted = new Transform2d(relativeOffset, Rotation2d.kZero); //origRotation
+    //         closestSourcePose = closestSourcePose.transformBy(converted);
+    //     };
+    //     //return closestSourcePose;
+    //     return driveToPosition(m_dDrivetrain, m_poseEstimation, () -> closestSourcePose);
+        
+    // }
 
 }
