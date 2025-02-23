@@ -7,35 +7,21 @@ import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
 
-import com.ctre.phoenix6.signals.RobotEnableValue;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
-//import frc.robot.subsystems.SubsystemName;
-//import frc.robot.subsystems.SubsystemName2;
-//import frc.robot.subsystems.SubsystemName.SubsystemNameStates;
-//import frc.robot.subsystems.SubsystemName2.SubsystemName2States;
-import frc.robot.subsystems.Vision.PoseEstimation;
-import frc.robot.subsystems.drive.Drivetrain;
 import frc.robot.subsystems.drive.AlignHandler.AlignStates;
-
-import static frc.robot.Constants.Swerve.*;
 
 public class AutoCommandBuilder {
 
@@ -59,7 +45,7 @@ public class AutoCommandBuilder {
 
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                4.75, 2.5,
+                3.25, 2,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         // PathFindHolonomic is confirmed functional without collisions avoidance,
@@ -239,30 +225,50 @@ public class AutoCommandBuilder {
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
                         break;
                     case StateIntake1Transition:
-                        if(m_Container.m_Aligner.isAllowedToDrive() && intakeStartTime == -1){ // intakeStartTime will be -1 when not being counted
+                        if(m_Container.m_Aligner.isAllowedToDrive()){
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            
+                            
+
+                            if(intakeStartTime == -1){ // intakeStartTime will be -1 when not being counted
                                 intakeStartTime = System.currentTimeMillis();
                             
 
-                        }
-                        else if(m_Container.m_Aligner.isAllowedToDrive()) {
-
-                            long deltaTime = System.currentTimeMillis()-intakeStartTime;
-                            if(deltaTime > 15000){
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
-
                             }
 
-                        }                      
-                        if(m_Container.m_Aligner.isAllowedToDrive() && m_Container.m_roller.isStalling())
-                         // add dynamic part here
-                        {
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                            m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateTravelTopLeft2;
+                            long deltaTime = System.currentTimeMillis()-intakeStartTime;
+                        
+                            if(m_Container.m_roller.isStalling() && deltaTime > 1000)
+                            // add dynamic part here
+                            {
+                                
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateTravelTopLeft2;
+        
+        
+                            }
+                            if(m_Container.m_Aligner.isAllowedToDrive()) {
+
+                                if(deltaTime > 15000){
+                                    m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+
+                                    m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+
+                                }
+
+                            }                      
+                            
+
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+
+                            
+                        
 
 
                         }
+                       
                         break;
                     case StateTravelTopLeft2:
                         intakeStartTime = -1;

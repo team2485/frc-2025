@@ -111,7 +111,7 @@ public class AlignHandler extends SubsystemBase{
     }
     public boolean isAllowedToDrive(){
 
-        if(currentState == AlignStates.StateLower || currentState == AlignStates.StateLowerInit || currentState == AlignStates.StateDriving || currentState == AlignStates.StateAuto || currentState == AlignStates.StateAlignFinished){
+        if(currentState == AlignStates.StateLower || currentState == AlignStates.StateLowerInit || currentState == AlignStates.StateDriving || currentState == AlignStates.StateAuto || currentState == AlignStates.StateAlignFinished || currentState == AlignStates.StateCoralFinished){
 
             return true;
 
@@ -253,7 +253,6 @@ public class AlignHandler extends SubsystemBase{
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
                 currentState = AlignStates.StateCoralApproach;
-                m_roller.requestState(RollerStates.StateRollerOnForward);
                 break;
             case StateCoralApproach:
                     
@@ -486,7 +485,7 @@ public class AlignHandler extends SubsystemBase{
                 break;    
             case StateBackupInit: // .7 meters should be ok
                 double forwardOffset = .7;
-                if(DriverStation.isAutonomousEnabled())forwardOffset=.5;
+  
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     forwardOffset=1.5;
 
@@ -501,6 +500,14 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateBackup;
                 break;
             case StateBackup:
+                if(DriverStation.isAutonomousEnabled()){
+
+                    currentState = AlignStates.StateLowerInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    m_activeFollowCommand=null;
+
+                }
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     currentState = AlignStates.StateLowerInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
@@ -512,6 +519,7 @@ public class AlignHandler extends SubsystemBase{
             case StateLowerInit:
                 speedMult = 0.2;
                 if(desiredExtension != AlignStates.StateExtendL2AlgaeInit && desiredExtension != AlignStates.StateExtendL3AlgaeInit){
+                    if(!DriverStation.isAutonomousEnabled())
                     m_roller.requestState(RollerStates.StateRollerOff);
 
 
