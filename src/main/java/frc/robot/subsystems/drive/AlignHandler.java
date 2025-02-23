@@ -230,7 +230,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1.8, 0, m_Drivetrain, m_PoseEstimation,true);
+                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1.43, 0, m_Drivetrain, m_PoseEstimation,true);
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateCoralStationRoughAlign;
 
@@ -247,7 +247,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.85, 0, m_Drivetrain, m_PoseEstimation,true);
+                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.73, 0, m_Drivetrain, m_PoseEstimation,true);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosCoral);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);

@@ -84,7 +84,7 @@ public class AutoCommandBuilder {
         StateTravelTopLeft2,
         StateTravellingTopLeft2,
         StateScoreTopLeft2,
-        StateScoringTopLeft2, StateIntake2Transition,
+        StateScoringTopLeft2, StateIntake2Transition, StateAbortInit,
     }
 
     public static autoPeriodicStates m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
@@ -186,7 +186,7 @@ public class AutoCommandBuilder {
     
                             break;
                         case StateIdle:
-                            m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
+                            m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
                             break;
                         case StateTravelTopLeft:
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
@@ -238,6 +238,7 @@ public class AutoCommandBuilder {
                             }
 
                             long deltaTime = System.currentTimeMillis()-intakeStartTime;
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
                         
                             if(m_Container.m_roller.isStalling() && deltaTime > 1000)
                             // add dynamic part here
@@ -248,19 +249,17 @@ public class AutoCommandBuilder {
         
         
                             }
-                            if(m_Container.m_Aligner.isAllowedToDrive()) {
 
-                                if(deltaTime > 15000){
-                                    m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            if(deltaTime > 3000){
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
 
-                                    m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
 
-                                }
+                            }
 
-                            }                      
+                                                 
                             
 
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
 
                             
@@ -312,6 +311,17 @@ public class AutoCommandBuilder {
                             m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateIdle;
 
                         }
+                        break;
+                    case StateAbortInit:
+                         m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                        
+                        targetPoint = new Pose2d(5, 7, Rotation2d.fromDegrees(-120));
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
+                       // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
+                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // m_activeFollowCommand.schedule();
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
                         break;
                     default:
                         break;
