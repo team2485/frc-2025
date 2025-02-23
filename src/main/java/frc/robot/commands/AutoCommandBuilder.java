@@ -59,7 +59,7 @@ public class AutoCommandBuilder {
 
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                1, 1,
+                5, 3,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         // PathFindHolonomic is confirmed functional without collisions avoidance,
@@ -119,7 +119,8 @@ public class AutoCommandBuilder {
     public static Command m_activeFollowCommand = null;
 
     public static int incrementer = 0;
-
+    private static long intakeStartTime = -1;
+    private static long intakeEndTime;
     public static void reset() {
         m_lineAutoRequestedState = lineAutoStates.StateInit;
 
@@ -129,80 +130,82 @@ public class AutoCommandBuilder {
         m_basicScoreAutoCurrentState = BasicScoreAutoStates.StateInit;
 
         m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
+        intakeStartTime = -1;
     }
-
-    // @Override
-    public static void autoControlLoop() {
-        // TODO: Include verification on state change here
-        m_lineAutoCurrentState = m_lineAutoRequestedState;
-        m_basicScoreAutoCurrentState = m_basicScoreAutoRequestedState;
-        m_autoPeriodicCurrentState = m_autoPeriodicRequestedState;
-        
-        // dashEntry.setString(m_basicScoreAutoCurrentState.name());
-        System.out.println(m_activeFollowCommand);
-        dashEntry.setString(m_basicScoreAutoCurrentState.name());
-        //dashEntry.setString(Integer.valueOf(incrementer).toString());
-
-        switch (m_autoPeriodicCurrentState) {
-            case StateInit:
-                m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
-                m_autoPeriodicRequestedState = autoPeriodicStates.BasicScoreAuto; // desired auto can go here based on
-                                                                                  // chooser :)
-                break;
-            case lineAuto:
-
-                switch (m_lineAutoCurrentState) {
-                    case StateInit:
-                        m_lineAutoRequestedState = lineAutoStates.StateFollowLine;
-                        break;
-                    case StateIdle:
-                        break;
-                    case StateFollowLine:
-                        m_activeFollowCommand = createPathCommand("line");
-                        m_activeFollowCommand.schedule();
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                        m_lineAutoRequestedState = lineAutoStates.StateFollowingLine;
-                        break;
-                    case StateFollowingLine:
-                        if (m_activeFollowCommand.isFinished()) {
-
-                            // change states
-                            // m_lineAutoRequestedState = lineAutoStates.StateFollowLine2;
-                            m_lineAutoRequestedState = lineAutoStates.StateFollowLine2;
-                        }
-                        break;
-                    case StateFollowLine2:
-                        m_activeFollowCommand = createPathCommand("line2");
-                        m_activeFollowCommand.schedule();
-                        m_lineAutoRequestedState = lineAutoStates.StateFollowingLine2;
-                        break;
-                    case StateFollowingLine2:
-                        if (m_activeFollowCommand.isFinished()) {
-
-                            // doneso
-                            m_lineAutoRequestedState = lineAutoStates.StateIdle;
-                        }
-
-                        break;
-
-                }
-                break;
-
-            case BasicScoreAuto:
-
-                switch (m_basicScoreAutoCurrentState) {
-
-                    case StateInit:
-
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
-
-                        break;
-                    case StateIdle:
-                        break;
-                    case StateTravelTopLeft:
-                        Pose2d topLeftPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
-                        m_activeFollowCommand = pathfindCommand(topLeftPoint);
+    static Pose2d targetPoint = Pose2d.kZero;
+        // @Override
+        public static void autoControlLoop() {
+            // TODO: Include verification on state change here
+            m_lineAutoCurrentState = m_lineAutoRequestedState;
+            m_basicScoreAutoCurrentState = m_basicScoreAutoRequestedState;
+            m_autoPeriodicCurrentState = m_autoPeriodicRequestedState;
+            
+            // dashEntry.setString(m_basicScoreAutoCurrentState.name());
+            System.out.println(m_activeFollowCommand);
+            dashEntry.setString(m_basicScoreAutoCurrentState.name());
+            //dashEntry.setString(Integer.valueOf(incrementer).toString());
+    
+            switch (m_autoPeriodicCurrentState) {
+                case StateInit:
+                    m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                    m_autoPeriodicRequestedState = autoPeriodicStates.BasicScoreAuto; // desired auto can go here based on
+                                                                                      // chooser :)
+                    break;
+                case lineAuto:
+    
+                    switch (m_lineAutoCurrentState) {
+                        case StateInit:
+                            m_lineAutoRequestedState = lineAutoStates.StateFollowLine;
+                            break;
+                        case StateIdle:
+                            break;
+                        case StateFollowLine:
+                            m_activeFollowCommand = createPathCommand("line");
+                            m_activeFollowCommand.schedule();
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                            // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                            m_lineAutoRequestedState = lineAutoStates.StateFollowingLine;
+                            break;
+                        case StateFollowingLine:
+                            if (m_activeFollowCommand.isFinished()) {
+    
+                                // change states
+                                // m_lineAutoRequestedState = lineAutoStates.StateFollowLine2;
+                                m_lineAutoRequestedState = lineAutoStates.StateFollowLine2;
+                            }
+                            break;
+                        case StateFollowLine2:
+                            m_activeFollowCommand = createPathCommand("line2");
+                            m_activeFollowCommand.schedule();
+                            m_lineAutoRequestedState = lineAutoStates.StateFollowingLine2;
+                            break;
+                        case StateFollowingLine2:
+                            if (m_activeFollowCommand.isFinished()) {
+    
+                                // doneso
+                                m_lineAutoRequestedState = lineAutoStates.StateIdle;
+                            }
+    
+                            break;
+    
+                    }
+                    break;
+    
+                case BasicScoreAuto:
+                    switch (m_basicScoreAutoCurrentState) {
+    
+                        case StateInit:
+    
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
+    
+                            break;
+                        case StateIdle:
+                            m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
+                            break;
+                        case StateTravelTopLeft:
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+                            targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
                         m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
 
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -211,7 +214,8 @@ public class AutoCommandBuilder {
                         incrementer++;
                         break;
                     case StateTravellingTopLeft:
-                        if (m_activeFollowCommand.isFinished()) {
+                        double dist = targetPoint.getTranslation().getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if (m_activeFollowCommand.isFinished() || dist<0.75) {
 
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
                         }
@@ -219,7 +223,7 @@ public class AutoCommandBuilder {
                     case StateScoreTopLeft:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft;
-                    
+                     
                     
                         break;
                     case StateScoringTopLeft:
@@ -235,7 +239,23 @@ public class AutoCommandBuilder {
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
                         break;
                     case StateIntake1Transition:
-                        if(m_Container.m_Aligner.isAllowedToDrive() && m_Container.m_roller.isStalling() )
+                        if(m_Container.m_Aligner.isAllowedToDrive() && intakeStartTime == -1){ // intakeStartTime will be -1 when not being counted
+                                intakeStartTime = System.currentTimeMillis();
+                            
+
+                        }
+                        else if(m_Container.m_Aligner.isAllowedToDrive()) {
+
+                            long deltaTime = System.currentTimeMillis()-intakeStartTime;
+                            if(deltaTime > 15000){
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+
+                            }
+
+                        }                      
+                        if(m_Container.m_Aligner.isAllowedToDrive() && m_Container.m_roller.isStalling())
                          // add dynamic part here
                         {
                             m_Container.m_roller.requestState(RollerStates.StateRollerOff);
@@ -245,22 +265,24 @@ public class AutoCommandBuilder {
                         }
                         break;
                     case StateTravelTopLeft2:
+                        intakeStartTime = -1;
                         m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                        topLeftPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
-                        m_activeFollowCommand = pathfindCommand(topLeftPoint);
+                        targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         // m_activeFollowCommand.schedule();
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft2;
                         incrementer++;
                         break;
                     case StateTravellingTopLeft2:
-                        if (m_activeFollowCommand.isFinished()) {
+                        double dist2 = targetPoint.getTranslation().getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if (m_activeFollowCommand.isFinished() || dist2<0.75) {
 
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft2;
                         }
                         break;
                     case StateScoreTopLeft2:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft2;
                     
                     

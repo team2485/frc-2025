@@ -5,14 +5,19 @@ import static frc.robot.Constants.WristConstants.*;
 import java.security.cert.PKIXReason;
 import java.time.chrono.ChronoPeriod;
 
+import com.ctre.phoenix6.mechanisms.DifferentialMechanism.RequiresUserReason;
+
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import static frc.robot.Constants.PivotConstants.*;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.SynchronousInterrupt.WaitResult;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Climber.ClimberStates;
 import frc.robot.subsystems.PieceHandling.Elevator;
 import frc.robot.subsystems.PieceHandling.Pivot;
 import frc.robot.subsystems.PieceHandling.Wrist;
@@ -42,7 +47,7 @@ public class StateHandler extends SubsystemBase{
     private Elevator m_Elevator;
     private Wrist m_Wrist;
     private Pivot m_Pivot;
-
+    private Climber m_Climber;
 
     public enum RobotStates {
 
@@ -99,15 +104,17 @@ public class StateHandler extends SubsystemBase{
         StateL4Prepare,
         StateAbort,
         StateL2Algae,
+        StateClimbPause,
         StateL3Algae,
         StateLollipopInit,
         StateLollipopFinal,
         StateProcessorInit,
-    
+        StateClimberPrepare,
+        StateClimbGo
     }
 
-    public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot){ // include subsystems as argument
-
+    public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot,Climber climber){ // include subsystems as argument
+        m_Climber=climber;
         m_Elevator = elevator;
         m_Wrist = wrist;
         m_Pivot = pivot;    
@@ -135,6 +142,7 @@ public class StateHandler extends SubsystemBase{
                 
                 break;
             case StateCoralStationInit:
+                m_Climber.requestState(ClimberStates.StateClimberOff);
                 m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
                 currentState = RobotStates.StateCoralStationTransition;
                 break;
@@ -248,6 +256,56 @@ public class StateHandler extends SubsystemBase{
                     currentState = RobotStates.StateCoralStationInit;
                 }
                 break;
+            case StateClimberPrepare:
+                if( requestedState==RobotStates.StateCoralStationInit || requestedState==RobotStates.StateClimbGo  ||requestedState==RobotStates.StateClimbPause  ){
+
+                    currentState=requestedState;
+
+                }
+                if(m_Pivot.getCurrentState() == PivotStates.StateClimb){
+
+                    m_Wrist.requestState(WristStates.StateClimb);
+
+
+                }
+                m_Climber.requestState(ClimberStates.StateClimberOnForward);
+                m_Pivot.requestState(PivotStates.StateClimb);
+                m_Elevator.requestState(ElevatorStates.StateStation);
+                break;
+            case StateClimbGo:
+                if( requestedState==RobotStates.StateClimberPrepare ||requestedState==RobotStates.StateClimbPause ){
+
+                    currentState=requestedState;
+
+                }
+                m_Climber.requestState(ClimberStates.StateClimberOnBackward);
+                m_Pivot.requestState(PivotStates.StateClimb);
+                m_Elevator.requestState(ElevatorStates.StateStation);
+                if(m_Pivot.getCurrentState() == PivotStates.StateClimb){
+
+                    m_Wrist.requestState(WristStates.StateClimb);
+
+
+                }
+                break;
+            case StateClimbPause:
+
+                if( requestedState==RobotStates.StateClimberPrepare || requestedState==RobotStates.StateClimbGo || requestedState == RobotStates.StateCoralStationInit ){
+
+                    currentState=requestedState;
+
+                }
+                m_Climber.requestState(ClimberStates.StateClimberOff);
+                m_Pivot.requestState(PivotStates.StateClimb);
+                m_Elevator.requestState(ElevatorStates.StateStation);
+                if(m_Pivot.getCurrentState() == PivotStates.StateClimb){
+
+                    m_Wrist.requestState(WristStates.StateClimb);
+
+
+                }
+                break;
+
             case StateL4Prepare1:
                 m_Pivot.requestState(PivotStates.StateL4);
                 m_Elevator.requestState(ElevatorStates.StateL4Half);

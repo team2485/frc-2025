@@ -36,6 +36,7 @@ public class Pivot extends SubsystemBase {
     StateLollipop,
     StateMoveToRequestedState,
     StateStation,
+    StateClimb,
     StateIntake
   }
 
@@ -114,7 +115,9 @@ public class Pivot extends SubsystemBase {
       case StateZero:
         desiredPosition = 0;
         break;
-
+      case StateClimb:
+        desiredPosition = 0.425;
+        break;
       case StateIntake:
         desiredPosition = 0;
         break;

@@ -111,7 +111,7 @@ public class AlignHandler extends SubsystemBase{
     }
     public boolean isAllowedToDrive(){
 
-        if(currentState == AlignStates.StateLower || currentState == AlignStates.StateDriving || currentState == AlignStates.StateAuto || currentState == AlignStates.StateAlignFinished){
+        if(currentState == AlignStates.StateLower || currentState == AlignStates.StateLowerInit || currentState == AlignStates.StateDriving || currentState == AlignStates.StateAuto || currentState == AlignStates.StateAlignFinished){
 
             return true;
 
@@ -236,12 +236,12 @@ public class AlignHandler extends SubsystemBase{
 
                 break;
             case StateCoralStationRoughAlign:
-                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
+               // if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
                     m_activeFollowCommand = null;
                     
                     currentState = AlignStates.StateCoralApproachInit;
-                }
+                //}
                 break;
             case StateCoralApproachInit:
                 targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
@@ -270,7 +270,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateAlignRightInit:
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
-                horizontalOffset = .2;
+                horizontalOffset = .23;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
                 // temporarily removed below for testing;
@@ -332,7 +332,18 @@ public class AlignHandler extends SubsystemBase{
 
                 break;
             case StateRoughAlign:
+                if(DriverStation.isAutonomousEnabled()){
 
+                    if(m_activeFollowCommand != null  && desiredExtension != AlignStates.StateExtendL2Init && desiredExtension != AlignStates.StateExtendL2AlgaeInit){
+                        CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                        m_activeFollowCommand = null;
+                        
+                        currentState = desiredExtension;
+    
+    
+                    }
+
+                }
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension != AlignStates.StateExtendL2Init && desiredExtension != AlignStates.StateExtendL2AlgaeInit){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
                     m_activeFollowCommand = null;
@@ -408,6 +419,14 @@ public class AlignHandler extends SubsystemBase{
                 currentState=  AlignStates.StateExtendL4;
                 break;
             case StateExtendL4:
+                if(DriverStation.isAutonomousEnabled()){
+
+                    currentState = AlignStates.StateApproachInit;
+                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+
+                    m_activeFollowCommand = null;
+
+                }
                 if(m_Handler.getCurrentState() == RobotStates.StateL4Finished){
 
                     currentState = AlignStates.StateApproachInit;
@@ -434,7 +453,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.45, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.4, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -467,6 +486,7 @@ public class AlignHandler extends SubsystemBase{
                 break;    
             case StateBackupInit: // .7 meters should be ok
                 double forwardOffset = .7;
+                if(DriverStation.isAutonomousEnabled())forwardOffset=.35;
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     forwardOffset=1.5;
 
@@ -509,6 +529,17 @@ public class AlignHandler extends SubsystemBase{
                     
 
                 }
+                else{
+                    if(requestedState != AlignStates.StateAlignCoralStationInit){
+
+                        requestedState=AlignStates.StateAlignFinished;
+
+
+                    } else{
+                        currentState = requestedState;
+                    }
+                    
+                }
                 if(speedMult < speedLimit){
                     speedMult+=0.003;
 
@@ -521,6 +552,7 @@ public class AlignHandler extends SubsystemBase{
                 if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
                     currentState = AlignStates.StateAlignFinished;
                 }
+                
                 break;
                 
             case StateAlignFinished:

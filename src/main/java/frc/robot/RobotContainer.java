@@ -32,6 +32,7 @@ import frc.robot.commands.AutoCommandBuilder;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.commands.PieceHandlingCommandBuilder;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.PieceHandling.Elevator;
 import frc.robot.subsystems.PieceHandling.Pivot;
 import frc.robot.subsystems.PieceHandling.Wrist;
@@ -64,10 +65,13 @@ public class RobotContainer {
   public final Roller m_roller = new Roller();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
-  PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
+  public PoseEstimation m_poseEstimation = new PoseEstimation(m_drivetrain::getYawMod, m_drivetrain::getModulePositionsInverted, m_drivetrain::getChassisSpeeds, m_driver, m_operator, m_drivetrain);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
-  public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot);
+  private final Climber m_climber = new Climber();
+
+  public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot,m_climber);
+
   public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller);
   private int extensionLevel = 2;
 
@@ -208,7 +212,8 @@ public class RobotContainer {
     m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel =3).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Prepare))));
     m_operator.rightTrigger().onTrue(new InstantCommand(() -> extensionLevel =5).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit))));
     m_operator.rightBumper().onTrue(new InstantCommand(() -> extensionLevel =6).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit))));
-  
+    m_operator.leftBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimberPrepare))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
+    m_operator.leftTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbGo))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
     
 
 

@@ -37,7 +37,8 @@ public class Wrist extends SubsystemBase {
     StateLollipop,
     StateMoveToRequestedState,
     StateStation,
-    StateL4Tuck
+    StateL4Tuck,
+    StateClimb
   }
 
   public static WristStates m_WristCurrentState;
@@ -146,9 +147,13 @@ public class Wrist extends SubsystemBase {
       case StateLollipop:
         desiredPosition = 0.2/kWristGearRatio;
         break;
+      case StateClimb:
+        desiredPosition=34/kWristGearRatio;
+        break;
       case StateL4Tuck:
         desiredPosition=(25/kWristGearRatio );
-    }
+        break;
+      }
     desiredPosition*=kWristGearRatio;
     runControlLoop();
  // 4.2 wrist 14 pivot
