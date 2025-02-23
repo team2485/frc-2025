@@ -486,7 +486,7 @@ public class AlignHandler extends SubsystemBase{
                 break;    
             case StateBackupInit: // .7 meters should be ok
                 double forwardOffset = .7;
-                if(DriverStation.isAutonomousEnabled())forwardOffset=.35;
+                if(DriverStation.isAutonomousEnabled())forwardOffset=.5;
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     forwardOffset=1.5;
 

@@ -59,7 +59,7 @@ public class AutoCommandBuilder {
 
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-                5, 3,
+                4.75, 2.5,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         // PathFindHolonomic is confirmed functional without collisions avoidance,
@@ -94,7 +94,7 @@ public class AutoCommandBuilder {
         StateTravellingTopLeft,
         StateScoreTopLeft,
         StateScoringTopLeft, StateIntake1Transition,StateIntake1Init,
-
+        StateIntake2Init,
         StateTravelTopLeft2,
         StateTravellingTopLeft2,
         StateScoreTopLeft2,
@@ -291,10 +291,15 @@ public class AutoCommandBuilder {
                         
                         if(m_Container.m_Aligner.isAllowedToDrive()){
                             m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Init;
 
                         }
                         break; 
+                    case StateIntake2Init:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                        break;
+                    
                     default:
                         break;
 
