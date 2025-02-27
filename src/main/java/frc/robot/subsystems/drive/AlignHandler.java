@@ -335,13 +335,13 @@ public class AlignHandler extends SubsystemBase{
                     horizontalOffset+=addedOffset;
 
                 }
-                if(DriverStation.getAlliance().equals(Alliance.Red) ){
+                //if(DriverStation.getAlliance().equals(Alliance.Red) ){
 
                     int index = targetID - 6;
                     double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsLeft()[index]; 
                     horizontalOffset+=addedOffset;
 
-                }
+                //}
 
 
                 CommandScheduler.getInstance().cancel(kteleOpCommand);

@@ -204,7 +204,7 @@ public final class Constants {
       0, //8
       0, //9 
       0, //10
-      0.1, //11
+      0.4, //11
 
 
     };
@@ -217,7 +217,7 @@ public final class Constants {
       0,//8
       0,//9
       0,//10
-      0.1,//11
+      0.4,//11
 
 
 
