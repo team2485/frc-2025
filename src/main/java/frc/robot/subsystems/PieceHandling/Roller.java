@@ -26,7 +26,8 @@ public class Roller extends SubsystemBase {
     StateMovingToRequestedState,
     StateRollerOnForward,
     StateRollerOnBackward,
-    StateAlgaeIntake
+    StateAlgaeIntake,
+    StateBloop
   }
 
   public static RollerStates m_RollerCurrentState;
@@ -94,6 +95,10 @@ public class Roller extends SubsystemBase {
         break;
       case StateAlgaeIntake:
         desiredVoltage = 9;
+        break;
+      case StateBloop:
+        desiredVoltage = -1.5;
+        break;
       }
 
  

@@ -118,6 +118,25 @@ public class AutoCommandBuilder {
         m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
         intakeStartTime = -1;
     }
+
+    public static void forceTeleOp(){
+
+        m_lineAutoRequestedState = lineAutoStates.StateIdle;
+
+        m_lineAutoCurrentState = lineAutoStates.StateIdle;
+        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+
+        m_basicScoreAutoCurrentState = BasicScoreAutoStates.StateIdle;
+        if(m_activeFollowCommand != null){
+
+            m_activeFollowCommand.cancel();
+
+
+        }
+        m_Container.m_Aligner.forceState(AlignStates.StateDriving);
+
+    }
+
     static Pose2d targetPoint = Pose2d.kZero;
         // @Override
         public static void autoControlLoop() {
@@ -295,7 +314,7 @@ public class AutoCommandBuilder {
                     case StateScoringTopLeft2:
                         
                         if(m_Container.m_Aligner.isAllowedToDrive()){
-                            m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
+                             m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Init;
 
                         }

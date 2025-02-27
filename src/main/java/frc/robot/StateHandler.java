@@ -2,6 +2,8 @@ package frc.robot;
 
 import static frc.robot.Constants.WristConstants.*;
 
+import java.net.Authenticator.RequestorType;
+import java.rmi.server.RemoteObjectInvocationHandler;
 import java.security.cert.PKIXReason;
 import java.time.chrono.ChronoPeriod;
 
@@ -24,6 +26,7 @@ import frc.robot.subsystems.PieceHandling.Wrist;
 import frc.robot.subsystems.PieceHandling.Elevator.ElevatorStates;
 import frc.robot.subsystems.PieceHandling.Pivot.PivotStates;
 import frc.robot.subsystems.PieceHandling.Wrist.WristStates;
+import frc.robot.subsystems.drive.AlignHandler;
 import frc.robot.subsystems.drive.AlignHandler.AlignStates;
 
 /*
@@ -48,7 +51,8 @@ public class StateHandler extends SubsystemBase{
     private Wrist m_Wrist;
     private Pivot m_Pivot;
     private Climber m_Climber;
-
+    private AlignHandler m_aligner; 
+    private RobotContainer m_container;
     public enum RobotStates {
 
         StateBetweenStates,
@@ -113,8 +117,9 @@ public class StateHandler extends SubsystemBase{
         StateClimbGo
     }
 
-    public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot,Climber climber){ // include subsystems as argument
+    public StateHandler(Elevator elevator, Wrist wrist, Pivot pivot,Climber climber, RobotContainer cont ){ // include subsystems as argument
         m_Climber=climber;
+        m_container = cont;
         m_Elevator = elevator;
         m_Wrist = wrist;
         m_Pivot = pivot;    
@@ -363,7 +368,17 @@ public class StateHandler extends SubsystemBase{
             //     break;
             case StateL4Finished:
                 if(requestedState==RobotStates.StateCoralStationInit) {
-                    currentState = RobotStates.StateL4RetractInit;
+                    currentState = RobotStates.StateCoralStationInit;
+                }
+                if(requestedState == RobotStates.StateL3AlgaeInit && m_container.m_Aligner.getCurrentState() == AlignStates.StateLower){
+
+                    currentState = RobotStates.StateL3AlgaeInit;
+
+                }
+                if(requestedState == RobotStates.StateL2AlgaeInit && m_container.m_Aligner.getCurrentState() == AlignStates.StateLower){
+
+                    currentState = RobotStates.StateL2AlgaeInit;
+
                 }
                 break;
             

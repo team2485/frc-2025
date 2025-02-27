@@ -90,7 +90,8 @@ public final class Constants {
     public int[] getProcessorId();
     public int[] getReefTagIds();
     public int[] getCoralStationTags();
-
+    public double[ ] getReefXOffsetsRight();
+    public double[] getReefXOffsetsLeft();
     public List<AprilTag> getAprilTagList();
     public AprilTag[] getReefTags();
     public boolean isOnRed();
@@ -146,7 +147,7 @@ public final class Constants {
     // DOCS: https://firstfrc.blob.core.windows.net/frc2025/FieldAssets/2025FieldDrawings-FieldLayoutAndMarking.pdf
     // Z-Rotation is Yaw, X-Rotation is Pitch
     // Rotation3d has roll first, then pitch, then yaw
-  
+
     public static final List<AprilTag> kBlueTagList = 
                                         List.of(
                                         new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126*Math.PI/180.0))),
@@ -193,6 +194,47 @@ public final class Constants {
       6,7,8,9,10,11
 
     };
+
+
+
+    static final double[] reefXOffsetsLeft = new double[] {
+      // correctional offsets for the following IDS:
+      0, //6
+      0, //7
+      0, //8
+      0, //9 
+      0, //10
+      0.1, //11
+
+
+    };
+    static final double[] reefXOffsetsRight = new double[] {
+      // correctional offsets for the following IDS:
+
+
+      0, ///6
+      0,//7
+      0,//8
+      0,//9
+      0,//10
+      0.1,//11
+
+
+
+    };
+    public double[] getReefXOffsetsLeft(){
+
+      return reefXOffsetsLeft;
+
+    }
+    public double[] getReefXOffsetsRight(){
+
+      return reefXOffsetsRight;
+
+    }
+
+
+
     static final int[] coralTags = new int[]{
 
       1,2
@@ -261,6 +303,42 @@ public final class Constants {
      
 
     };
+
+    static final double[] reefXOffsetsLeft = new double[] {
+
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+
+
+    };
+    public static final double[] reefXOffsetsRight = new double[] {
+
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      
+
+
+    };
+    public double[] getReefXOffsetsLeft(){
+
+      return reefXOffsetsLeft;
+
+    }
+    public double[] getReefXOffsetsRight(){
+
+      return reefXOffsetsRight;
+
+    }
+
+
     static final int[] coralTags = new int[]{
 
       12,13
@@ -505,7 +583,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6,0,0.2),new PIDConstants(1.5,0,0.2));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.5,0,0.2),new PIDConstants(1.5,0,0.2));
 
  
 

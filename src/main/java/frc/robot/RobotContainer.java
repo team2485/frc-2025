@@ -70,12 +70,16 @@ public class RobotContainer {
   DriveCommandBuilder m_driveBuilder = new DriveCommandBuilder(m_poseEstimation, m_drivetrain);
   private final Climber m_climber = new Climber();
 
-  public final StateHandler m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot,m_climber);
+  public StateHandler m_Handler ;
 
-  public final AlignHandler m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller);
+  public AlignHandler m_Aligner;
   private int extensionLevel = 2;
-
+  GenericEntry desiredExt = Shuffleboard.getTab("States").add("desired ext", -1).getEntry();
+  
   public RobotContainer() { 
+    m_Handler = new StateHandler(m_elevator, m_wrist, m_pivot,m_climber,this);
+    
+    m_Aligner = new AlignHandler(m_drivetrain, m_poseEstimation, m_driver,m_Handler,m_roller,this);
     // Configure the trigger bindings
     NamedCommands.registerCommand("ZeroGyro", new InstantCommand(m_poseEstimation::test_set));
     m_poseEstimation.addDashboardWidgets(Shuffleboard.getTab("Autos"));
@@ -128,6 +132,8 @@ public class RobotContainer {
     }
 
   }
+
+
   public void alignMid(){
 
     switch(extensionLevel){
@@ -142,6 +148,11 @@ public class RobotContainer {
         break;
 
     }
+
+  }
+  public int getDesiredLevel(){
+    desiredExt.setInteger(extensionLevel);
+    return extensionLevel;
 
   }
   public void alignRight(){
@@ -187,12 +198,15 @@ public class RobotContainer {
     // m_driver.a().onTrue(PieceHandlingCommandBuilder.requestL2(m_wrist, m_elevator, m_pivot));
 
 
-    m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+      m_driver.leftBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnBackward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+      m_driver.rightBumper().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateBloop), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
+
    
   
       m_driver.rightPOV().onTrue(new InstantCommand(() ->alignRight() ));
       m_driver.leftPOV().onTrue(new InstantCommand(() ->alignLeft() ));   
-      m_driver.upperPOV().onTrue(new InstantCommand(() ->alignMid() ));   
+      m_driver.upperPOV().onTrue(new InstantCommand(() ->alignMid() )); 
+       
 
 
     
@@ -211,7 +225,12 @@ public class RobotContainer {
     m_operator.lowerPOV().onTrue(new InstantCommand(() -> extensionLevel = 2).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2Prepare))));
     m_operator.leftPOV().onTrue(new InstantCommand(() -> extensionLevel =3).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3Prepare))));
     m_operator.rightTrigger().onTrue(new InstantCommand(() -> extensionLevel =5).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit))));
-    m_operator.rightBumper().onTrue(new InstantCommand(() -> extensionLevel =6).andThen(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit))));
+    m_operator.rightBumper().onTrue(new InstantCommand(() -> extensionLevel =6).andThen(new InstantCommand(() -> 
+    
+    m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit)
+    
+    
+    )));
     m_operator.leftBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimberPrepare))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
     m_operator.leftTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbGo))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
     

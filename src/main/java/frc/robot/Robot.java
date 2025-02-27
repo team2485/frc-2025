@@ -83,7 +83,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.m_Aligner.requestAlignState(AlignStates.StateDriving);
+
+    AutoCommandBuilder.forceTeleOp();
+
+   // m_robotContainer.m_Aligner.requestAlignState(AlignStates.StateDriving);
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
