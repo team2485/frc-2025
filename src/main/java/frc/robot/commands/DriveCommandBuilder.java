@@ -180,7 +180,7 @@ public class DriveCommandBuilder {
     }
     public static Command shortDriveToPoseSlow(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
-        PathConstraints constraints = new PathConstraints(1, 1, 0.5,0.5);
+        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
        // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
         return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
 
@@ -188,7 +188,9 @@ public class DriveCommandBuilder {
     public static Command shortDriveToPoseMid(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
         // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
-        PathConstraints constraints = new PathConstraints(2, 1.5, 0.5,0.5);
+        //PathConstraints constraints = new PathConstraints(2, 1.5, 0.5,0.5);
+        PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+        
         return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
  
      }
@@ -196,7 +198,9 @@ public class DriveCommandBuilder {
     public static Command shortDriveToPoseFast(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
        // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
-       PathConstraints constraints = new PathConstraints(4, 3, 0.5,0.5);
+       PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+       
+       //PathConstraints constraints = new PathConstraints(4, 3, 0.5,0.5);
        return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
         
        /// new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),direction),new Pose2d(6.35,2.54, Rotation2d.kZero)

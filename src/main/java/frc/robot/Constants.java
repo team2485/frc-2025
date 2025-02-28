@@ -199,25 +199,24 @@ public final class Constants {
 
     static final double[] reefXOffsetsLeft = new double[] {
       // correctional offsets for the following IDS:
-      0, //6
-      0, //7
-      0, //8
-      0, //9 
-      0, //10
-      0.4, //11
+      4.5* kInchesToMeters, //6
+      2.5* kInchesToMeters, //7
+      1.5* kInchesToMeters, //8
+      1* kInchesToMeters, //9 
+      2* kInchesToMeters, //10
+      1.75 * kInchesToMeters, //11
 
 
     };
     static final double[] reefXOffsetsRight = new double[] {
       // correctional offsets for the following IDS:
 
-
-      0, ///6
-      0,//7
-      0,//8
-      0,//9
-      0,//10
-      0.4,//11
+      4.5* kInchesToMeters, //6
+      2.5* kInchesToMeters, //7
+      1.5* kInchesToMeters, //8
+      1* kInchesToMeters, //9 
+      2* kInchesToMeters, //10
+      1.75 * kInchesToMeters, //11
 
 
 
@@ -306,23 +305,24 @@ public final class Constants {
 
     static final double[] reefXOffsetsLeft = new double[] {
 
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      3* kInchesToMeters,
+      2* kInchesToMeters,
+      1* kInchesToMeters,
+      2* kInchesToMeters,
+      2* kInchesToMeters,
+      3 * kInchesToMeters,
 
 
     };
     public static final double[] reefXOffsetsRight = new double[] {
 
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      3* kInchesToMeters,
+      2* kInchesToMeters,
+      1* kInchesToMeters,
+      2.5* kInchesToMeters,
+      2* kInchesToMeters,
+      3 * kInchesToMeters,
+
       
 
 

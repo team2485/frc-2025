@@ -291,20 +291,33 @@ public class AlignHandler extends SubsystemBase{
             case StateAlignRightInit:
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 horizontalOffset = .2;
-                if(DriverStation.getAlliance().equals(Alliance.Blue) ){
 
-                    int index = targetID - 17;
-                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
-                    horizontalOffset+=addedOffset;
-
-                }
-                if(DriverStation.getAlliance().equals(Alliance.Red) ){
+                if(m_PoseEstimation.getFieldConstants().isOnRed()){
 
                     int index = targetID - 6;
                     double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
                     horizontalOffset+=addedOffset;
 
                 }
+                else{
+
+                    int index = targetID - 17;
+                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
+                    horizontalOffset+=addedOffset;
+
+                }
+                // if(DriverStation.getAlliance().equals(Alliance.Blue) ){
+
+                //     int index = targetID - 17;
+                //     double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
+                //     horizontalOffset+=addedOffset;
+
+                // }
+                // if(DriverStation.getAlliance().equals(Alliance.Red) ){
+
+                    
+
+                // }
 
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
 
@@ -328,19 +341,29 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
 
-                if(DriverStation.getAlliance().equals(Alliance.Blue) ){
+                // if(DriverStation.getAlliance().equals(Alliance.Blue) ){
+
+                //     int index = targetID - 17;
+                //     double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsLeft()[index]; 
+                //     horizontalOffset+=addedOffset;
+
+                // }
+                //if(DriverStation.getAlliance().equals(Alliance.Red) ){
+
+                if(m_PoseEstimation.getFieldConstants().isOnRed()){
+
+                    int index = targetID - 6;
+                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsLeft()[index]; 
+                    horizontalOffset+=addedOffset;
+
+                }
+                else{
 
                     int index = targetID - 17;
                     double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsLeft()[index]; 
                     horizontalOffset+=addedOffset;
 
                 }
-                //if(DriverStation.getAlliance().equals(Alliance.Red) ){
-
-                    int index = targetID - 6;
-                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsLeft()[index]; 
-                    horizontalOffset+=addedOffset;
-
                 //}
 
 
