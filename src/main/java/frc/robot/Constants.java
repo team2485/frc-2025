@@ -199,7 +199,7 @@ public final class Constants {
 
     static final double[] reefXOffsetsLeft = new double[] {
       // correctional offsets for the following IDS:
-      4.5* kInchesToMeters, //6
+      3* kInchesToMeters, //6
       2.5* kInchesToMeters, //7
       1.5* kInchesToMeters, //8
       1* kInchesToMeters, //9 
@@ -211,7 +211,7 @@ public final class Constants {
     static final double[] reefXOffsetsRight = new double[] {
       // correctional offsets for the following IDS:
 
-      4.5* kInchesToMeters, //6
+      3* kInchesToMeters, //6
       2.5* kInchesToMeters, //7
       1.5* kInchesToMeters, //8
       1* kInchesToMeters, //9 

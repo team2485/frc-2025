@@ -444,13 +444,13 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateExtendL2Algae:
                 
-                if(m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal){
+                // if(m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal){
 
                     currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                     m_activeFollowCommand = null;
-                }
+                // }
                 break;
             case StateExtendL3AlgaeInit:
                 CommandScheduler.getInstance().cancel(m_activeFollowCommand);
@@ -472,24 +472,24 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateExtendL3;
                 break;
             case StateExtendL3Algae:
-                if(m_Handler.getCurrentState() == RobotStates.StateL3AlgaeFinal){
+                // if(m_Handler.getCurrentState() == RobotStates.StateL3AlgaeFinal){
 
                     currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                     m_activeFollowCommand = null;
 
-                }
+                // }
                 break;
             case StateExtendL3:
         
-                if(m_Handler.getCurrentState() == RobotStates.StateL3Finished){
+                // if(m_Handler.getCurrentState() == RobotStates.StateL3Finished){
 
                     currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                     m_activeFollowCommand = null;
-                }
+                // }
                 break;
             case StateExtendL4Init:
                 m_Handler.requestRobotState(RobotStates.StateL4Init);
@@ -506,22 +506,22 @@ public class AlignHandler extends SubsystemBase{
                     m_activeFollowCommand = null;
 
                 }
-                if(m_Handler.getCurrentState() == RobotStates.StateL4Finished ){//|| m_Handler.getCurrentState()==RobotStates.StateCoralStationFinal || m_Handler.getCurrentState() == RobotStates.StateCoralStationInit){
+                // if(m_Handler.getCurrentState() == RobotStates.StateL4Finished ){//|| m_Handler.getCurrentState()==RobotStates.StateCoralStationFinal || m_Handler.getCurrentState() == RobotStates.StateCoralStationInit){
 
                     currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                     m_activeFollowCommand = null;
-                }
+                // }
                 break;
             case StateExtendL2:
-                if(m_Handler.getCurrentState() == RobotStates.StateL2Finished){
+                // if(m_Handler.getCurrentState() == RobotStates.StateL2Finished){
 
                     currentState = AlignStates.StateApproachInit;
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                    m_activeFollowCommand = null;
-                }
+                // }
                 break;
             case StateApproachInit:
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
