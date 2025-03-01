@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRadiansPerSecondSquared;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
 
@@ -15,7 +16,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -103,14 +106,16 @@ public class AutoCommandBuilder {
     public static lineAutoStates m_lineAutoRequestedState = lineAutoStates.StateInit;
     static GenericEntry dashEntry = Shuffleboard.getTab("Autos")
             .add("auto state", m_basicScoreAutoCurrentState.toString()).getEntry();
-
+    static GenericEntry shouldRunTop = Shuffleboard.getTab("Autos").add("Should Run Topside?",true).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
     public static Command m_activeFollowCommand = null;
 
     public static int incrementer = 0;
     private static long intakeStartTime = -1;
     private static long intakeEndTime;
     private static boolean isOnRed;
+    private static boolean runsTop;
     public static void reset() {
+        runsTop = shouldRunTop.getBoolean(true);
         isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
         m_lineAutoRequestedState = lineAutoStates.StateInit;
 
@@ -218,14 +223,25 @@ public class AutoCommandBuilder {
 
                         // targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
                         if(!isOnRed){
+                            if(runsTop){
 
-                            targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
 
+                                targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+
+                            }
+                            else{
+
+                                targetPoint = new Pose2d(5, 2, Rotation2d.fromDegrees(-60));
+
+
+                            }
 
                         }
                         else{
-
-                            targetPoint = new Pose2d(17.55-5 , 6, Rotation2d.fromDegrees(0-60));
+                            if(runsTop){
+                                targetPoint = new Pose2d(17.55-5, 6, Rotation2d.fromDegrees(-60));
+                            }
+                            targetPoint = new Pose2d(17.55-5 , 2, Rotation2d.fromDegrees(-120));
 
                         }
 
@@ -297,15 +313,23 @@ public class AutoCommandBuilder {
                     case StateTravelTopLeft2:
                         intakeStartTime = -1;
                         m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                        if(!isOnRed){
-
-                            targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+                        if(!isOnRed){ 
+                            if(runsTop){
+                                targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+                            }
+                            else{
+                                targetPoint = new Pose2d(3, 2, Rotation2d.fromDegrees(-120));
+                            }
 
 
                         }
                         else{
-
+                            if(runsTop){
                             targetPoint = new Pose2d(17.55-3 , 6, Rotation2d.fromDegrees(-120));
+                            }
+                            else{
+                                targetPoint = new Pose2d(17.55-3, 2, Rotation2d.fromDegrees(-60));
+                            }
 
                         }
                         m_activeFollowCommand = pathfindCommand(targetPoint);
