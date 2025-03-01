@@ -137,8 +137,8 @@ public class Drivetrain extends SubsystemBase {
     // }
 
     public void driveAuto(ChassisSpeeds speeds) {
-        if(Math.abs(speeds.vxMetersPerSecond) > 0.5) speeds.vxMetersPerSecond = 0.5 * Math.signum(speeds.vxMetersPerSecond);/// NOTE: NEEDS SIGN CHANGER
-        if(Math.abs(speeds.vyMetersPerSecond) > 0.5) speeds.vyMetersPerSecond = 0.5 * Math.signum(speeds.vyMetersPerSecond); // HARD SPEED LIMIT!!
+        // if(Math.abs(speeds.vxMetersPerSecond) > 0.5) speeds.vxMetersPerSecond = 0.5 * Math.signum(speeds.vxMetersPerSecond);/// NOTE: NEEDS SIGN CHANGER
+        // if(Math.abs(speeds.vyMetersPerSecond) > 0.5) speeds.vyMetersPerSecond = 0.5 * Math.signum(speeds.vyMetersPerSecond); // HARD SPEED LIMIT!!
 
 
         driveWithSuppliedRotation(new Translation2d(-speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),speeds.omegaRadiansPerSecond, false, true, Rotation2d.fromDegrees(getYawAbsolute().getDegrees() % 180));

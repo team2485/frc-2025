@@ -305,8 +305,8 @@ public final class Constants {
 
     static final double[] reefXOffsetsLeft = new double[] {
 
-      3* kInchesToMeters,
-      2* kInchesToMeters,
+      2* kInchesToMeters, //17
+      2* kInchesToMeters, //18 
       1* kInchesToMeters,
       2* kInchesToMeters,
       2* kInchesToMeters,

@@ -292,17 +292,20 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
                 horizontalOffset = .2;
 
-                if(m_PoseEstimation.getFieldConstants().isOnRed()){
+                if(PoseEstimation.getFieldConstants().isOnRed()){
 
                     int index = targetID - 6;
-                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
+   
+                    double addedOffset = PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
+                    
+                    
                     horizontalOffset+=addedOffset;
 
                 }
                 else{
 
                     int index = targetID - 17;
-                    double addedOffset = m_PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
+                    double addedOffset = PoseEstimation.getFieldConstants().getReefXOffsetsRight()[index]; 
                     horizontalOffset+=addedOffset;
 
                 }
@@ -450,7 +453,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;
             case StateExtendL3AlgaeInit:
-             CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
                 m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
                 currentState = AlignStates.StateExtendL3Algae;
@@ -604,16 +607,17 @@ public class AlignHandler extends SubsystemBase{
        
                 
                 //if(m_Handler.getRequestedState()
-                if(m_Container.getDesiredLevel() == 6){
+                // if(m_Container.getDesiredLevel() == 6){
 
-                    m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
+                //     m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
 
 
-                }else if(m_Container.getDesiredLevel() == 5){
-                    m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit);
+                // }else if(m_Container.getDesiredLevel() == 5){
+                //     m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit);
 
-                }
-                else{
+                // }
+                // else{
+                if(m_Container.getDesiredLevel()!=6 && m_Container.getDesiredLevel()!=5){
 
                     m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
 
@@ -651,7 +655,7 @@ public class AlignHandler extends SubsystemBase{
 
                 }
 
-                if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal || m_Handler.getCurrentState()==RobotStates.StateL3AlgaeFinal){
+                if (m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal || m_Handler.getCurrentState()==RobotStates.StateL3AlgaeFinal || m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal){
                     currentState = AlignStates.StateAlignFinished;
                 }
                 
@@ -686,6 +690,8 @@ public class AlignHandler extends SubsystemBase{
                 m_Handler.requestRobotState(RobotStates.StateAbort);
                 requestedState=AlignStates.StateDriving;
                 currentState=AlignStates.StateDriving;
+                break;
+            default:
                 break;
         }
 

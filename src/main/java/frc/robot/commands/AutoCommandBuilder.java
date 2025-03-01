@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
+import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.AlignHandler.AlignStates;
 
 public class AutoCommandBuilder {
@@ -108,8 +109,9 @@ public class AutoCommandBuilder {
     public static int incrementer = 0;
     private static long intakeStartTime = -1;
     private static long intakeEndTime;
-
+    private static boolean isOnRed;
     public static void reset() {
+        isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
         m_lineAutoRequestedState = lineAutoStates.StateInit;
 
         m_lineAutoCurrentState = lineAutoStates.StateInit;
@@ -211,7 +213,23 @@ public class AutoCommandBuilder {
                         break;
                     case StateTravelTopLeft:
                         m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-                        targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+
+
+
+                        // targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+                        if(!isOnRed){
+
+                            targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+
+
+                        }
+                        else{
+
+                            targetPoint = new Pose2d(17.55-5 , 6, Rotation2d.fromDegrees(0-60));
+
+                        }
+
+
                         m_activeFollowCommand = pathfindCommand(targetPoint);
                         m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
 
@@ -266,7 +284,7 @@ public class AutoCommandBuilder {
 
                             }
 
-                            if (deltaTime > 3000) {
+                            if (deltaTime > 10000) {
                                 m_Container.m_roller.requestState(RollerStates.StateRollerOff);
 
                                 m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
@@ -279,7 +297,17 @@ public class AutoCommandBuilder {
                     case StateTravelTopLeft2:
                         intakeStartTime = -1;
                         m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                        targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+                        if(!isOnRed){
+
+                            targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+
+
+                        }
+                        else{
+
+                            targetPoint = new Pose2d(17.55-3 , 6, Rotation2d.fromDegrees(-120));
+
+                        }
                         m_activeFollowCommand = pathfindCommand(targetPoint);
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         // m_activeFollowCommand.schedule();
@@ -321,8 +349,18 @@ public class AutoCommandBuilder {
                         break;
                     case StateAbortInit:
                         m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                        if(!isOnRed){
 
-                        targetPoint = new Pose2d(5, 7, Rotation2d.fromDegrees(-120));
+                            targetPoint = new Pose2d(5, 7, Rotation2d.fromDegrees(-120));
+
+
+                        }
+                        else{
+
+                            targetPoint = new Pose2d(17.55-5, 7, Rotation2d.fromDegrees(-120));
+                            
+
+                        }
                         m_activeFollowCommand = pathfindCommand(targetPoint);
                         // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
 

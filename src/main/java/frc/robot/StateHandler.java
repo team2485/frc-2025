@@ -126,7 +126,7 @@ public class StateHandler extends SubsystemBase{
 
     }
     
-    GenericEntry state = Shuffleboard.getTab("Elevator").add("state", "").getEntry();
+    GenericEntry state = Shuffleboard.getTab("States").add("state", "").getEntry();
     
     @Override
     public void periodic(){
