@@ -65,7 +65,7 @@ public class Roller extends SubsystemBase {
     talonFXConfigs.CurrentLimits.SupplyCurrentLowerTime = 0;
     talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable=true;
     talonFXConfigs.CurrentLimits.SupplyCurrentLimit=70;
-    talonFXConfigs.CurrentLimits.StatorCurrentLimit=100;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit=120;
     talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable=true;
     if (kRollerClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -85,19 +85,19 @@ public class Roller extends SubsystemBase {
   public void periodic() {
     switch (m_RollerRequestedState) {
       case StateRollerOff:
-        desiredVoltage = 0;
+        desiredVoltage = 0.5;
         break;
       case StateRollerOnForward:
         desiredVoltage = 5;
         break;
       case StateRollerOnBackward:
-        desiredVoltage = -5;
+        desiredVoltage = -3;
         break;
       case StateAlgaeIntake:
         desiredVoltage = 9;
         break;
       case StateBloop:
-        desiredVoltage = -1.5;
+        desiredVoltage = -7;
         break;
       }
 

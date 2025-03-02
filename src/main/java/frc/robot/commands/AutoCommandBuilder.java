@@ -113,7 +113,7 @@ public class AutoCommandBuilder {
     private static long intakeStartTime = -1;
     private static long intakeEndTime;
     private static boolean isOnRed;
-    private static boolean runsTop;
+    private static boolean runsTop;// = false; // TODO: CHANGE THIS BASED ON WHERE U WANNA RUN AUTO
     public static void reset() {
         runsTop = shouldRunTop.getBoolean(true);
         isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
@@ -211,6 +211,7 @@ public class AutoCommandBuilder {
                     case StateInit:
 
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
+                        intakeStartTime = -1;
 
                         break;
                     case StateIdle:
@@ -218,6 +219,7 @@ public class AutoCommandBuilder {
                         break;
                     case StateTravelTopLeft:
                         m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+                        // isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
 
 
 
@@ -231,7 +233,7 @@ public class AutoCommandBuilder {
                             }
                             else{
 
-                                targetPoint = new Pose2d(5, 2, Rotation2d.fromDegrees(-60));
+                                targetPoint = new Pose2d(5, 2, Rotation2d.fromDegrees(120));
 
 
                             }
@@ -240,23 +242,52 @@ public class AutoCommandBuilder {
                         else{
                             if(runsTop){
                                 targetPoint = new Pose2d(17.55-5, 6, Rotation2d.fromDegrees(-60));
+                            }else{
+
+
+                                targetPoint = new Pose2d(17.55-5 , 2, Rotation2d.fromDegrees(60));
+
                             }
-                            targetPoint = new Pose2d(17.55-5 , 2, Rotation2d.fromDegrees(-120));
 
                         }
 
 
                         m_activeFollowCommand = pathfindCommand(targetPoint);
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                        
+                       // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
 
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        incrementer++;
+                        // intakeStartTime = -1;
+                        intakeStartTime = System.currentTimeMillis();
                         // m_activeFollowCommand.schedule();
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft;
-                        incrementer++;
+
                         break;
                     case StateTravellingTopLeft:
                         double dist = targetPoint.getTranslation()
                                 .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+
+
+                        // if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                            
+
+                        // }
+
+                        long deltaTime = System.currentTimeMillis() - intakeStartTime;
+                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                  
+                        if (deltaTime > 300)
+                        // add dynamic part here
+                        {
+
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                        }
+
+                        
                         if (m_activeFollowCommand.isFinished() || dist < 0.75) {
 
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
@@ -277,6 +308,8 @@ public class AutoCommandBuilder {
                         break;
                     case StateIntake1Init:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                        intakeStartTime = -1;
+                        
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
                         break;
                     case StateIntake1Transition:
@@ -288,10 +321,10 @@ public class AutoCommandBuilder {
 
                             }
 
-                            long deltaTime = System.currentTimeMillis() - intakeStartTime;
+                            long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime > 1000)
+                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
                             // add dynamic part here
                             {
 
@@ -300,7 +333,7 @@ public class AutoCommandBuilder {
 
                             }
 
-                            if (deltaTime > 10000) {
+                            if (deltaTime2 > 150000) {
                                 m_Container.m_roller.requestState(RollerStates.StateRollerOff);
 
                                 m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
@@ -318,7 +351,7 @@ public class AutoCommandBuilder {
                                 targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
                             }
                             else{
-                                targetPoint = new Pose2d(3, 2, Rotation2d.fromDegrees(-120));
+                                targetPoint = new Pose2d(3, 2, Rotation2d.fromDegrees(60));
                             }
 
 
@@ -328,7 +361,7 @@ public class AutoCommandBuilder {
                             targetPoint = new Pose2d(17.55-3 , 6, Rotation2d.fromDegrees(-120));
                             }
                             else{
-                                targetPoint = new Pose2d(17.55-3, 2, Rotation2d.fromDegrees(-60));
+                                targetPoint = new Pose2d(17.55-3, 2, Rotation2d.fromDegrees(120));
                             }
 
                         }
