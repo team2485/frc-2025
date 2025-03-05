@@ -66,6 +66,7 @@ public class AutoCommandBuilder {
         StateInit,
         lineAuto,
         BasicScoreAuto,
+        BasicMidScoreAuto,
     }
 
     public enum lineAutoStates {
@@ -92,10 +93,32 @@ public class AutoCommandBuilder {
         StateScoringTopLeft2, StateIntake2Transition, StateAbortInit,
     }
 
+    public enum BasicMidScoreAutoStates {
+        StateInit,
+        StateIdle,
+        StateTravelMiddle,
+        StateTravellingMiddle,
+        StateScoreMiddle,
+        StateScoringMiddle, 
+        StateIntake1Transition, StateIntake1Init,
+        StateTravelMiddleAlgae,
+        StateTravellingMiddleAlgae,
+        StateTravelBarge,
+        StateTravellingBarge,
+        StateScoreBarge,
+        StateScoringBarge,
+        StateIntake2Transition, StateAbortInit,
+    }
+
     public static autoPeriodicStates m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
     public static autoPeriodicStates m_autoPeriodicRequestedState = autoPeriodicStates.StateInit;
+
     public static BasicScoreAutoStates m_basicScoreAutoCurrentState = BasicScoreAutoStates.StateInit;
     public static BasicScoreAutoStates m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateInit;
+
+    public static BasicMidScoreAutoStates m_basicMidScoreAutoCurrentState =  BasicMidScoreAutoStates.StateInit;
+    public static BasicMidScoreAutoStates m_basicMidScoreAutoRequestedState =  BasicMidScoreAutoStates.StateInit;
+
     public static RobotContainer m_Container;
 
     public static void setRobotContainer(RobotContainer cont) {
@@ -289,7 +312,7 @@ public class AutoCommandBuilder {
 
                         
                         if (m_activeFollowCommand.isFinished() || dist < 0.75) {
-
+                            // m_activeFollowCommand.cancel();
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
                         }
                         break;
@@ -426,6 +449,88 @@ public class AutoCommandBuilder {
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
                         break;
                     default:
+                        break;
+
+                }
+
+                break;
+
+
+                //middle auto
+
+
+                case BasicMidScoreAuto:
+                switch (m_basicMidScoreAutoCurrentState) {
+
+                    case StateInit:
+
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
+                        intakeStartTime = -1;
+
+                        break;
+                    case StateIdle:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                        break;
+
+                    case StateScoreMiddle:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
+                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateScoringMiddle;
+                        break;
+                    
+                    case StateScoringMiddle:
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateIntake1Init;
+                        }
+                        break;
+        
+                    case StateIntake1Init:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init);
+                        intakeStartTime = -1;
+                        
+                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateIntake1Transition;
+                        break;
+                    case StateIntake1Transition:
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                                intakeStartTime = System.currentTimeMillis();
+
+                            }
+
+                            long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
+                            // add dynamic part here
+                            {
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateTravelBarge;
+
+                            }
+
+                            if (deltaTime2 > 150000) {
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
+
+                            }
+                        }
+                        break;
+                    case StateTravelBarge:
+                        intakeStartTime = -1;
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                        if(!isOnRed){ 
+                            targetPoint = new Pose2d(7.575, 6.118, Rotation2d.fromDegrees(0));
+                        }
+                        else{
+                            targetPoint = new Pose2d(10, 2, Rotation2d.fromDegrees(0));
+                        }
+
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
+                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // m_activeFollowCommand.schedule();
+                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateAbortInit;
+                        incrementer++;
                         break;
 
                 }
