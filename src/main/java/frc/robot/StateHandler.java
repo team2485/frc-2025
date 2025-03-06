@@ -177,7 +177,7 @@ public class StateHandler extends SubsystemBase{
                 break;
 
             case StateL1Final:
-                if(requestedState == RobotStates.StateCoralStationInit){
+                if(requestedState == RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit){
 
                     currentState=requestedState;
 
@@ -218,8 +218,8 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateL2Finished:
-                if(requestedState==RobotStates.StateCoralStationInit ) {
-                    currentState = RobotStates.StateCoralStationInit;
+                if(requestedState==RobotStates.StateCoralStationInit  || requestedState == RobotStates.StateProcessorInit ) {
+                    currentState = requestedState;
                 }
                 break;
             case StateL3Prepare:
@@ -257,8 +257,8 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateL3Finished:
-                if(requestedState==RobotStates.StateCoralStationInit) {
-                    currentState = RobotStates.StateCoralStationInit;
+                if(requestedState==RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit) {
+                    currentState = requestedState;
                 }
                 break;
             case StateClimberPrepare:
@@ -367,8 +367,11 @@ public class StateHandler extends SubsystemBase{
             //     }
             //     break;
             case StateL4Finished:
-                if(requestedState==RobotStates.StateCoralStationInit) {
+                if(requestedState==RobotStates.StateCoralStationInit ) {
                     currentState = RobotStates.StateCoralStationInit;
+                }
+                if(requestedState==RobotStates.StateProcessorInit ) {
+                    currentState = RobotStates.StateProcessorInit;
                 }
                 if(requestedState == RobotStates.StateL3AlgaeInit && m_container.m_Aligner.getCurrentState() == AlignStates.StateLower){
 
@@ -453,6 +456,9 @@ public class StateHandler extends SubsystemBase{
                 if(requestedState==RobotStates.StateCoralStationInit) {
                     currentState = RobotStates.StateCoralStationInit;
                 }
+                if(requestedState==RobotStates.StateProcessorInit) {
+                    currentState = RobotStates.StateProcessorInit;
+                }
                 break;
                 
 
@@ -460,15 +466,19 @@ public class StateHandler extends SubsystemBase{
                 if(requestedState==RobotStates.StateCoralStationInit) {
                     currentState = RobotStates.StateCoralStationInit;
                 }
+                if(requestedState==RobotStates.StateProcessorInit) {
+                    currentState = RobotStates.StateProcessorInit;
+                }
                 break;
             
             case StateProcessorInit:
                 m_Elevator.requestState(ElevatorStates.StateProcessor);
                 m_Wrist.requestState(WristStates.StateProcessor);
+                m_Pivot.requestState(PivotStates.StateProcessor);
                 currentState = RobotStates.StateProcessorFinal;
                 break;
             case StateProcessorFinal:
-                if(requestedState == RobotStates.StateCoralStationInit){
+                if(requestedState == RobotStates.StateCoralStationInit || requestedState == RobotStates.StateBargeInit){
 
                     currentState=requestedState;
 

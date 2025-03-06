@@ -142,6 +142,7 @@ public class AlignHandler extends SubsystemBase{
     
     GenericEntry state = Shuffleboard.getTab("Autos").add("alignerstate", "").getEntry();
     GenericEntry tagLog = Shuffleboard.getTab("Autos").add("tag log", -1).getEntry();
+    GenericEntry horizOfLog = Shuffleboard.getTab("Autos").add("horizontal offset", -1).getEntry();
     
 
     public void forceState(AlignStates state){ // use only for tele-op transitions or aborts
@@ -524,6 +525,7 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
+                
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     m_roller.requestState(RollerStates.StateAlgaeIntake);
 
@@ -538,6 +540,8 @@ public class AlignHandler extends SubsystemBase{
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
                 currentState = AlignStates.StateApproach;
+                horizOfLog.setDouble(horizontalOffset);
+
                 break;
 
             // case StateLeftApproachInit:
@@ -623,7 +627,11 @@ public class AlignHandler extends SubsystemBase{
 
 
                 }
+                else{
+                    m_Handler.requestRobotState(RobotStates.StateProcessorInit);
 
+
+                }
 
 
                 currentState = AlignStates.StateLower;

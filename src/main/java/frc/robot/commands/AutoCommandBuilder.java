@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingDeque;
 
 import org.json.simple.parser.ParseException;
 
+import com.ctre.phoenix6.signals.RobotEnableValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -41,7 +42,7 @@ public class AutoCommandBuilder {
         }
         return AutoBuilder.followPath(followPath);
     }
-
+    static boolean isExtended = false;
     public static Command pathfindCommand(Pose2d endPoint) { // SHOULD ONLY BE USED TO DRIVE TO DECISION PTS
 
         // Since we are using a holonomic drivetrain, the rotation component of this
@@ -49,10 +50,23 @@ public class AutoCommandBuilder {
         // represents the goal holonomic rotation
 
         // Create the constraints to use while pathfinding
-        PathConstraints constraints = new PathConstraints(
-                4, 2,
+        PathConstraints constraints;
+        if(!isExtended){
+
+            constraints     = new PathConstraints(
+                5, 3,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
+
+        }else{
+
+            
+            constraints     = new PathConstraints(
+                3, 2,
+                kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
+
+        }
+      
         // PathFindHolonomic is confirmed functional without collisions avoidance,
         // AutoBuilder must be used to avoid collision
 
@@ -185,7 +199,7 @@ public class AutoCommandBuilder {
         switch (m_autoPeriodicCurrentState) {
             case StateInit:
                 m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
-                m_autoPeriodicRequestedState = autoPeriodicStates.BasicMidScoreAuto; // desired auto can go here based on
+                m_autoPeriodicRequestedState = autoPeriodicStates.BasicScoreAuto; // desired auto can go here based on
                                                                                   // chooser :)
                 break;
             case lineAuto:
@@ -229,8 +243,16 @@ public class AutoCommandBuilder {
                 break;
 
             case BasicScoreAuto:
-                switch (m_basicScoreAutoCurrentState) {
+                if(m_Container.m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
+                    isExtended = false;
+                
 
+                }
+                else{
+                    isExtended=true;
+                }
+                switch (m_basicScoreAutoCurrentState) {
+                    
                     case StateInit:
 
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
@@ -465,6 +487,7 @@ public class AutoCommandBuilder {
                     case StateInit:
 
                         m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateScoreMiddle;
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
                         intakeStartTime = -1;
 
                         break;
@@ -473,8 +496,13 @@ public class AutoCommandBuilder {
                         break;
 
                     case StateScoreMiddle:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
-                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateScoringMiddle;
+                        if(m_Container.m_Handler.getCurrentState() == RobotStates.StateL4Prepare2){
+
+                            m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
+                            m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateScoringMiddle;
+                            
+
+                        }
                         break;
                     
                     case StateScoringMiddle:
