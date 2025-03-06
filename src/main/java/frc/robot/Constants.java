@@ -199,25 +199,26 @@ public final class Constants {
 
     static final double[] reefXOffsetsLeft = new double[] {
       // correctional offsets for the following IDS:
-      3* kInchesToMeters, //6
-      2.5* kInchesToMeters, //7
-      1.5* kInchesToMeters, //8
-      1* kInchesToMeters, //9 
-      2* kInchesToMeters, //10
-      1.75 * kInchesToMeters, //11
-
+      // PHR CONSTANTS:
+      // 3* kInchesToMeters, //6
+      // 2.5* kInchesToMeters, //7
+      // 1.5* kInchesToMeters, //8
+      // 1* kInchesToMeters, //9 
+      // 2* kInchesToMeters, //10
+      // 1.75 * kInchesToMeters, //11
+      0,0,0,0,0,0
 
     };
     static final double[] reefXOffsetsRight = new double[] {
       // correctional offsets for the following IDS:
-
-      3* kInchesToMeters, //6
-      2.5* kInchesToMeters, //7
-      1.5* kInchesToMeters, //8
-      1* kInchesToMeters, //9 
-      2* kInchesToMeters, //10
-      1.75 * kInchesToMeters, //11
-
+      // PHR CONSTANTS: 
+      // 3* kInchesToMeters, //6
+      // 2.5* kInchesToMeters, //7
+      // 1.5* kInchesToMeters, //8
+      // 1* kInchesToMeters, //9 
+      // 2* kInchesToMeters, //10
+      // 1.75 * kInchesToMeters, //11
+      0,0,0,0,0,0
 
 
     };
@@ -304,25 +305,25 @@ public final class Constants {
     };
 
     static final double[] reefXOffsetsLeft = new double[] {
-
-      2* kInchesToMeters, //17
-      2* kInchesToMeters, //18 
-      1* kInchesToMeters,
-      2* kInchesToMeters,
-      2* kInchesToMeters,
-      3 * kInchesToMeters,
-
+      // PHR CONSTANTS:
+      // 2* kInchesToMeters, //17
+      // 2* kInchesToMeters, //18 
+      // 1* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 3 * kInchesToMeters,
+      0,0,0,0,0,0
 
     };
     public static final double[] reefXOffsetsRight = new double[] {
-
-      3* kInchesToMeters,
-      2* kInchesToMeters,
-      1* kInchesToMeters,
-      2.5* kInchesToMeters,
-      2* kInchesToMeters,
-      3 * kInchesToMeters,
-
+      // PHR CONSTANTS:
+      // 3* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 1* kInchesToMeters,
+      // 2.5* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 3 * kInchesToMeters,
+      0,0,0,0,0,0
       
 
 
@@ -583,7 +584,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.5,0,0.2),new PIDConstants(1.5,0,0.2));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.1,0,0.25),new PIDConstants(1.5,0,0.2));
 
  
 

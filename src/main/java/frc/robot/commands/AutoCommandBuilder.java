@@ -54,7 +54,7 @@ public class AutoCommandBuilder {
         if(!isExtended){
 
             constraints     = new PathConstraints(
-                5, 3,
+                5, 3.5,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
 
@@ -62,7 +62,7 @@ public class AutoCommandBuilder {
 
             
             constraints     = new PathConstraints(
-                3, 2,
+                5, 3,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         }
@@ -104,7 +104,7 @@ public class AutoCommandBuilder {
         StateTravelTopLeft2,
         StateTravellingTopLeft2,
         StateScoreTopLeft2,
-        StateScoringTopLeft2, StateIntake2Transition, StateAbortInit,
+        StateScoringTopLeft2, StateIntake2Transition, StateAbortInit, StateAbort,
     }
 
     public enum BasicMidScoreAutoStates {
@@ -193,7 +193,7 @@ public class AutoCommandBuilder {
         m_basicMidScoreAutoCurrentState = m_basicMidScoreAutoRequestedState;
         // dashEntry.setString(m_basicScoreAutoCurrentState.name());
         System.out.println(m_activeFollowCommand);
-        dashEntry.setString(m_basicMidScoreAutoRequestedState.name());
+        dashEntry.setString(m_basicScoreAutoRequestedState.name());
         // dashEntry.setString(Integer.valueOf(incrementer).toString());
 
         switch (m_autoPeriodicCurrentState) {
@@ -352,8 +352,9 @@ public class AutoCommandBuilder {
                         }
                         break;
                     case StateIntake1Init:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
-                        intakeStartTime = -1;
+                       m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                     
+                       intakeStartTime = -1;
                         
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
                         break;
@@ -378,7 +379,7 @@ public class AutoCommandBuilder {
 
                             }
 
-                            if (deltaTime2 > 150000) {
+                            if (deltaTime2 > 5000) {
                                 m_Container.m_roller.requestState(RollerStates.StateRollerOff);
 
                                 m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
@@ -432,7 +433,6 @@ public class AutoCommandBuilder {
                     case StateScoringTopLeft2:
 
                         if (m_Container.m_Aligner.isAllowedToDrive()) {
-                            m_Container.m_Aligner.requestAlignState(AlignStates.StateDriving);
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Init;
 
                         }
@@ -440,14 +440,39 @@ public class AutoCommandBuilder {
                     case StateIntake2Init:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
+                        intakeStartTime = -1;
                         break;
                     case StateIntake2Transition:
-                        if (m_Container.m_Aligner.getCurrentState() == AlignStates.StateCoralFinished) {
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                                intakeStartTime = System.currentTimeMillis();
+
+                            }
+
+                            long deltaTime3 = System.currentTimeMillis() - intakeStartTime;
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1000)
+                            // add dynamic part here
+                            {
+
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+
+                            }
+
+                            if (deltaTime3 > 5000) {
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
+
+                            }
 
                         }
+
+                
                         break;
                     case StateAbortInit:
                         m_Container.m_roller.requestState(RollerStates.StateRollerOff);
@@ -468,7 +493,16 @@ public class AutoCommandBuilder {
 
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         // m_activeFollowCommand.schedule();
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbort;
+                    
+                        break;
+                    case StateAbort:
+                        if(m_activeFollowCommand.isFinished()){
+
+                            m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateIdle;
+
+
+                        }
                         break;
                     default:
                         break;
@@ -554,6 +588,7 @@ public class AutoCommandBuilder {
                             targetPoint = new Pose2d(10, 2, Rotation2d.fromDegrees(0));
                         }
 
+                        
                         m_activeFollowCommand = pathfindCommand(targetPoint);
                         CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         // m_activeFollowCommand.schedule();
