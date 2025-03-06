@@ -176,16 +176,16 @@ public class AutoCommandBuilder {
         m_lineAutoCurrentState = m_lineAutoRequestedState;
         m_basicScoreAutoCurrentState = m_basicScoreAutoRequestedState;
         m_autoPeriodicCurrentState = m_autoPeriodicRequestedState;
-        
+        m_basicMidScoreAutoCurrentState = m_basicMidScoreAutoRequestedState;
         // dashEntry.setString(m_basicScoreAutoCurrentState.name());
         System.out.println(m_activeFollowCommand);
-        dashEntry.setString(m_basicScoreAutoCurrentState.name());
+        dashEntry.setString(m_basicMidScoreAutoRequestedState.name());
         // dashEntry.setString(Integer.valueOf(incrementer).toString());
 
         switch (m_autoPeriodicCurrentState) {
             case StateInit:
                 m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
-                m_autoPeriodicRequestedState = autoPeriodicStates.BasicScoreAuto; // desired auto can go here based on
+                m_autoPeriodicRequestedState = autoPeriodicStates.BasicMidScoreAuto; // desired auto can go here based on
                                                                                   // chooser :)
                 break;
             case lineAuto:
@@ -459,12 +459,12 @@ public class AutoCommandBuilder {
                 //middle auto
 
 
-                case BasicMidScoreAuto:
+            case BasicMidScoreAuto:
                 switch (m_basicMidScoreAutoCurrentState) {
 
                     case StateInit:
 
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
+                        m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateScoreMiddle;
                         intakeStartTime = -1;
 
                         break;
@@ -485,7 +485,7 @@ public class AutoCommandBuilder {
         
                     case StateIntake1Init:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init);
-                        intakeStartTime = -1;
+                        // intakeStartTime = -1;
                         
                         m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateIntake1Transition;
                         break;
@@ -493,27 +493,27 @@ public class AutoCommandBuilder {
                         if (m_Container.m_Aligner.isAllowedToDrive()) {
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
-                                intakeStartTime = System.currentTimeMillis();
+                            // if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                            //     intakeStartTime = System.currentTimeMillis();
 
-                            }
+                            // }
 
-                            long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+                            // long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
+                            // if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
                             // add dynamic part here
-                            {
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            // {
+                                // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
                                 m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateTravelBarge;
 
-                            }
+                            // }
 
-                            if (deltaTime2 > 150000) {
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
+                            // if (deltaTime2 > 150000) {
+                            //     m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            //     m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
 
-                            }
+                            // }
                         }
                         break;
                     case StateTravelBarge:

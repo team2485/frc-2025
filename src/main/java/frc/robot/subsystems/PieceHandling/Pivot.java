@@ -76,16 +76,16 @@ public class Pivot extends SubsystemBase {
     slot0Configs.kG = 0;// kGPivot;
     slot0Configs.kV = 0.25;
     slot0Configs.kA = 0.01;
-    slot0Configs.kP = 1;// kPPivot;
+    slot0Configs.kP = 2;// kPPivot;
     slot0Configs.kI = 0;
-    slot0Configs.kD = kDPivot;
+    slot0Configs.kD = 0.2;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 30;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 55;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 80;
+    motionMagicConfigs.MotionMagicAcceleration = 160;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 500;
+    motionMagicConfigs.MotionMagicJerk = 800;
 
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kPivotClockwisePositive)
