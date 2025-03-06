@@ -163,8 +163,8 @@ public class DriveCommandBuilder {
         var difference =endPos.minus( m_PoseEstimation.getCurrentPose() ) ;
         var direction = difference.getRotation();
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),Rotation2d.kZero),
-            new Pose2d(endPos.getTranslation(), Rotation2d.fromDegrees(0))
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation()),
+            new Pose2d(endPos.getTranslation(), endPos.getRotation())
            // new Pose2d(0.75, 0.25, Rotation2d.fromDegrees(0)),
             //new Pose2d(5.0*0.25, 3.0*0.25, Rotation2d.fromDegrees(90))
         
