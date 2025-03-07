@@ -74,7 +74,7 @@ public class Elevator extends SubsystemBase {
     slot0Configs.kD = 0.25;//kDElevator;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 70;//kElevatorCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity;
     // vel/acc = time to reach constant velocity
     motionMagicConfigs.MotionMagicAcceleration = 350;//kElevatorAcceleration;
     // acc/jerk = time to reach constant acceleration
@@ -116,7 +116,7 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 1;
         break;
       case StateL3:
-        desiredPosition = 18.75;
+        desiredPosition = 19.25;
         break;
       case StateL4Half:
         desiredPosition = 5-.25;
