@@ -542,7 +542,7 @@ public class AlignHandler extends SubsystemBase{
                 if(!DriverStation.isAutonomousEnabled()){
 
 
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
 
                 }
                 else{
