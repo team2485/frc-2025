@@ -562,7 +562,13 @@ public class AlignHandler extends SubsystemBase{
                     PathConstraints constraints = new PathConstraints(2.7, 3, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                     
-                }                      
+                }   
+                
+                if (desiredExtension != AlignStates.StateExtendL4Init){
+                    PathConstraints constraints = new PathConstraints(5, 4, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+                    m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
+                }
+
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
                 currentState = AlignStates.StateApproach;
