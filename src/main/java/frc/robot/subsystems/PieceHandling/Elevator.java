@@ -142,7 +142,7 @@ public class Elevator extends SubsystemBase {
  
         
       case StateStation:
-        desiredPosition = 1;
+        desiredPosition = 0;
     }
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();

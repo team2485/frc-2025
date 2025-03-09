@@ -57,7 +57,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
 
-  private final Drivetrain m_drivetrain = new Drivetrain();
+  public final Drivetrain m_drivetrain = new Drivetrain();
   private final SendableChooser<Command> autoChooser;
   private final Elevator m_elevator = new Elevator();
   private final Pivot m_pivot = new Pivot();

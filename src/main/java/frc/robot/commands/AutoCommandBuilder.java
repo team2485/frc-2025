@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
@@ -62,7 +63,7 @@ public class AutoCommandBuilder {
 
             
             constraints     = new PathConstraints(
-                5, 3,
+                5, 3.5,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         }
@@ -104,7 +105,7 @@ public class AutoCommandBuilder {
         StateTravelTopLeft2,
         StateTravellingTopLeft2,
         StateScoreTopLeft2,
-        StateScoringTopLeft2, StateIntake2Transition, StateAbortInit, StateAbort,
+        StateScoringTopLeft2, StateIntake2Transition, StateAbortInit, StateAbort, StateScore3, StateScoring3, StateDone,
     }
 
     public enum BasicMidScoreAutoStates {
@@ -353,12 +354,25 @@ public class AutoCommandBuilder {
                         break;
                     case StateIntake1Init:
                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
-                     
+
+                       // put in the command here that makes it go forward;
+                         
                        intakeStartTime = -1;
                         
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
                         break;
                     case StateIntake1Transition:
+                        int targetCoralID = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        Pose2d forwardPosCoral = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                       
+                       // Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetCoralID, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        double distIntake = forwardPosCoral.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake >2){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
                         if (m_Container.m_Aligner.isAllowedToDrive()) {
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
@@ -391,7 +405,6 @@ public class AutoCommandBuilder {
                         break;
                     case StateTravelTopLeft2:
                         intakeStartTime = -1;
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
                         if(!isOnRed){ 
                             if(runsTop){
                                 targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
@@ -412,21 +425,23 @@ public class AutoCommandBuilder {
 
                         }
                         m_activeFollowCommand = pathfindCommand(targetPoint);
-                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         // m_activeFollowCommand.schedule();
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft2;
                         incrementer++;
                         break;
                     case StateTravellingTopLeft2:
                         double dist2 = targetPoint.getTranslation()
                                 .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-                        if (m_activeFollowCommand.isFinished() || dist2 < 0.75) {
-
+                        // if (m_activeFollowCommand.isFinished() ) {
+                            m_activeFollowCommand.cancel();
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft2;
-                        }
+                        // }
                         break;
                     case StateScoreTopLeft2:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft2;
 
                         break;
@@ -443,6 +458,16 @@ public class AutoCommandBuilder {
                         intakeStartTime = -1;
                         break;
                     case StateIntake2Transition:
+                        int targetCoralID2 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        
+                        Pose2d forwardPosCoral2 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        double distIntake2 = forwardPosCoral2.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake2 > 1.6){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
                         if (m_Container.m_Aligner.isAllowedToDrive()) {
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
@@ -459,7 +484,7 @@ public class AutoCommandBuilder {
                             {
 
                                 m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScore3;
 
                             }
 
@@ -473,6 +498,35 @@ public class AutoCommandBuilder {
                         }
 
                 
+                        break;
+                    case StateScore3:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Init);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoring3;
+                        break;
+                    case StateScoring3:
+                        
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateDone;
+
+                        }
+                        break;
+                    case StateDone:
+                        int targetCoralID3 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        Pose2d forwardPosCoral3 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                            
+                       // Pose2d forwardPosCoral3 = DriveCommandBuilder.convertAprilTag(targetCoralID3, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        double distIntake3 = forwardPosCoral3.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake3 > 2){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
+                        intakeStartTime = -1;
+                        
                         break;
                     case StateAbortInit:
                         m_Container.m_roller.requestState(RollerStates.StateRollerOff);
