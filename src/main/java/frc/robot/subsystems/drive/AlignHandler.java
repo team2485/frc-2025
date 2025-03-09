@@ -257,7 +257,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // temporarily removed below for testing;
 
-                // int tagToTarget = 21; // replace with find nearest scorable tag logic
+                // int tagToTarget = 21;appr // replace with find nearest scorable tag logic
                 // Pose2d coralStationTargetPose = DriveCommandBuilder.convertAprilTag(targetID, 1.3, 0, m_Drivetrain, m_PoseEstimation);
                 // m_activeFollowCommand =DriveCommandBuilder.shortDriveToPoseFast(m_Drivetrain, m_PoseEstimation, coralStationTargetPose);// DriveCommandBuilder.roughAlignToTag(targetID, 1.3, 0, m_Drivetrain, m_PoseEstimation,true);
                 // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
@@ -563,7 +563,7 @@ public class AlignHandler extends SubsystemBase{
                     }
                 }
                 else{
-                    PathConstraints constraints = new PathConstraints(2.7, 3, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(2.5, 2, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                     
                 }   
