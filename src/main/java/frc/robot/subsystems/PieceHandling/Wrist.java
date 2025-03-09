@@ -54,6 +54,7 @@ public class Wrist extends SubsystemBase {
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
   public static GenericEntry motorPosition = Shuffleboard.getTab("Wrist").add("position", 0.0).getEntry();
 
+  public static GenericEntry errorLog = Shuffleboard.getTab("Wrist").add("error", 0.0).getEntry();
   
   public Wrist() {
     // Misc setup goes here
@@ -127,7 +128,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.6036;//-0.21891;
         break;
       case StateL4:
-        desiredPosition = 0.68750-0.21891;
+        desiredPosition = 0.52414556; //(0.68750-0.21891) + (1/18);
         break;
       case StateIntake:
         desiredPosition = 0;
@@ -156,6 +157,7 @@ public class Wrist extends SubsystemBase {
       }
     desiredPosition*=kWristGearRatio;
     runControlLoop();
+    errorLog.setDouble(getError());
  // 4.2 wrist 14 pivot
     if (getError() < kWristErrorTolerance)
       m_WristCurrentState = m_WristRequestedState;

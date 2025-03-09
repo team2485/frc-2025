@@ -498,7 +498,7 @@ public class AlignHandler extends SubsystemBase{
                 m_Handler.requestRobotState(RobotStates.StateL4Init);
                 CommandScheduler.getInstance().cancel(m_activeFollowCommand);
 
-                currentState=  AlignStates.StateExtendL4;
+                currentState = AlignStates.StateExtendL4;
                 break;
             case StateExtendL4:
                 if(DriverStation.isAutonomousEnabled()){
@@ -536,13 +536,13 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.38, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.42, horizontalOffset, m_Drivetrain, m_PoseEstimation);
                 
                 
                 if(!DriverStation.isAutonomousEnabled()){
 
 
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseSlow(m_Drivetrain, m_PoseEstimation, forwardPosRight);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
 
                 }
                 else{

@@ -85,7 +85,7 @@ public class Roller extends SubsystemBase {
   public void periodic() {
     switch (m_RollerRequestedState) {
       case StateRollerOff:
-        desiredVoltage = 0.5;
+        desiredVoltage = .5;
         break;
       case StateRollerOnForward:
         desiredVoltage = 5;
