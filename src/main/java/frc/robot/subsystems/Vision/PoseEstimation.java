@@ -45,9 +45,13 @@ public class PoseEstimation extends SubsystemBase {
   private final Field2d field2d = new Field2d();
  private final Vision frontLeftPhoton = new Vision("cameraFrontLeft"); // TODO: Replace Camera Name here!
  private final Vision frontRightPhoton = new Vision("cameraFrontRight"); // TODO: See if this would work for multicamera localization.
-  private final Notifier photonNotifier = new Notifier(frontLeftPhoton);
+ private final Vision backPhoton = new Vision("cameraBack"); // TODO: See if this would work for multicamera localization.
   
-  private final Notifier photonNotifier2 = new Notifier(frontRightPhoton);
+ private final Notifier photonNotifier = new Notifier(frontLeftPhoton);
+  
+  
+ private final Notifier photonNotifier2 = new Notifier(frontRightPhoton);
+ private final Notifier photonNotifier3 = new Notifier(backPhoton);
   private final WL_CommandXboxController m_driver;
     private final WL_CommandXboxController m_operator;
 
@@ -93,6 +97,9 @@ public class PoseEstimation extends SubsystemBase {
 
     photonNotifier.setName("PhotonRunnable");
     photonNotifier.startPeriodic(0.02);
+    
+    photonNotifier3.setName("PhotonRunnable");
+    photonNotifier3.startPeriodic(0.02);
     photonNotifier2.setName("PhotonRunnable");
     photonNotifier2.startPeriodic(0.02);
 
@@ -116,10 +123,11 @@ public class PoseEstimation extends SubsystemBase {
     //attemptedNavPosition.setValue(getFormattedPose(DriveCommandBuilder.alignToSource(m_drivetrain, this)));
     var visionPoseFrontLeft = frontLeftPhoton.grabLatestEstimatedPose();
     var visionPoseFrontRight = frontRightPhoton.grabLatestEstimatedPose();
+    var visionPoseBack = backPhoton.grabLatestEstimatedPose();
     if(visionPoseFrontLeft != null){
 
       var pose2d = visionPoseFrontLeft.estimatedPose.toPose2d();
-      // poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontLeft.timestampSeconds);
+      poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontLeft.timestampSeconds);
 
 
     }
@@ -129,6 +137,13 @@ public class PoseEstimation extends SubsystemBase {
       poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
      
     }
+    if(visionPoseBack != null){
+
+      var pose2d = visionPoseBack.estimatedPose.toPose2d();
+      // poseEstimator.addVisionMeasurement(pose2d, visionPoseBack.timestampSeconds);
+     
+    }
+    
     // var visionPose = photonEstimator.grabLatestEstimatedPose();
     // var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
     // if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4

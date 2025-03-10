@@ -144,7 +144,10 @@ public class Vision implements Runnable {
             isReefCamera=true;
 
         }
-
+        if(cameraName.equals("cameraBack")){
+            offset = kRobotToCameraBack;
+            isReefCamera = false;
+        }
         try {
             //sets the origin to the blue side every time but flips the tag positions if we are red.
             var layout = new AprilTagFieldLayout(kBlueTagList, kFieldLengthMeters, kFieldWidthMeters); // attempt to load the AprilTagFieldLayout
@@ -192,8 +195,9 @@ public class Vision implements Runnable {
 
                 } else{
 
-                    photonResults.targets.removeIf(new TagFilter(kVisionMaxDistanceMeters));
-                    photonResults.targets.removeIf(new WhitelistFilter(PoseEstimation.getFieldConstants().getReefTagIds()));    
+                   
+                    // photonResults.targets.removeIf(new TagFilter(kVisionMaxDistanceMeters));
+                    photonResults.targets.removeIf(new WhitelistFilter( new int[] {1,2,12,13}));    
 
                 }
                
