@@ -109,7 +109,7 @@ public class Roller extends SubsystemBase {
 
   public boolean isStalling(){
 
-    if(m_talon.getVelocity().getValueAsDouble() < 2 && m_talon.getSupplyCurrent().getValueAsDouble() > 10 ){
+    if(m_talon.getVelocity().getValueAsDouble() < 1.5 && m_talon.getSupplyCurrent().getValueAsDouble() > 10 ){
 
       return true;
 

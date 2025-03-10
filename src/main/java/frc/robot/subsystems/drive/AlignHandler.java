@@ -254,7 +254,8 @@ public class AlignHandler extends SubsystemBase{
                     targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
                // horizontalOffset = .255;
                 CommandScheduler.getInstance().cancel(kteleOpCommand);
-
+                if(m_activeFollowCommand!=null)
+                m_activeFollowCommand.cancel();
                 // temporarily removed below for testing;
 
                 // int tagToTarget = 21;appr // replace with find nearest scorable tag logic
@@ -266,8 +267,8 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateCoralStationRoughAlign:
             //    if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
-                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-                    m_activeFollowCommand = null;
+                    // CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    // m_activeFollowCommand = null;
                     
                     currentState = AlignStates.StateCoralApproachInit;
                 // }
@@ -276,7 +277,7 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
 
                 // put in the command here that makes it go forward;
-                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.8, 0, m_Drivetrain, m_PoseEstimation,true);
+                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.75, 0, m_Drivetrain, m_PoseEstimation,true);
                 
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToCoralStation(m_Drivetrain, m_PoseEstimation, forwardPosCoral);
                 
@@ -285,9 +286,14 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateCoralApproach;
                 break;
             case StateCoralApproach:
-                    
-                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
-                    CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+            targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
+                
+            Pose2d distCheckforwardPosCoral =DriveCommandBuilder.convertAprilTag(targetID, 0.75, 0, m_Drivetrain, m_PoseEstimation,true);
+                double dist = distCheckforwardPosCoral.getTranslation().getDistance(m_PoseEstimation.getCurrentPose().getTranslation()); 
+                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() || dist < 0.5 ){//&& m_activeFollowCommand != null){
+                    m_activeFollowCommand.cancel();
+                   // CommandScheduler.getInstance().cancel(m_activeFollowCommand);
+                    m_Drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
                     m_activeFollowCommand = null;
                     
                     currentState = AlignStates.StateCoralFinished;
@@ -542,10 +548,10 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 // put in the command here that makes it go forward;
-                double forwardOffsetApproach = 0.44;
+                double forwardOffsetApproach = 0.46;
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach = 0.5;
+                    forwardOffsetApproach = 0.51;
 
                 }
                 Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, forwardOffsetApproach,horizontalOffset, m_Drivetrain, m_PoseEstimation);

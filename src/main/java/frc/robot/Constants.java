@@ -584,7 +584,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.1,0,0.25),new PIDConstants(1.5,0,0.2));
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.1,0,0.5),new PIDConstants(2.2,0,0.2));
 
  
 
