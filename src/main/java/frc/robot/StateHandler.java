@@ -277,6 +277,7 @@ public class StateHandler extends SubsystemBase{
                 m_Pivot.requestState(PivotStates.StateClimb);
                 m_Elevator.requestState(ElevatorStates.StateStation);
                 break;
+                
             case StateClimbGo:
                 if( requestedState==RobotStates.StateClimberPrepare ||requestedState==RobotStates.StateClimbPause ){
 
