@@ -308,7 +308,7 @@ public class AlignHandler extends SubsystemBase{
             case StateAlignRightInit:
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
-                horizontalOffset = .23;
+                horizontalOffset = .28;
 
 
                 if(PoseEstimation.getFieldConstants().isOnRed()){
@@ -359,7 +359,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignLeftInit:
-                horizontalOffset = -0.1;
+                horizontalOffset = -0.05;
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
 
@@ -548,11 +548,11 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.51;
+                    forwardOffsetApproach=.56;
 
                 }
-                if (desiredExtension == AlignStates.StateExtendL2 || desiredExtension == AlignStates.StateExtendL3){
-                    forwardOffsetApproach = 0.29;
+                if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
+                    forwardOffsetApproach = 0.4;
                 }
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     m_roller.requestState(RollerStates.StateAlgaeIntake);
@@ -563,7 +563,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // put in the command here that makes it go forward;
 
-                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, 0.43, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, forwardOffsetApproach, horizontalOffset, m_Drivetrain, m_PoseEstimation);
 
                 
                 
@@ -663,6 +663,7 @@ public class AlignHandler extends SubsystemBase{
                     if(DriverStation.isAutonomousEnabled()){
 
 
+
                         currentState=AlignStates.StateAutoBackupInit;
                     }
                     else{
@@ -688,7 +689,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 break;
             case StateBackupInit: // .7 meters should be ok
-                double forwardOffset = 0.8;
+                double forwardOffset = 1;
   
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit || m_Container.getDesiredLevel() == 6){
                     forwardOffset=1.5;
