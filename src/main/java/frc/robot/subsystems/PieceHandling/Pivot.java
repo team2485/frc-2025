@@ -130,7 +130,7 @@ public class Pivot extends SubsystemBase {
         desiredPosition = 0.03;
         break;
       case StateL2:
-        desiredPosition = 0.09;
+        desiredPosition = 0.105;
         break;
       case StateL3:
         desiredPosition = 0;
