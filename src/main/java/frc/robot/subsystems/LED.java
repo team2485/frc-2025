@@ -76,7 +76,6 @@ public class LED extends SubsystemBase {
   public void requestState(LEDStates requestedState) {
     try {
       m_LEDRequestedState = requestedState;
-      System.out.println("dummy");
     }
     catch (Exception e) {}
   }
