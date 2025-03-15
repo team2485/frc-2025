@@ -82,7 +82,9 @@ public class Vision implements Runnable {
 
 
             if(!DriverStation.isEnabled()){
-
+                if(t.getPoseAmbiguity() > 0.02){
+                    return true;
+                }
                 return false;
 
             }
