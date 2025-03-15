@@ -26,48 +26,59 @@ public class LED extends SubsystemBase {
   CANdle candle;
 
   public LED() {
-    m_LEDRequestedState = LEDStates.StateOff;
-    candle = new CANdle(0); // set to the actual ID
-    CANdleConfiguration config = new CANdleConfiguration();
-    config.stripType = LEDStripType.RGB;
-    config.brightnessScalar = 1.0;
-    candle.configAllSettings(config);
+    try {
+      m_LEDRequestedState = LEDStates.StateOff;
+      candle = new CANdle(0); // set to the actual ID
+      CANdleConfiguration config = new CANdleConfiguration();
+      config.stripType = LEDStripType.RGB;
+      config.brightnessScalar = 1.0;
+      candle.configAllSettings(config);
+    }
+    catch (Exception e) {}
+
   }
 
   @Override
   public void periodic() {
-    switch (m_LEDRequestedState) {
-      case StateOff:
-        // Turn off LED
-        candle.setLEDs(0, 0, 0);
-        break;
-      case StateWhite:
-        // Set the LED to white
-        candle.setLEDs(255, 255, 255);
-        break;
-      case StateYellow:
-        // Set the LED to yellow
-        candle.setLEDs(249, 166, 3); // Change to a different yellow maybe
-        break;
-      case StatePink:
-        candle.setLEDs(255, 16, 240);
-        break;
-      case StateRainbow:
-        RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 64);
-        candle.animate(rainbowAnim);
-        break;
+    try {
+      switch (m_LEDRequestedState) {
+        case StateOff:
+          // Turn off LED
+          candle.setLEDs(0, 0, 0);
+          break;
+        case StateWhite:
+          // Set the LED to white
+          candle.setLEDs(255, 255, 255);
+          break;
+        case StateYellow:
+          // Set the LED to yellow
+          candle.setLEDs(249, 166, 3); // Change to a different yellow maybe
+          break;
+        case StatePink:
+          candle.setLEDs(255, 16, 240);
+          break;
+        case StateRainbow:
+          RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 64);
+          candle.animate(rainbowAnim);
+          break;
+      }
+
+      m_LEDCurrentState = m_LEDRequestedState;
+
+      runControlLoop();
     }
-
-    m_LEDCurrentState = m_LEDRequestedState;
-
-    runControlLoop();
+    catch (Exception e) {}
   }
-    public void runControlLoop() {}
+  public void runControlLoop() {}
 
  
   // example of a "setter" method
   public void requestState(LEDStates requestedState) {
-    m_LEDRequestedState = requestedState;
+    try {
+      m_LEDRequestedState = requestedState;
+      System.out.println("dummy");
+    }
+    catch (Exception e) {}
   }
   // example of a "getter" method
   public LEDStates getCurrentState() {

@@ -53,7 +53,7 @@ public class StateHandler extends SubsystemBase{
     private Pivot m_Pivot;
     private Climber m_Climber;
     private AlignHandler m_aligner; 
-    //private LED m_leds;
+    private LED m_leds;
     private RobotContainer m_container;
     public enum RobotStates {
 
@@ -176,13 +176,13 @@ public class StateHandler extends SubsystemBase{
                 m_Wrist.requestState(WristStates.StateL1);
                 m_Pivot.requestState(PivotStates.StateL1);
                 currentState = RobotStates.StateL1Final;
-                //m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 break;
 
             case StateL1Final:
                 
                 if(requestedState == RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit){
-                    //m_leds.requestState(LED.LEDStates.StateWhite);
+                    m_leds.requestState(LED.LEDStates.StateWhite);
                     currentState=requestedState;
                 }
                 break;
@@ -197,7 +197,7 @@ public class StateHandler extends SubsystemBase{
             case StateL2Init:
                 m_Elevator.requestState(ElevatorStates.StateL2); // making the assumption it's the opposite as going to zero...
                 currentState = RobotStates.StateL2Transition;
-                //m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 break;  
             case StateL2Transition:
                 if(m_Elevator.getCurrentState() == ElevatorStates.StateL2){// the elevator is in movingToRequestedState when NOT at goal...
@@ -225,7 +225,7 @@ public class StateHandler extends SubsystemBase{
                 if(requestedState==RobotStates.StateCoralStationInit  || requestedState == RobotStates.StateProcessorInit ) {
                     currentState = requestedState;
                 }
-                //m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 break;
             case StateL3Prepare:
                 m_Wrist.requestState(WristStates.StateL3);
@@ -237,7 +237,7 @@ public class StateHandler extends SubsystemBase{
             case StateL3Init:
                 m_Elevator.requestState(ElevatorStates.StateL3); // making the assumption it's the opposite as going to zero...
                 currentState = RobotStates.StateL3Transition;
-               // m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 break;
 
             case StateL3Transition:
@@ -264,7 +264,7 @@ public class StateHandler extends SubsystemBase{
                 break;
             case StateL3Finished:
                 if(requestedState==RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit) {
-                    //m_leds.requestState(LED.LEDStates.StateWhite);
+                    m_leds.requestState(LED.LEDStates.StateWhite);
                     currentState = requestedState;
                 }
                 
@@ -284,7 +284,7 @@ public class StateHandler extends SubsystemBase{
                 m_Climber.requestState(ClimberStates.StateClimberOnForward);
                 m_Pivot.requestState(PivotStates.StateClimb);
                 m_Elevator.requestState(ElevatorStates.StateStation);
-                //m_leds.requestState(LED.LEDStates.StatePink);
+                m_leds.requestState(LED.LEDStates.StatePink);
                 break;
                 
             case StateClimbGo:
@@ -302,7 +302,7 @@ public class StateHandler extends SubsystemBase{
 
 
                 }
-               // m_leds.requestState(LED.LEDStates.StateRainbow);
+                m_leds.requestState(LED.LEDStates.StateRainbow);
                 break;
             case StateClimbPause:
 
@@ -347,7 +347,7 @@ public class StateHandler extends SubsystemBase{
                 m_Elevator.requestState(ElevatorStates.StateL4); // making the assumption it's the opposite as going to zero...
                 
                 currentState = RobotStates.StateL4Transition;
-                //m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 break;
             
 
@@ -379,7 +379,7 @@ public class StateHandler extends SubsystemBase{
             //     }
             //     break;
             case StateL4Finished:
-                //m_leds.requestState(LED.LEDStates.StateWhite);
+                m_leds.requestState(LED.LEDStates.StateWhite);
                 if(requestedState==RobotStates.StateCoralStationInit ) {
                     currentState = RobotStates.StateCoralStationInit;
                 }
