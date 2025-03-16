@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Climber.ClimberStates;
+import frc.robot.subsystems.LED.LEDStates;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.PieceHandling.Elevator;
 import frc.robot.subsystems.PieceHandling.Pivot;
@@ -124,7 +125,8 @@ public class StateHandler extends SubsystemBase{
         m_container = cont;
         m_Elevator = elevator;
         m_Wrist = wrist;
-        m_Pivot = pivot;    
+        m_Pivot = pivot;
+        m_leds = new LED();    
 
     }
     
@@ -137,6 +139,7 @@ public class StateHandler extends SubsystemBase{
 
             case StateInit:
                 currentState=RobotStates.StateCoralStationInit;
+                m_leds.requestState(LEDStates.StateWhite);
                 break;
             case StateZero:
                 m_Wrist.requestState(WristStates.StateZero); // just making the assumption that wrist must retract before the other subsystems 
@@ -146,7 +149,7 @@ public class StateHandler extends SubsystemBase{
                     m_Pivot.requestState(PivotStates.StateZero);
 
                 }
-                
+
                 break;
             case StateCoralStationInit:
                 m_Climber.requestState(ClimberStates.StateClimberOff);
@@ -225,7 +228,7 @@ public class StateHandler extends SubsystemBase{
                 if(requestedState==RobotStates.StateCoralStationInit  || requestedState == RobotStates.StateProcessorInit ) {
                     currentState = requestedState;
                 }
-                m_leds.requestState(LED.LEDStates.StateYellow);
+                m_leds.requestState(LED.LEDStates.StateWhite);
                 break;
             case StateL3Prepare:
                 m_Wrist.requestState(WristStates.StateL3);
@@ -264,10 +267,9 @@ public class StateHandler extends SubsystemBase{
                 break;
             case StateL3Finished:
                 if(requestedState==RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit) {
-                    m_leds.requestState(LED.LEDStates.StateWhite);
                     currentState = requestedState;
                 }
-                
+                m_leds.requestState(LED.LEDStates.StateWhite);
                 break;
             case StateClimberPrepare:
                 if( requestedState==RobotStates.StateCoralStationInit || requestedState==RobotStates.StateClimbGo  ||requestedState==RobotStates.StateClimbPause  ){
