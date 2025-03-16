@@ -19,6 +19,7 @@ import frc.robot.StateHandler;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.PieceHandling.Roller;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
@@ -50,6 +51,7 @@ public class AlignHandler extends SubsystemBase{
     private double horizontalOffset;
     private Roller m_roller;
     private AlignStates desiredExtension=AlignStates.StateInit;
+    private LED m_leds;
     private RobotContainer m_Container;
     public enum AlignStates {
 
@@ -133,13 +135,14 @@ public class AlignHandler extends SubsystemBase{
         m_PoseEstimation = poseEst;
         m_Handler = handler;
         m_roller=rollers;
+        m_leds = new LED();
         kteleOpCommand = new DriveWithController(
             m_driver::getLeftY,
             m_driver::getLeftX,
             m_driver::getRightX,
             this::getSpeedMultiplier,
             () -> true,
-            m_Drivetrain, m_PoseEstimation); 
+            m_Drivetrain, m_PoseEstimation);
     }
     
     GenericEntry state = Shuffleboard.getTab("Autos").add("alignerstate", "").getEntry();
@@ -205,7 +208,6 @@ public class AlignHandler extends SubsystemBase{
 
                 break; // put stuff for when the controllers are active;
             case StateAlignLeftL2Init:
-
                 desiredExtension=AlignStates.StateExtendL2Init;
                 currentState=AlignStates.StateAlignLeftInit;
                 break;
@@ -442,6 +444,7 @@ public class AlignHandler extends SubsystemBase{
                 //     }
 
                 // }
+                m_leds.requestState(LED.LEDStates.StateYellow);
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && desiredExtension != AlignStates.StateExtendL2Init && desiredExtension != AlignStates.StateExtendL2AlgaeInit){
                     CommandScheduler.getInstance().cancel(m_activeFollowCommand);
                     m_activeFollowCommand = null;

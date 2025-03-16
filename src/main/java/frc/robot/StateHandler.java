@@ -152,6 +152,7 @@ public class StateHandler extends SubsystemBase{
 
                 break;
             case StateCoralStationInit:
+                m_leds.requestState(LED.LEDStates.StateWhite);
                 m_Climber.requestState(ClimberStates.StateClimberOff);
                 m_Elevator.requestState(ElevatorStates.StateStation); // just making the assumption that wrist must retract before the other subsystems 
                 currentState = RobotStates.StateCoralStationTransition;
@@ -171,6 +172,7 @@ public class StateHandler extends SubsystemBase{
                 }
                 break;
             case StateCoralStationFinal:
+                m_leds.requestState(LED.LEDStates.StateWhite);
                 if(requestedState != RobotStates.StateCoralStationInit){
                     currentState=requestedState;
                 }
@@ -185,7 +187,6 @@ public class StateHandler extends SubsystemBase{
             case StateL1Final:
                 
                 if(requestedState == RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit){
-                    m_leds.requestState(LED.LEDStates.StateWhite);
                     currentState=requestedState;
                 }
                 break;
@@ -228,7 +229,6 @@ public class StateHandler extends SubsystemBase{
                 if(requestedState==RobotStates.StateCoralStationInit  || requestedState == RobotStates.StateProcessorInit ) {
                     currentState = requestedState;
                 }
-                m_leds.requestState(LED.LEDStates.StateWhite);
                 break;
             case StateL3Prepare:
                 m_Wrist.requestState(WristStates.StateL3);
@@ -268,8 +268,7 @@ public class StateHandler extends SubsystemBase{
             case StateL3Finished:
                 if(requestedState==RobotStates.StateCoralStationInit || requestedState == RobotStates.StateProcessorInit) {
                     currentState = requestedState;
-                }
-                m_leds.requestState(LED.LEDStates.StateWhite);
+                }                
                 break;
             case StateClimberPrepare:
                 if( requestedState==RobotStates.StateCoralStationInit || requestedState==RobotStates.StateClimbGo  ||requestedState==RobotStates.StateClimbPause ){
@@ -380,7 +379,6 @@ public class StateHandler extends SubsystemBase{
             //     }
             //     break;
             case StateL4Finished:
-                m_leds.requestState(LED.LEDStates.StateWhite);
                 if(requestedState==RobotStates.StateCoralStationInit ) {
                     currentState = RobotStates.StateCoralStationInit;
                 }
