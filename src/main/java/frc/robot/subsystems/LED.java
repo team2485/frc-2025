@@ -40,17 +40,21 @@ public class LED extends SubsystemBase {
     switch (m_LEDRequestedState) {
       case StateOff:
         // Turn off LED
+        candle.clearAnimation(0);
         candle.setLEDs(0, 0, 0);
         break;
       case StateWhite:
         // Set the LED to white
+        candle.clearAnimation(0);
         candle.setLEDs(255, 255, 255);
         break;
       case StateYellow:
         // Set the LED to yellow
+        candle.clearAnimation(0);
         candle.setLEDs(250, 242, 3); // Change to a different yellow maybe
         break;
       case StatePink:
+        candle.clearAnimation(0);
         candle.setLEDs(255, 16, 240);
         break;
       case StateRainbow:
