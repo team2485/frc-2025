@@ -86,10 +86,10 @@ public class Climber extends SubsystemBase {
         desiredVoltage = 0;
         break;
       case StateClimberOnForward:
-        desiredVoltage = 5;
+        desiredVoltage = 10;
         break;
       case StateClimberOnBackward:
-        desiredVoltage = -5;
+        desiredVoltage = -10;
         break;
 
       }
@@ -113,7 +113,7 @@ public class Climber extends SubsystemBase {
       m_talon.setVoltage(desiredVoltage);
 
 
-    }else if(m_talon.getPosition().getValueAsDouble() < -380 && desiredVoltage < 0){
+    }else if(m_talon.getPosition().getValueAsDouble() < -400 && desiredVoltage < 0){
 
       m_talon.setVoltage(0);
 
