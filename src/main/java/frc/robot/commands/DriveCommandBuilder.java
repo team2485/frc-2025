@@ -182,11 +182,12 @@ public class DriveCommandBuilder {
 
     }
     public static Command shortDriveToPose3Waypoint(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d point1, Pose2d endPos, PathConstraints constraints)
-    {
+    {   
         // PathConstraints constraints = new PathConstraints(7,4.5, 4, 4);
+        Rotation2d heading =point1.getTranslation().minus( m_PoseEstimation.getCurrentPose().getTranslation()).getAngle();
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
-            new Pose2d(point1.getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),m_PoseEstimation.getCurrentPose().getRotation()),
+            // new Pose2d(point1.getTranslation(), heading),
 
             new Pose2d(endPos.getTranslation(), endPos.getRotation().rotateBy(Rotation2d.k180deg))
         );

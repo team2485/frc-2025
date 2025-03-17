@@ -355,8 +355,16 @@ public class AlignHandler extends SubsystemBase{
                 // temporarily removed below for testing;
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
+                if(DriverStation.isAutonomous()){
+                    m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1.5, horizontalOffset, m_Drivetrain, m_PoseEstimation);
 
-                m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, .85, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+
+                }
+                else{
+                    m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, .85, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+
+
+                }
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 currentState = AlignStates.StateRoughAlign;
                 if(desiredExtension==AlignStates.StateExtendL2Init){
@@ -601,13 +609,13 @@ public class AlignHandler extends SubsystemBase{
                     
                     PathConstraints constraints = new PathConstraints(4.5, 4,0.5, 0.5, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
-                    Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, .85, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
+                    Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
-                    if(count == 0){
+                    // if(count == 0){
 
-                        constraints=new PathConstraints(3, 3,0.75, 0.75, 12);
+                    //     constraints=new PathConstraints(3, 3,0.75, 0.75, 12);
 
-                    }
+                    // }
 
                     
 
@@ -617,6 +625,8 @@ public class AlignHandler extends SubsystemBase{
 
 
                 }
+
+
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                 
                 currentState = AlignStates.StateApproach;
