@@ -396,7 +396,7 @@ public class AutoCommandBuilder {
                             long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime2 > 750)
+                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
                             // add dynamic part here
                             {
 
@@ -498,7 +498,7 @@ public class AutoCommandBuilder {
                             long deltaTime3 = System.currentTimeMillis() - intakeStartTime;
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime3 > 750)
+                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1000)
                             // add dynamic part here
                             {
 

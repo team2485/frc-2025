@@ -162,7 +162,7 @@ public class DriveCommandBuilder {
     public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos, PathConstraints constraints){
 
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation()),
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation() ),
             new Pose2d(endPos.getTranslation(), endPos.getRotation())
         );
         PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, endPos.getRotation()));
@@ -179,6 +179,22 @@ public class DriveCommandBuilder {
         PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, endPos.getRotation()));
         path.preventFlipping = true;
         return AutoBuilder.followPath(path);
+
+    }
+    public static Command shortDriveToPose3Waypoint(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d point1, Pose2d endPos, PathConstraints constraints)
+    {
+        // PathConstraints constraints = new PathConstraints(7,4.5, 4, 4);
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
+            new Pose2d(point1.getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
+
+            new Pose2d(endPos.getTranslation(), endPos.getRotation().rotateBy(Rotation2d.k180deg))
+        );
+        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, endPos.getRotation()));
+        path.preventFlipping = true;
+        return AutoBuilder.followPath(path);
+
+
 
     }
     public static Command shortDriveToPoseSlow(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
@@ -203,7 +219,7 @@ public class DriveCommandBuilder {
        // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
     //    PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
        
-       PathConstraints constraints = new PathConstraints(7, 6, 0.5,0.5);
+       PathConstraints constraints = new PathConstraints(3.5, 3, 1.3,1.3);
        return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
         
        /// new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),direction),new Pose2d(6.35,2.54, Rotation2d.kZero)

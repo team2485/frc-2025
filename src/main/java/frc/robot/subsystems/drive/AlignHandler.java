@@ -125,6 +125,7 @@ public class AlignHandler extends SubsystemBase{
         }
         return false;
     }
+    int count = 0;
 
     public AlignHandler(Drivetrain drivetrain, PoseEstimation poseEst, WL_CommandXboxController driver, StateHandler handler, Roller rollers, RobotContainer cont){ // include subsystems as argument
         m_driver = driver;
@@ -312,9 +313,11 @@ public class AlignHandler extends SubsystemBase{
                 requestedState=AlignStates.StateAuto;
                 break;
             case StateAlignRightInit:
+
+                
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
-                horizontalOffset = .28;
+                horizontalOffset = .25;
 
 
                 if(PoseEstimation.getFieldConstants().isOnRed()){
@@ -365,7 +368,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignLeftInit:
-                horizontalOffset = -0.05;
+                horizontalOffset = -0.07;
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
 
@@ -550,11 +553,11 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateApproachInit:
 
-                double forwardOffsetApproach = 0.51; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.525; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.525;
+                    forwardOffsetApproach=.51;
 
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
@@ -586,18 +589,31 @@ public class AlignHandler extends SubsystemBase{
                 }   
                 
                 if (desiredExtension != AlignStates.StateExtendL4Init){
-                    PathConstraints constraints = new PathConstraints(4.5, 4, 0.75, 0.75);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(5.5, 5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
 
                 if (desiredExtension == AlignStates.StateExtendL2Init){
-                    PathConstraints constraints = new PathConstraints(8, 8, 0.75, 0.75);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(8, 8, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
                 if(DriverStation.isAutonomous()){
-                    PathConstraints constraints = new PathConstraints(1.5, 0.65,4, 4, 12);//new PathConstraints(1, 1, 0.5,0.5);
-                    m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
-           
+                    
+                    PathConstraints constraints = new PathConstraints(4.5, 4,0.5, 0.5, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                   
+                    Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, .85, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
+                
+                    if(count == 0){
+
+                        constraints=new PathConstraints(3, 3,0.75, 0.75, 12);
+
+                    }
+
+                    
+
+
+                    m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose3Waypoint(m_Drivetrain, m_PoseEstimation, roughAlignPos, forwardPosRight, constraints);
+                    count++;
 
 
                 }
@@ -704,7 +720,8 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 Pose2d backPos = DriveCommandBuilder.convertAprilTag(targetID, forwardOffset, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseFast(m_Drivetrain, m_PoseEstimation, backPos);
+                PathConstraints constraints = new PathConstraints(7, 5, 1.3, 1.3);
+                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, backPos,constraints);
                 
                 CommandScheduler.getInstance().schedule(m_activeFollowCommand);
             

@@ -39,7 +39,7 @@ public class Climber extends SubsystemBase {
   public static GenericEntry stateRequested = Shuffleboard.getTab("Climber").add("Req. State of Climber", "init").getEntry();
   public static GenericEntry currentLog = Shuffleboard.getTab("Climber").add("current",0.0).getEntry();
   public static GenericEntry veloLog = Shuffleboard.getTab("Climber").add("velocity",0.0).getEntry();
-
+  public static GenericEntry posLog = Shuffleboard.getTab("Climber").add("pos",0.0).getEntry();
   // Unit default for TalonFX libraries is rotations
   private double desiredVoltage = 0;
 
@@ -102,7 +102,7 @@ public class Climber extends SubsystemBase {
   public void runControlLoop() {
     currentLog.setDouble(m_talon.getSupplyCurrent().getValueAsDouble());
     veloLog.setDouble(m_talon.getVelocity().getValueAsDouble());
-   
+    posLog.setDouble(m_talon.getPosition().getValueAsDouble());
     m_talon.setVoltage(desiredVoltage);
   }
 

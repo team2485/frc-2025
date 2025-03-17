@@ -136,9 +136,9 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3429, 0.27305  - 0.0222, 0.187325),
+    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3719, 0.27305, 0.09),
         new Rotation3d(0,.1745,0)); 
-    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3429, -0.27305, 0.187325),
+    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3719, -0.27305, 0.09),
         new Rotation3d(0,.1745,0)); 
     //-0.698
 
@@ -584,7 +584,7 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(5,0.1,0.9),new PIDConstants(2.2,0,0.3));  //6.1,0,1
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(5,0,1.1),new PIDConstants(2.2,0,0.3));  //6.1,0,1
 
  
 
