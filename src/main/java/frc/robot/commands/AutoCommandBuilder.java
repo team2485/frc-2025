@@ -303,7 +303,7 @@ public class AutoCommandBuilder {
                         
                        // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
 
-                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
                         incrementer++;
                         // intakeStartTime = -1;
                         intakeStartTime = System.currentTimeMillis();
@@ -332,13 +332,14 @@ public class AutoCommandBuilder {
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
                             // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
                             m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                            m_activeFollowCommand.cancel();
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+        
                         }
 
                         
-                        if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
-                            m_activeFollowCommand.cancel();
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
-                        }
+                        // if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
+                        // }
                         break;
                     case StateScoreTopLeft:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
