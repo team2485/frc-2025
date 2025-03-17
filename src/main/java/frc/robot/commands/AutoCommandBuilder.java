@@ -455,7 +455,7 @@ public class AutoCommandBuilder {
                         double dist2 = targetPoint.getTranslation()
                                 .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
                         // if (m_activeFollowCommand.isFinished() ) {
-                            m_activeFollowCommand.cancel();
+                            // m_activeFollowCommand.cancel();
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft2;
                         // }
                         break;

@@ -18,6 +18,7 @@ import org.opencv.video.FarnebackOpticalFlow;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
@@ -160,7 +161,7 @@ public class DriveCommandBuilder {
     }
 
     public static Command shortDriveToPose(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos, PathConstraints constraints){
-
+        PathPlannerPath.clearCache();
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
             new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation() ),
             new Pose2d(endPos.getTranslation(), endPos.getRotation())
@@ -171,6 +172,7 @@ public class DriveCommandBuilder {
 
     }
     public static Command shortDriveToCoralStation(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
+        PathPlannerPath.clearCache();
         PathConstraints constraints = new PathConstraints(7,4.5, 4, 4);
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
             new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
@@ -183,6 +185,9 @@ public class DriveCommandBuilder {
     }
     public static Command shortDriveToPose3Waypoint(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d point1, Pose2d endPos, PathConstraints constraints)
     {   
+
+
+        PathPlannerPath.clearCache();
         // PathConstraints constraints = new PathConstraints(7,4.5, 4, 4);
         Rotation2d heading =point1.getTranslation().minus( m_PoseEstimation.getCurrentPose().getTranslation()).getAngle();
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
