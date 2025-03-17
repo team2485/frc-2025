@@ -333,17 +333,24 @@ public class AutoCommandBuilder {
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
                             // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
                             m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
                             m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
 
+
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+        
                         }
 
                         
+
+                        // if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
+
                         // if (m_activeFollowCommand.isFinished() || dist<0.35) {
                         //     m_activeFollowCommand.cancel();
                         //                         m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
 
                         //     m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+
                         // }
                         break;
                     case StateScoreTopLeft:
