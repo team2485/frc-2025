@@ -139,7 +139,8 @@ public class StateHandler extends SubsystemBase{
 
             case StateInit:
                 currentState=RobotStates.StateCoralStationInit;
-                m_leds.requestState(LEDStates.StateWhite);
+                m_leds.requestState(LEDStates.StateBlueAnim);
+                // m_leds.requestState(LEDStates.StateWhite);
                 break;
             case StateZero:
                 m_Wrist.requestState(WristStates.StateZero); // just making the assumption that wrist must retract before the other subsystems 
@@ -498,6 +499,7 @@ public class StateHandler extends SubsystemBase{
             break;
 
             case StateBargeInit:
+                m_leds.requestState(LEDStates.StateBlueAnim);
                 m_Elevator.requestState(ElevatorStates.StateBarge);
                 m_Wrist.requestState(WristStates.StateBarge);
                 m_Pivot.requestState(PivotStates.StateBarge);

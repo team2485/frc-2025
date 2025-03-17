@@ -9,6 +9,8 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 // import com.crte.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 public class LED extends SubsystemBase {
   // Enum representing all of the states the subsystem can be in
@@ -17,11 +19,13 @@ public class LED extends SubsystemBase {
     StateWhite,
     StateYellow,
     StatePink,
-    StateRainbow
+    StateRainbow,
+    StateBlueAnim
   }
 
   public static LEDStates m_LEDCurrentState;
   public static LEDStates m_LEDRequestedState;
+  private static boolean runningAnimation;
 
   CANdle candle;
 
@@ -33,6 +37,7 @@ public class LED extends SubsystemBase {
     config.stripType = LEDStripType.RGB;
     config.brightnessScalar = 1.0;
     candle.configAllSettings(config);
+    runningAnimation = false;
   }
 
   @Override
@@ -40,28 +45,45 @@ public class LED extends SubsystemBase {
     switch (m_LEDRequestedState) {
       case StateOff:
         // Turn off LED
+        runningAnimation = false;
         candle.clearAnimation(0);
         candle.setLEDs(0, 0, 0);
         break;
       case StateWhite:
         // Set the LED to white
+        runningAnimation = false;
         candle.clearAnimation(0);
         candle.setLEDs(255, 255, 255);
         break;
       case StateYellow:
         // Set the LED to yellow
+        runningAnimation = false;
         candle.clearAnimation(0);
         candle.setLEDs(250, 242, 3); // Change to a different yellow maybe
         break;
       case StatePink:
+        runningAnimation = false;
         candle.clearAnimation(0);
         candle.setLEDs(255, 16, 240);
         break;
       case StateRainbow:
+        candle.clearAnimation(0);
         RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 64);
         candle.animate(rainbowAnim);
         break;
-    }
+      case StateBlueAnim:
+        // Blue streak animation
+        if(!runningAnimation) {
+          candle.clearAnimation(0);
+          // ColorFlowAnimation blue2 = new ColorFlowAnimation(26, 152, 218, 0, 0.5, 64, Direction.Forward);
+          LarsonAnimation blue = new LarsonAnimation(26, 152, 218, 0, 0.25, 64, BounceMode.Center, 5);
+          candle.animate(blue);
+          runningAnimation = true;
+        }
+        // Find out a way to repeat the animation but only when the previous one is finished
+        break;
+    } // autos will have alliance color for LEDs
+    // green LEDs for scoring in processor
 
     m_LEDCurrentState = m_LEDRequestedState;
 
