@@ -36,7 +36,7 @@ import frc.robot.subsystems.drive.Drivetrain;
 
 public class PoseEstimation extends SubsystemBase {
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 2);
 
   private final Supplier<Rotation2d> rotation;
   private final Supplier<SwerveModulePosition[]> modulePosition;

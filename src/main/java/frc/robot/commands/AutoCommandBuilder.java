@@ -16,6 +16,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -56,7 +57,7 @@ public class AutoCommandBuilder {
         if(!isExtended){
 
             constraints     = new PathConstraints(
-                6, 3.5,
+                7, 6,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
 
@@ -64,7 +65,7 @@ public class AutoCommandBuilder {
 
             
             constraints     = new PathConstraints(
-                6, 3.5,
+                7, 6,
                 kTeleopMaxAngularSpeedRadiansPerSecond, kTeleopMaxAngularAccelerationRadiansPerSecondSquared);
 
         }
@@ -73,7 +74,7 @@ public class AutoCommandBuilder {
         // AutoBuilder must be used to avoid collision
 
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
-        Command pathfindingCommand = AutoBuilder.pathfindToPose(endPoint, constraints, 0.0);
+        Command pathfindingCommand = AutoBuilder.pathfindToPose(endPoint, constraints, 0);
         return pathfindingCommand;
 
     }
@@ -275,12 +276,12 @@ public class AutoCommandBuilder {
                             if(runsTop){
 
 
-                                targetPoint = new Pose2d(5.5, 5.5, Rotation2d.fromDegrees(-120));
+                                targetPoint = new Pose2d(5.7, 6, Rotation2d.fromDegrees(-120));
 
                             }
                             else{
 
-                                targetPoint = new Pose2d(5.5, 2.5, Rotation2d.fromDegrees(120));
+                                targetPoint = new Pose2d(5.7, 1.98, Rotation2d.fromDegrees(120));
 
 
                             }
@@ -288,11 +289,11 @@ public class AutoCommandBuilder {
                         }
                         else{
                             if(runsTop){
-                                targetPoint = new Pose2d(17.55-5.5, 5.5, Rotation2d.fromDegrees(-60));
+                                targetPoint = new Pose2d(17.55-5.7, 6, Rotation2d.fromDegrees(-60));
                             }else{
 
 
-                                targetPoint = new Pose2d(17.55-5.5 , 2.5, Rotation2d.fromDegrees(60));
+                                targetPoint = new Pose2d(17.55-5.7 , 1.98, Rotation2d.fromDegrees(60));
 
                             }
 
@@ -325,20 +326,31 @@ public class AutoCommandBuilder {
                         m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
                   
-                        if (deltaTime > 400)
+                        if (deltaTime > 300)
                         // add dynamic part here
                         {
 
                             // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
                             // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
                             m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                            m_activeFollowCommand.cancel();
+
+                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+
+
                             m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
         
                         }
 
                         
+
                         // if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
+
+                        // if (m_activeFollowCommand.isFinished() || dist<0.35) {
+                        //     m_activeFollowCommand.cancel();
+                        //                         m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+
+                        //     m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+
                         // }
                         break;
                     case StateScoreTopLeft:
@@ -391,7 +403,7 @@ public class AutoCommandBuilder {
                             long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1500)
+                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
                             // add dynamic part here
                             {
 
@@ -493,7 +505,7 @@ public class AutoCommandBuilder {
                             long deltaTime3 = System.currentTimeMillis() - intakeStartTime;
                             m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
 
-                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1500)
+                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1000)
                             // add dynamic part here
                             {
 
@@ -515,7 +527,7 @@ public class AutoCommandBuilder {
                         break;
                     case StateScore3:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Init);
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
                         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoring3;
                         break;
                     case StateScoring3:
