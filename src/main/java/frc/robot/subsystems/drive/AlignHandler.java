@@ -319,7 +319,7 @@ public class AlignHandler extends SubsystemBase{
                 
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
-                horizontalOffset = .25;
+                horizontalOffset = .29;
 
 
                 if(PoseEstimation.getFieldConstants().isOnRed()){
@@ -378,7 +378,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignLeftInit:
-                horizontalOffset = -0.07;
+                horizontalOffset = -0.03;
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
 
@@ -564,7 +564,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateApproachInit:
 
-                double forwardOffsetApproach = 0.525; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.555; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
 
