@@ -568,7 +568,7 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.51;
+                    forwardOffsetApproach=.5;
 
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
@@ -610,7 +610,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(4, 3.5,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(4.3, 2.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
