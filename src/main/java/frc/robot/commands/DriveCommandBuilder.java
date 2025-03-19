@@ -173,7 +173,7 @@ public class DriveCommandBuilder {
     }
     public static Command shortDriveToCoralStation(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
         // PathPlannerPath.clearCache();
-        PathConstraints constraints = new PathConstraints(7,4.5, 4, 4);
+        PathConstraints constraints = new PathConstraints(12,9, 4, 4);
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
             new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
             new Pose2d(endPos.getTranslation(), endPos.getRotation().rotateBy(Rotation2d.k180deg))
@@ -213,7 +213,7 @@ public class DriveCommandBuilder {
     public static Command shortDriveToPoseMid(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
 
         // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
-        PathConstraints constraints = new PathConstraints(2, 3, 0.5,0.5);
+        PathConstraints constraints = new PathConstraints(3.9, 3, 1,1);
         // PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
         
         return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
@@ -225,7 +225,7 @@ public class DriveCommandBuilder {
        // endPos = new Pose2d(6.35,2.54, Rotation2d.kZero);
     //    PathConstraints constraints = new PathConstraints(0.5, 0.5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
        
-       PathConstraints constraints = new PathConstraints(3, 3, 1.3,1.3);
+       PathConstraints constraints = new PathConstraints(3.7, 5, 1.3,1.3);
        return shortDriveToPose(m_Drivetrain, m_PoseEstimation, endPos, constraints);
         
        /// new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),direction),new Pose2d(6.35,2.54, Rotation2d.kZero)

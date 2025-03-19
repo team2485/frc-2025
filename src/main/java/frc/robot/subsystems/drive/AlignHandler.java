@@ -282,7 +282,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // put in the command here that makes it go forward;
                  coralSign = 1;
-                if(targetID == 13){
+                if(targetID == 13){ // TODO: ADD OTHER CORAL STATION ID FOR RED 
                     coralSign=-1;
 
 
@@ -361,7 +361,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // int tagToTarget = 21; // replace with find nearest scorable tag logic
                 if(DriverStation.isAutonomous()){
-                    m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1.5, horizontalOffset, m_Drivetrain, m_PoseEstimation);
+                    m_activeFollowCommand = DriveCommandBuilder.roughAlignToTag(targetID, 1.3, horizontalOffset, m_Drivetrain, m_PoseEstimation);
 
 
                 }
@@ -617,7 +617,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(4.45, 1.8,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(4.75, 1.85,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
