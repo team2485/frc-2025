@@ -68,7 +68,7 @@ public class LED extends SubsystemBase {
         break;
       case StateRainbow:
         candle.clearAnimation(0);
-        RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 64);
+        RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 68);
         candle.animate(rainbowAnim);
         break;
       case StateBlueAnim:
@@ -76,7 +76,7 @@ public class LED extends SubsystemBase {
         if(!runningAnimation) {
           candle.clearAnimation(0);
           // ColorFlowAnimation blue2 = new ColorFlowAnimation(26, 152, 218, 0, 0.5, 64, Direction.Forward);
-          LarsonAnimation blue = new LarsonAnimation(26, 152, 218, 0, 0.25, 64, BounceMode.Center, 5);
+          LarsonAnimation blue = new LarsonAnimation(26, 152, 218, 0, 0.25, 68, BounceMode.Center, 5);
           candle.animate(blue);
           runningAnimation = true;
         }

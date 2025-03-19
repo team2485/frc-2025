@@ -320,7 +320,10 @@ public class AlignHandler extends SubsystemBase{
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
                 horizontalOffset = .29;
+                if(DriverStation.isAutonomous()){
+                    horizontalOffset=.27;
 
+                }
 
                 if(PoseEstimation.getFieldConstants().isOnRed()){
 
@@ -379,6 +382,10 @@ public class AlignHandler extends SubsystemBase{
 
             case StateAlignLeftInit:
                 horizontalOffset = -0.03;
+                if(DriverStation.isAutonomous()){
+                    horizontalOffset=-0.05;
+
+                }
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
 
@@ -568,7 +575,7 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.5;
+                    forwardOffsetApproach=.495;
 
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
@@ -610,7 +617,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(4.3, 2.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(4.45, 1.8,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
