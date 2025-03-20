@@ -287,7 +287,7 @@ public class AlignHandler extends SubsystemBase{
 
 
                 }
-                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.6, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
+                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.4, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
                 
 
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToCoralStation(m_Drivetrain, m_PoseEstimation, forwardPosCoral);
@@ -299,7 +299,7 @@ public class AlignHandler extends SubsystemBase{
             case StateCoralApproach:
             targetID = DriveCommandBuilder.findNearestSourceId(m_PoseEstimation,m_Drivetrain);
                 
-            Pose2d distCheckforwardPosCoral =DriveCommandBuilder.convertAprilTag(targetID, 0.6, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
+            Pose2d distCheckforwardPosCoral =DriveCommandBuilder.convertAprilTag(targetID, 0.4, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
                 double dist = distCheckforwardPosCoral.getTranslation().getDistance(m_PoseEstimation.getCurrentPose().getTranslation()); 
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()  ){//&& m_activeFollowCommand != null){
                     m_activeFollowCommand.cancel();
@@ -571,11 +571,11 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateApproachInit:
 
-                double forwardOffsetApproach = 0.555; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.565; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.495;
+                    forwardOffsetApproach=.51;
 
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
@@ -617,7 +617,7 @@ public class AlignHandler extends SubsystemBase{
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(4.75, 1.85,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(3, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 

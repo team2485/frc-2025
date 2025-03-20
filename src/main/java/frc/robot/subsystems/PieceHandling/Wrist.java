@@ -75,18 +75,18 @@ public class Wrist extends SubsystemBase {
     slot0Configs.kS = kSWrist;
     slot0Configs.kG = kGWrist;// kGWrist;
 
-    slot0Configs.kV = 0.8;
-    slot0Configs.kA = 0.2;
-    slot0Configs.kP = 10;// kPWrist;
-    slot0Configs.kI = kIWrist;
-    slot0Configs.kD = 0.2;
+    slot0Configs.kV = 1.0;
+    slot0Configs.kA = 0.15;
+    slot0Configs.kP = 10.0;// kPWrist;
+    slot0Configs.kI = 0.1;
+    slot0Configs.kD = 0.15;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 45;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 55;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 250;
+    motionMagicConfigs.MotionMagicAcceleration = 1000;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 700;
+    motionMagicConfigs.MotionMagicJerk = 1600;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kWristClockwisePositive)
