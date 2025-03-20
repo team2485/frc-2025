@@ -116,7 +116,7 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 1;
         break;
       case StateL3:
-        desiredPosition = 18.25;
+        desiredPosition = 19;
         break;
       case StateL4Half:
         desiredPosition = 5-.25;

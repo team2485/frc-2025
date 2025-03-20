@@ -575,7 +575,7 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(DriverStation.isAutonomous()){
 
-                    forwardOffsetApproach=.51;
+                    forwardOffsetApproach=.54;
 
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
