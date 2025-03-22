@@ -287,7 +287,7 @@ public class AlignHandler extends SubsystemBase{
 
 
                 }
-                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.4, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
+                Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetID, 0.3, -.5*coralSign, m_Drivetrain, m_PoseEstimation,true);
                 
 
                 m_activeFollowCommand = DriveCommandBuilder.shortDriveToCoralStation(m_Drivetrain, m_PoseEstimation, forwardPosCoral);
@@ -304,7 +304,7 @@ public class AlignHandler extends SubsystemBase{
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()  ){//&& m_activeFollowCommand != null){
                     m_activeFollowCommand.cancel();
                    // CommandScheduler.getInstance().cancel(m_activeFollowCommand);
-                    m_Drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+                    m_Drivetrain.driveAuto(new ChassisSpeeds(-0.5, 0,0));
                     m_activeFollowCommand = null;
                     
                     currentState = AlignStates.StateCoralFinished;
@@ -596,8 +596,10 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(!DriverStation.isAutonomousEnabled()){
 
-
-                m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
+                    PathConstraints constraints = new PathConstraints(4,3.2, 1.5,1);
+                    m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
+             
+                // m_activeFollowCommand = DriveCommandBuilder.shortDriveToPoseMid(m_Drivetrain, m_PoseEstimation, forwardPosRight);
 
                 }
                 else{
@@ -607,12 +609,12 @@ public class AlignHandler extends SubsystemBase{
                 }   
                 
                 if (desiredExtension != AlignStates.StateExtendL4Init){
-                    PathConstraints constraints = new PathConstraints(5.5, 5, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(5, 4.5, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
 
                 if (desiredExtension == AlignStates.StateExtendL2Init){
-                    PathConstraints constraints = new PathConstraints(8, 8, 0.5, 0.5);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(6, 4.5, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
                 if(DriverStation.isAutonomous()){

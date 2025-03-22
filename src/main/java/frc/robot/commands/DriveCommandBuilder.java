@@ -183,7 +183,7 @@ public class DriveCommandBuilder {
     }
     public static Command shortDriveToCoralStation(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation, Pose2d endPos){
         // PathPlannerPath.clearCache();
-        PathConstraints constraints = new PathConstraints(13,8.5, 4, 4);
+        PathConstraints constraints = new PathConstraints(12,8.5, 4, 4);
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
             new Pose2d(m_PoseEstimation.getCurrentPose().getTranslation(),endPos.getRotation().rotateBy(Rotation2d.k180deg)),
             new Pose2d(endPos.getTranslation(), endPos.getRotation().rotateBy(Rotation2d.k180deg))

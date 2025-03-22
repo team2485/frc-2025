@@ -67,9 +67,12 @@ public class LED extends SubsystemBase {
         candle.setLEDs(255, 16, 240);
         break;
       case StateRainbow:
-        candle.clearAnimation(0);
-        RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.5, 68);
-        candle.animate(rainbowAnim);
+        if(!runningAnimation) {
+          candle.clearAnimation(0);
+          RainbowAnimation rainbowAnim = new RainbowAnimation(1, 0.75, 68);
+          candle.animate(rainbowAnim);
+          runningAnimation = true;
+        }
         break;
       case StateBlueAnim:
         // Blue streak animation
@@ -80,9 +83,9 @@ public class LED extends SubsystemBase {
           candle.animate(blue);
           runningAnimation = true;
         }
-        // Find out a way to repeat the animation but only when the previous one is finished
         break;
-    } // autos will have alliance color for LEDs
+    }
+    // autos will have alliance color for LEDs
     // green LEDs for scoring in processor
 
     m_LEDCurrentState = m_LEDRequestedState;

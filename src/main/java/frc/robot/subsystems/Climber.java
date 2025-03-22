@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase {
     StateMovingToRequestedState,
     StateClimberOnForward,
     StateClimberOnBackward,
-
+    StateClimberOnDeploy,
   }
 
   public static ClimberStates m_ClimberCurrentState;
@@ -88,6 +88,9 @@ public class Climber extends SubsystemBase {
       case StateClimberOnForward:
         desiredVoltage = 10;
         break;
+      case StateClimberOnDeploy:
+        desiredVoltage = -5;
+        break;
       case StateClimberOnBackward:
         desiredVoltage = -10;
         break;
@@ -103,26 +106,52 @@ public class Climber extends SubsystemBase {
 
 
   public void runControlLoop() {
+    m_ClimberCurrentState = m_ClimberRequestedState;
     currentLog.setDouble(m_talon.getSupplyCurrent().getValueAsDouble());
     veloLog.setDouble(m_talon.getVelocity().getValueAsDouble());
     posLog.setDouble(m_talon.getPosition().getValueAsDouble());
 
+    if(m_ClimberRequestedState ==ClimberStates.StateClimberOnBackward){
 
+
+      if(desiredVoltage == 0){
+        m_talon.setVoltage(desiredVoltage);
+  
+  
+      }else if(m_talon.getPosition().getValueAsDouble() < -510 && desiredVoltage < 0){
+  
+        m_talon.setVoltage(0);
+  
+      }
+
+      else{
+        m_talon.setVoltage(desiredVoltage);
+  
+      }
+  
+
+    }else if (m_ClimberRequestedState == ClimberStates.StateClimberOnDeploy) {
+      if(desiredVoltage == 0){
+        m_talon.setVoltage(desiredVoltage);
+  
+  
+      }else if(m_talon.getPosition().getValueAsDouble() < -50 && desiredVoltage < 0){
+  
+        m_talon.setVoltage(0);
+  
+      }
+      else{
+        m_talon.setVoltage(desiredVoltage);
+  
+      }
+  
+    }
 
     if(desiredVoltage == 0){
       m_talon.setVoltage(desiredVoltage);
 
 
-    }else if(m_talon.getPosition().getValueAsDouble() < -475 && desiredVoltage < 0){
-
-      m_talon.setVoltage(0);
-
     }
-    else{
-      m_talon.setVoltage(desiredVoltage);
-
-    }
-
   }
 
   // example of a "setter" method

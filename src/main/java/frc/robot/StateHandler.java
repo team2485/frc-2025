@@ -271,7 +271,7 @@ public class StateHandler extends SubsystemBase{
                     currentState = requestedState;
                 }                
                 break;
-            case StateClimberPrepare:
+            case StateClimberPrepare: 
                 if( requestedState==RobotStates.StateCoralStationInit || requestedState==RobotStates.StateClimbGo  ||requestedState==RobotStates.StateClimbPause ){
 
                     currentState=requestedState;
@@ -283,14 +283,14 @@ public class StateHandler extends SubsystemBase{
 
 
                 }
-                m_Climber.requestState(ClimberStates.StateClimberOnForward);
+                m_Climber.requestState(ClimberStates.StateClimberOnDeploy);
                 m_Pivot.requestState(PivotStates.StateClimb);
                 m_Elevator.requestState(ElevatorStates.StateStation);
                 m_leds.requestState(LED.LEDStates.StatePink);
                 break;
                 
             case StateClimbGo:
-                if( requestedState==RobotStates.StateClimberPrepare ||requestedState==RobotStates.StateClimbPause ){
+                if( requestedState==RobotStates.StateClimberPrepare || requestedState==RobotStates.StateClimbPause ){
 
                     currentState=requestedState;
 

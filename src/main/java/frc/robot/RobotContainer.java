@@ -233,8 +233,9 @@ public class RobotContainer {
     
     
     )));
-    m_operator.leftBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimberPrepare))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
+    // m_operator.leftBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimberPrepare))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause)));
     m_operator.leftTrigger().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbGo))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause))); // pulls taught
+    m_operator.leftBumper().onTrue(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimberPrepare))).onFalse(new InstantCommand(() -> m_Handler.requestRobotState(RobotStates.StateClimbPause))); // pulls taught
     
 
 
