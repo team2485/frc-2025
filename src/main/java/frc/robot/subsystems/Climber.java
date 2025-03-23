@@ -118,7 +118,7 @@ public class Climber extends SubsystemBase {
         m_talon.setVoltage(desiredVoltage);
   
   
-      }else if(m_talon.getPosition().getValueAsDouble() < -510 && desiredVoltage < 0){
+      }else if(m_talon.getPosition().getValueAsDouble() < -535 && desiredVoltage < 0){
   
         m_talon.setVoltage(0);
   

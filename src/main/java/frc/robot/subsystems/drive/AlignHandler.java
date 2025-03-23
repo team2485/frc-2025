@@ -570,12 +570,18 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
-
                 double forwardOffsetApproach = 0.565; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
+                    count++; // first placement is 1
+                    if(count == 2){
 
-                    forwardOffsetApproach=.54;
+                        forwardOffsetApproach = .52;
+
+                    }
+                    else{
+                        forwardOffsetApproach=.54;
+                    }
 
                 }else if(targetID == 17 && horizontalOffset < 0){
 
@@ -626,17 +632,17 @@ public class AlignHandler extends SubsystemBase{
                 }   
                 
                 if (desiredExtension != AlignStates.StateExtendL4Init){
-                    PathConstraints constraints = new PathConstraints(5, 4.5, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(5, 3, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
 
                 if (desiredExtension == AlignStates.StateExtendL2Init){
-                    PathConstraints constraints = new PathConstraints(6, 4.5, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(6, 3, 1, 1);//new PathConstraints(1, 1, 0.5,0.5);
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose(m_Drivetrain, m_PoseEstimation, forwardPosRight, constraints);
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(3.1, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(3.15, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
@@ -650,7 +656,7 @@ public class AlignHandler extends SubsystemBase{
 
 
                     m_activeFollowCommand = DriveCommandBuilder.shortDriveToPose3Waypoint(m_Drivetrain, m_PoseEstimation, roughAlignPos, forwardPosRight, constraints);
-                    count++;
+                    // count++;
 
 
                 }
