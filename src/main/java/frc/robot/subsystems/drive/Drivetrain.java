@@ -51,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
             absoluteGyroPosition = 180;
         try{
           pathplannerConfig = RobotConfig.fromGUISettings();
-          System.out.println("asdfadsfasdf" + pathplannerConfig.toString());
+        //   System.out.println("asdfadsfasdf" + pathplannerConfig.toString());
         } catch (Exception e) {
             // Handle exception as needed
             

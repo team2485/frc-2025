@@ -201,7 +201,7 @@ public class AutoCommandBuilder {
         m_autoPeriodicCurrentState = m_autoPeriodicRequestedState;
         m_basicMidScoreAutoCurrentState = m_basicMidScoreAutoRequestedState;
         // dashEntry.setString(m_basicScoreAutoCurrentState.name());
-        System.out.println(m_activeFollowCommand);
+        // System.out.println(m_activeFollowCommand);
         dashEntry.setString(m_basicScoreAutoRequestedState.name());
         // dashEntry.setString(Integer.valueOf(incrementer).toString());
 
