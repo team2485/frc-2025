@@ -173,7 +173,7 @@ public class AutoCommandBuilder {
         try {Thread.sleep(50);} catch(Exception exc){
 
 
-            System.out.println(exc.toString());
+            System.out.println("Delay failed\n" + exc.toString());
 
         }
         m_lineAutoRequestedState = lineAutoStates.StateIdle;
@@ -251,7 +251,7 @@ public class AutoCommandBuilder {
                 }
                 break;
 
-            case BasicScoreAuto:
+            case BasicScoreAuto: //3 piece auto L4
                 if(m_Container.m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
                     isExtended = false;
                 

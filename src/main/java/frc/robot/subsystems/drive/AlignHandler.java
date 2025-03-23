@@ -577,9 +577,26 @@ public class AlignHandler extends SubsystemBase{
 
                     forwardOffsetApproach=.54;
 
+                }else if(targetID == 17 && horizontalOffset < 0){
+
+                    forwardOffsetApproach = .52;
+
+                }else if(targetID == 18 && horizontalOffset < 0){
+
+                    forwardOffsetApproach=.52;
+
                 }
                 if (desiredExtension == AlignStates.StateExtendL2Init || desiredExtension == AlignStates.StateExtendL3Init){
                     forwardOffsetApproach = 0.4;
+                    if(targetID == 17 && horizontalOffset < 0){
+
+                        forwardOffsetApproach = .35;
+    
+                    }else if(targetID == 18 && horizontalOffset < 0){
+    
+                        forwardOffsetApproach=.35;
+    
+                    }
                 }
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     m_roller.requestState(RollerStates.StateAlgaeIntake);
@@ -619,11 +636,11 @@ public class AlignHandler extends SubsystemBase{
                 }
                 if(DriverStation.isAutonomous()){
                     
-                    PathConstraints constraints = new PathConstraints(3, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
+                    PathConstraints constraints = new PathConstraints(3.1, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
                    
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
-                    // if(count == 0){
+                    // if(count == 0)5
 
                     //     constraints=new PathConstraints(3, 3,0.75, 0.75, 12);
 
