@@ -78,7 +78,7 @@ public class Elevator extends SubsystemBase {
     // vel/acc = time to reach constant velocity
     motionMagicConfigs.MotionMagicAcceleration = 450;//kElevatorAcceleration;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 800;
+    motionMagicConfigs.MotionMagicJerk = 900;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kElevatorClockwisePositive)
