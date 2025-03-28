@@ -69,16 +69,16 @@ public class Elevator extends SubsystemBase {
 
     slot0Configs.kV = 4;
     slot0Configs.kA = .1;
-    slot0Configs.kP = 16;// kPElevator;
+    slot0Configs.kP = 18;// kPElevator;
     slot0Configs.kI = kIElevator;
     slot0Configs.kD = 0.25;//kDElevator;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 350;//kElevatorAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 450;//kElevatorAcceleration;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 600;
+    motionMagicConfigs.MotionMagicJerk = 800;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kElevatorClockwisePositive)
