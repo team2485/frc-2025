@@ -326,6 +326,7 @@ public class StateHandler extends SubsystemBase{
 
             case StateL4Prepare1:
                 m_Pivot.requestState(PivotStates.StateL4);
+                m_Wrist.requestState(WristStates.StateL4);
                 m_Elevator.requestState(ElevatorStates.StateL4Half);
                 currentState = RobotStates.StateL4Prepare2;
                 break;
