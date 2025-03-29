@@ -570,7 +570,7 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
-                double forwardOffsetApproach = 0.565; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.54; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
                     count++; // first placement is 1
@@ -726,7 +726,7 @@ public class AlignHandler extends SubsystemBase{
             //     currentState = AlignStates.StateApproach;
             //     break;
             case StateApproach:
-                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished()){
+                if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && (m_Container.m_Handler.getCurrentState() == RobotStates.StateL4Finished ||m_Container.m_Handler.getCurrentState() == RobotStates.StateL3Finished || m_Container.m_Handler.getCurrentState() == RobotStates.StateL2Finished || m_Container.m_Handler.getCurrentState() == RobotStates.StateL1Final || m_Container.m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal || m_Container.m_Handler.getCurrentState() == RobotStates.StateL3AlgaeFinal )){
                     if(DriverStation.isAutonomousEnabled()){
 
 

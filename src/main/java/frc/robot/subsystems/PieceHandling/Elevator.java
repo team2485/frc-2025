@@ -113,13 +113,13 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateL2:
-        desiredPosition = 0;
+        desiredPosition = 1;
         break;
       case StateL3:
-        desiredPosition = 19;
+        desiredPosition = 19 + 2.5; //DUMMY FIX for gala recording
         break;
       case StateL4Half:
-        desiredPosition = 5-.25;
+        desiredPosition = 7;
         break;
       case StateL4:
         desiredPosition = 27.625-1.25;
@@ -147,7 +147,7 @@ public class Elevator extends SubsystemBase {
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
 
-    if (getError() < kElevatorErrorTolerance)
+    if (getError() < kElevatorErrorTolerance && m_elevatorTalon1.getVelocity().getValueAsDouble() < 4)
       m_ElevatorCurrentState = m_ElevatorRequestedState;
     else
       m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
