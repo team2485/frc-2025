@@ -36,6 +36,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 // Imports go here
@@ -64,7 +65,37 @@ public class DriveCommandBuilder {
         PathfindingCommand.warmupCommand().schedule();
     }
     
-    
+    public static Command driveToBarge(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation){
+
+        Pose2d currentPos = m_PoseEstimation.getCurrentPose();
+        double bargeDistanceMeters = 0;
+        if(DriverStation.getAlliance().get() == Alliance.Blue){
+
+            bargeDistanceMeters = 310.5*Constants.kInchesToMeters;
+
+
+        }else{
+            bargeDistanceMeters = Constants.VisionConstants.kFieldLengthMeters - (310.5*Constants.kInchesToMeters);
+
+
+        }
+        Pose2d targetPose = new Pose2d(bargeDistanceMeters,m_PoseEstimation.getCurrentPose().getY(),Rotation2d.k180deg);
+        double dist =  m_PoseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
+        if(dist<.5){
+
+            return driveToPosition(m_Drivetrain, m_PoseEstimation,()->targetPose);
+
+        }
+        else{
+
+            PathConstraints constraints = new PathConstraints(3, 3, 1, 1);
+            var cmd = AutoBuilder.pathfindToPose(targetPose, constraints);
+            return cmd;
+            
+
+        }
+
+    }
     public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {
  
     
