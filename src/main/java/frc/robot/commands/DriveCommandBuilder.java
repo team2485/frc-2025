@@ -118,6 +118,48 @@ public class DriveCommandBuilder {
         }
 
     }
+    public static Command driveToShoot(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation){
+
+        Pose2d currentPos = m_PoseEstimation.getCurrentPose();
+        double bargeDistanceMeters = 0;
+        Rotation2d flip = Rotation2d.k180deg;
+        if(DriverStation.getAlliance().get() == Alliance.Blue){
+
+            bargeDistanceMeters = 105*Constants.kInchesToMeters;
+            
+
+        }else{
+            bargeDistanceMeters = 105*Constants.kInchesToMeters;
+            flip = Rotation2d.kZero;
+        }
+        Translation2d dir = currentPos.minus(PoseEstimation.getFieldConstants().getBargePose()).getTranslation();
+        
+        Translation2d unit = dir.div(Math.sqrt((dir.getX()*dir.getX()) + (dir.getY()*dir.getY()) ));
+        Translation2d actualPose = PoseEstimation.getFieldConstants().getBargePose().getTranslation() .minus(unit.times(bargeDistanceMeters) );
+        Pose2d targetPose = new Pose2d(actualPose,flip);
+        double dist =  m_PoseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
+        
+        // return driveToPosition(m_Drivetrain, m_PoseEstimation,()->targetPose);
+        if(dist <.2 ){
+
+            return null;
+
+        }
+        if(dist<.6){
+
+            return driveToPosition(m_Drivetrain, m_PoseEstimation,()->targetPose);
+
+        }
+        else{
+
+            PathConstraints constraints = new PathConstraints(3.7, 3, 1.3, 1.3);
+            var cmd = AutoBuilder.pathfindToPose(targetPose, constraints);
+            return cmd;
+            
+
+        }
+
+    }
     public static Command driveToPosition(Drivetrain m_drivetrain, PoseEstimation m_poseEstimation, Supplier<Pose2d> fieldEndPos) {
  
     

@@ -173,7 +173,7 @@ public class Pivot extends SubsystemBase {
   //  m_PivotTalon2.setControl(request.withPosition(desiredPosition));
   }
 
-  private double getPosition() {
+  public double getPosition() {
     return m_talon.getPosition().getValueAsDouble();
   }
   public double getPositionWithRatio(){

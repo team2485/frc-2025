@@ -60,7 +60,7 @@ public class RobotContainer {
   public final Drivetrain m_drivetrain = new Drivetrain();
   private final SendableChooser<Command> autoChooser;
   private final Elevator m_elevator = new Elevator();
-  private final Pivot m_pivot = new Pivot();
+  public final Pivot m_pivot = new Pivot();
   public final Wrist m_wrist = new Wrist();
   public final Roller m_roller = new Roller();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
