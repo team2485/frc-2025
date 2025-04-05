@@ -504,7 +504,14 @@ public class StateHandler extends SubsystemBase{
                 m_Elevator.requestState(ElevatorStates.StateBarge);
                 m_Wrist.requestState(WristStates.StateBarge);
                 m_Pivot.requestState(PivotStates.StateBarge);
-                currentState = RobotStates.StateBargeFinal;
+
+                if(m_Wrist.getCurrentState() == WristStates.StateBarge && m_Elevator.getCurrentState() == ElevatorStates.StateBarge && m_Pivot.getCurrentState() == PivotStates.StateBarge){
+
+
+                    currentState = RobotStates.StateBargeFinal;
+
+                }
+
                 break;
             
             case StateBargeFinal:

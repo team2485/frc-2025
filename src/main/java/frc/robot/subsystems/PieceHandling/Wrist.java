@@ -143,7 +143,7 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0;
         break;
       case StateBarge:
-        desiredPosition = 19.5/kWristGearRatio;
+        desiredPosition = 21/kWristGearRatio;
         break;
       case StateProcessor:
         desiredPosition = 0.13;
@@ -185,7 +185,7 @@ public class Wrist extends SubsystemBase {
   //  m_WristTalon2.setControl(request.withPosition(desiredPosition));
   }
 
-  private double getPosition() {
+  public double getPosition() {
     return m_talon.getPosition().getValueAsDouble();
   }
 

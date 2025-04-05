@@ -72,7 +72,7 @@ public class DriveCommandBuilder {
 
         Pose2d currentPos = m_PoseEstimation.getCurrentPose();
         double bargeDistanceMeters = 0;
-        Rotation2d flip = Rotation2d.kZero;
+        Rotation2d flip = Rotation2d.k180deg;
         if(DriverStation.getAlliance().get() == Alliance.Blue){
 
             bargeDistanceMeters = 310.5*Constants.kInchesToMeters;
@@ -81,7 +81,7 @@ public class DriveCommandBuilder {
         }else{
             bargeDistanceMeters = Constants.VisionConstants.kFieldLengthMeters - (310.5*Constants.kInchesToMeters);
 
-            flip = Rotation2d.k180deg;
+            flip = Rotation2d.kZero;
         }
         Pose2d targetPose = new Pose2d(bargeDistanceMeters,m_PoseEstimation.getCurrentPose().getY(),flip);
         double dist =  m_PoseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());

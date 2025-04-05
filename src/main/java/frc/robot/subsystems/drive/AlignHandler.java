@@ -56,7 +56,7 @@ public class AlignHandler extends SubsystemBase{
     private AlignStates desiredExtension=AlignStates.StateInit;
     private LED m_leds;
     private RobotContainer m_Container;
-    private static PIDController aimController = new PIDController(1, 0, 0);
+    private static PIDController aimController = new PIDController(2, 0, 0.5);
 
     public enum AlignStates {
 
@@ -161,6 +161,7 @@ public class AlignHandler extends SubsystemBase{
     GenericEntry state = Shuffleboard.getTab("Autos").add("alignerstate", "").getEntry();
     GenericEntry tagLog = Shuffleboard.getTab("Autos").add("tag log", -1).getEntry();
     GenericEntry horizOfLog = Shuffleboard.getTab("Autos").add("horizontal offset", -1).getEntry();
+    GenericEntry omegaLog = Shuffleboard.getTab("Autos").add("omega ", -1).getEntry();
     long stateBackupStartTime = -1;
     long bargeShotStopTime = -1;
 
@@ -217,7 +218,7 @@ public class AlignHandler extends SubsystemBase{
                 requestedState == AlignStates.StateAlignLeftL3Init ||
                 requestedState == AlignStates.StateAlignRightL3Init ||
                 requestedState==AlignStates.StateAlignAlgaeL3Init ||
-                requestedState == AlignStates.StateAuto
+                requestedState == AlignStates.StateAuto || requestedState == AlignStates.StateAlignBargeInit || requestedState == AlignStates.StateShootBargeInit
                 
                 ) currentState = requestedState;
 
@@ -917,23 +918,36 @@ public class AlignHandler extends SubsystemBase{
                 break;
             case StateAlignBargeExtend:
                 if(m_activeFollowCommand.isFinished()){
+                    currentState=AlignStates.StateAlignBargeYield;
 
                     m_Handler.requestRobotState(RobotStates.StateBargeInit);
                     bargeShotStopTime = System.currentTimeMillis();
                 }
-                currentState=AlignStates.StateAlignBargeYield;
                 break;
             case StateAlignBargeYield:
-                if(m_Handler.getCurrentState() == RobotStates.StateBargeFinal && System.currentTimeMillis() - bargeShotStopTime >= 3000){ // shot delay
+                if(m_Handler.getCurrentState() == RobotStates.StateBargeFinal ){ // shot delay
 
                     // requestedState = AlignStates.StateLower;
-                    m_Container.m_roller.requestState(RollerStates.StateBloop);
-                    currentState =AlignStates.StateLowerInit;
+                    m_roller.requestState(RollerStates.StateSHOOOOOT);
+                    // currentState =AlignStates.StateLowerInit;
+                    // m_Handler.requestRobotState(RobotStates.StateCoralStationInit);    
+                }
+                if(m_Handler.getCurrentState() == RobotStates.StateBargeFinal && System.currentTimeMillis() - bargeShotStopTime >= 2000){ // shot delay
+
+                    // requestedState = AlignStates.StateLower;
+                   // m_Container.m_roller.requestState(RollerStates.StateSHOOOOOT);\
+                    
+                   m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+                    m_roller.requestState(RollerStates.StateRollerOff);
+                    currentState = AlignStates.StateLower;
+
+                    // currentState =AlignStates.StateLowerInit;
                     // m_Handler.requestRobotState(RobotStates.StateCoralStationInit);    
                 }
                 break;
             case StateShootBargeInit:
-                m_Drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+             CommandScheduler.getInstance().cancel(kteleOpCommand);
+                // m_Drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
                 currentState = AlignStates.StateShootBargeAim;
                 break;
             case StateShootBargeAim:
@@ -942,17 +956,17 @@ public class AlignHandler extends SubsystemBase{
                 Rotation2d targetAngle = m_PoseEstimation.getCurrentPose().getTranslation().minus(target.getTranslation()).getAngle() ;
 
                 double omega = aimController.calculate(m_Drivetrain.getYaw().getRadians(), targetAngle.getRadians());
-
+                omegaLog.setDouble(omega);
 
                 
                 m_Drivetrain.driveAuto(new ChassisSpeeds(
 
 
-                0,0,omega*Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond
+                0,0,omega
 
 
                 ));
-                if(omega <= .05){
+                if(Math.abs(m_PoseEstimation.getCurrentPose().getRotation().getDegrees()- targetAngle.getDegrees()) <=5){
 
                     currentState = AlignStates.StateShootBargeExtend;
                     m_Drivetrain.driveAuto(new ChassisSpeeds(
@@ -968,7 +982,7 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateShootBargeYield;
                 break;
             case StateShootBargeYield:
-                if(m_Container.m_wrist.getVelocity() > 20){
+                if(m_Container.m_wrist.getPosition() > 15 ){
                     bargeShotStopTime = System.currentTimeMillis();
 
                     m_roller.requestState(RollerStates.StateSHOOOOOT);

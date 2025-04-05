@@ -71,18 +71,18 @@ public class Elevator extends SubsystemBase {
     slot0Configs.kS = kSElevator;
     slot0Configs.kG =0;// kGElevator;
 
-    slot0Configs.kV = 2.5;
-    slot0Configs.kA = .15;
-    slot0Configs.kP = 18;// kPElevator;
+    slot0Configs.kV = .15;
+    slot0Configs.kA = .02;
+    slot0Configs.kP = 4;// kPElevator;
     slot0Configs.kI = kIElevator;
-    slot0Configs.kD = 0.2;//kDElevator;
+    slot0Configs.kD = 0.005;//kDElevator;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
     motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 450;//kElevatorAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 400;//kElevatorAcceleration;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 900;
+    motionMagicConfigs.MotionMagicJerk = 3000;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kElevatorClockwisePositive)
@@ -126,18 +126,19 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 7;
         break;
       case StateL4:
-        desiredPosition = 27.625-1.25;
+        desiredPosition = 27.625+0.25;
         break;
       case StateProcessor:
         desiredPosition = 1;
         break;
       case StateBarge:
-        desiredPosition = 27.625 -3 ;
+        desiredPosition = 27.625  ;
         break;
       case StateL2Algae:
         desiredPosition = 1;
         break;
       case StateL3Algae:
+      
         desiredPosition = 17.125;
         break;
       case StateLollipop:
@@ -146,7 +147,7 @@ public class Elevator extends SubsystemBase {
  
         
       case StateStation:
-        desiredPosition = 1 + 3;
+        desiredPosition = 0.5;
     }
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();

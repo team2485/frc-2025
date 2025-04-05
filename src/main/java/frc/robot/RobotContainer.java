@@ -209,10 +209,7 @@ public class RobotContainer {
       m_driver.leftPOV().onTrue(new InstantCommand(() ->alignLeft() ));   
       m_driver.upperPOV().onTrue(new InstantCommand(() ->alignMid() )); 
       m_driver.y().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateAlignBargeInit)));
-      m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateShootBargeInit)));
-
-
-    
+      m_driver.a().onTrue(new InstantCommand(() ->  m_Aligner.requestAlignState(AlignStates.StateShootBargeInit)));
 
    
     m_driver.rightTrigger().onTrue(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOnForward), m_roller)).onFalse(new InstantCommand(() -> m_roller.requestState(RollerStates.StateRollerOff), m_roller));
