@@ -68,6 +68,24 @@ public class DriveCommandBuilder {
         PathfindingCommand.warmupCommand().schedule();
     }
 
+
+    public static double constrainRadians(double rads){
+
+        while(rads < -Math.PI){
+
+            rads+=(Math.PI*2);
+
+        }
+        while(rads > Math.PI){
+
+
+            rads-=(Math.PI*2);
+
+        }
+        return rads;
+
+    }
+
     public static Command driveToBarge(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation){
 
         Pose2d currentPos = m_PoseEstimation.getCurrentPose();

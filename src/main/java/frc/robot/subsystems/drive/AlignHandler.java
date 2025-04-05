@@ -1,5 +1,9 @@
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
+
+import java.lang.invoke.ConstantCallSite;
+
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -56,7 +60,7 @@ public class AlignHandler extends SubsystemBase{
     private AlignStates desiredExtension=AlignStates.StateInit;
     private LED m_leds;
     private RobotContainer m_Container;
-    private static PIDController aimController = new PIDController(2, 0, 0.5);
+    private PIDController aimController = new PIDController(2, 0, 0.1);
 
     public enum AlignStates {
 
@@ -149,6 +153,7 @@ public class AlignHandler extends SubsystemBase{
         m_Handler = handler;
         m_roller=rollers;
         m_leds = new LED();
+        aimController.enableContinuousInput(-Math.PI,Math.PI);
         kteleOpCommand = new DriveWithController(
             m_driver::getLeftY,
             m_driver::getLeftX,
@@ -162,6 +167,9 @@ public class AlignHandler extends SubsystemBase{
     GenericEntry tagLog = Shuffleboard.getTab("Autos").add("tag log", -1).getEntry();
     GenericEntry horizOfLog = Shuffleboard.getTab("Autos").add("horizontal offset", -1).getEntry();
     GenericEntry omegaLog = Shuffleboard.getTab("Autos").add("omega ", -1).getEntry();
+    GenericEntry targetLog = Shuffleboard.getTab("Autos").add("target ", -1).getEntry();
+    GenericEntry actualLog = Shuffleboard.getTab("Autos").add("actual ", -1).getEntry();
+
     long stateBackupStartTime = -1;
     long bargeShotStopTime = -1;
 
@@ -954,19 +962,42 @@ public class AlignHandler extends SubsystemBase{
                 Pose2d target = m_PoseEstimation.getFieldConstants().getBargePose();    
 
                 Rotation2d targetAngle = m_PoseEstimation.getCurrentPose().getTranslation().minus(target.getTranslation()).getAngle() ;
+                double constTarget = DriveCommandBuilder.constrainRadians(targetAngle.getRadians());
+                double constActual = DriveCommandBuilder.constrainRadians(m_PoseEstimation.getCurrentPose().getRotation().getRadians());
+                double sign = -1;
+                // double omega = 0;
+                // if(actualRots - targetRots > 0.5){
+                //     sign = -1;
+                //     // rotate negatively
+                //     omega = aimController.calculate(m_Drivetrain.getYaw().getRotations(), targetAngle.getRotations());
 
-                double omega = aimController.calculate(m_Drivetrain.getYaw().getRadians(), targetAngle.getRadians());
+                // }else{
+                //     sign = 1;
+
+                //     // rotate positively
+                //     omega = aimController.calculate(m_Drivetrain.getYaw().getRotations(), targetAngle.unaryMinus().getRotations());
+
+                // }
+
+                double omega = aimController.calculate(constActual,constTarget);
+                // omega = Math.copySign(omega * omega, omega);
+
+ 
+
+
                 omegaLog.setDouble(omega);
+                targetLog.setDouble(constTarget);
+                actualLog.setDouble(constActual );
 
                 
-                m_Drivetrain.driveAuto(new ChassisSpeeds(
+                m_Drivetrain.driveAuto(ChassisSpeeds.fromFieldRelativeSpeeds( 
 
 
-                0,0,omega
+                0,0,omega * kTeleopMaxAngularSpeedRadiansPerSecond,m_Drivetrain.getYaw()
 
 
                 ));
-                if(Math.abs(m_PoseEstimation.getCurrentPose().getRotation().getDegrees()- targetAngle.getDegrees()) <=5){
+                if(Math.abs(constTarget - constActual) <= (5*Math.PI/180)){
 
                     currentState = AlignStates.StateShootBargeExtend;
                     m_Drivetrain.driveAuto(new ChassisSpeeds(
@@ -977,6 +1008,7 @@ public class AlignHandler extends SubsystemBase{
                     ));
                 }
                 break;
+                
             case StateShootBargeExtend:
                 m_Handler.requestRobotState(RobotStates.StateBargeInit);
                 currentState = AlignStates.StateShootBargeYield;
