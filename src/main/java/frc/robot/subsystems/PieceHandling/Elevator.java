@@ -69,20 +69,20 @@ public class Elevator extends SubsystemBase {
     // kD outputs n volts when the velocity error is 1 rotation per second
     var slot0Configs = talonFXConfigs.Slot0;
     slot0Configs.kS = kSElevator;
-    slot0Configs.kG =0;// kGElevator;
+    slot0Configs.kG = 0;// kGElevator;
 
-    slot0Configs.kV = 2.5;
-    slot0Configs.kA = .15;
-    slot0Configs.kP = 18;// kPElevator;
+    slot0Configs.kV = 0.15; // 2.5
+    slot0Configs.kA = 0.02; // 0.15
+    slot0Configs.kP = 4;// kPElevator; 18
     slot0Configs.kI = kIElevator;
-    slot0Configs.kD = 0.2;//kDElevator;
+    slot0Configs.kD = 0.005;//kDElevator; 0.2
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity; 80
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 450;//kElevatorAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 400;//kElevatorAcceleration; 450
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 900;
+    motionMagicConfigs.MotionMagicJerk = 3000; // 900
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kElevatorClockwisePositive)
@@ -126,7 +126,7 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 7;
         break;
       case StateL4:
-        desiredPosition = 27.625-1.25;
+        desiredPosition = 27.625+0.25;
         break;
       case StateProcessor:
         desiredPosition = 1;
@@ -144,9 +144,9 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 0;
         break;
  
-        
       case StateStation:
-        desiredPosition = 1 + 3;
+        desiredPosition = 0.5;
+        break;
     }
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
