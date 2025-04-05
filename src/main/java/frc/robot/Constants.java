@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.Vision.Vision;
 import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
@@ -89,6 +90,7 @@ public final class Constants {
   public interface FieldConstants {
     public int[] getProcessorId();
     public int[] getReefTagIds();
+    public Pose2d getBargePose();
     public int[] getCoralStationTags();
     public double[ ] getReefXOffsetsRight();
     public double[] getReefXOffsetsLeft();
@@ -222,6 +224,12 @@ public final class Constants {
 
 
     };
+    public Pose2d getBargePose(){
+
+
+      return VisionConstants.kBlueTagList.get(14).pose.toPose2d();
+
+    }
     public double[] getReefXOffsetsLeft(){
 
       return reefXOffsetsLeft;
@@ -303,7 +311,12 @@ public final class Constants {
      
 
     };
+    public Pose2d getBargePose(){
 
+
+      return VisionConstants.kBlueTagList.get(13).pose.toPose2d();
+
+    }
     static final double[] reefXOffsetsLeft = new double[] {
       // PHR CONSTANTS:
       // 2* kInchesToMeters, //17

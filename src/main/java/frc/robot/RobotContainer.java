@@ -61,7 +61,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   private final Elevator m_elevator = new Elevator();
   private final Pivot m_pivot = new Pivot();
-  private final Wrist m_wrist = new Wrist();
+  public final Wrist m_wrist = new Wrist();
   public final Roller m_roller = new Roller();
   private final WL_CommandXboxController m_driver = new WL_CommandXboxController(kDriverPort);
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
@@ -208,7 +208,8 @@ public class RobotContainer {
       m_driver.rightPOV().onTrue(new InstantCommand(() ->alignRight() ));
       m_driver.leftPOV().onTrue(new InstantCommand(() ->alignLeft() ));   
       m_driver.upperPOV().onTrue(new InstantCommand(() ->alignMid() )); 
-       
+      m_driver.y().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateAlignBargeInit)));
+      m_driver.b().onTrue(new InstantCommand(() -> m_Aligner.requestAlignState(AlignStates.StateShootBargeInit)));
 
 
     

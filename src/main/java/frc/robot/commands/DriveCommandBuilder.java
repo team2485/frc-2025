@@ -9,6 +9,7 @@ import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRa
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxSpeedMetersPerSecond;
 
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -28,10 +29,12 @@ import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -64,22 +67,23 @@ public class DriveCommandBuilder {
         m_drivetrain);
         PathfindingCommand.warmupCommand().schedule();
     }
-    
+
     public static Command driveToBarge(Drivetrain m_Drivetrain, PoseEstimation m_PoseEstimation){
 
         Pose2d currentPos = m_PoseEstimation.getCurrentPose();
         double bargeDistanceMeters = 0;
+        Rotation2d flip = Rotation2d.kZero;
         if(DriverStation.getAlliance().get() == Alliance.Blue){
 
             bargeDistanceMeters = 310.5*Constants.kInchesToMeters;
-
+            
 
         }else{
             bargeDistanceMeters = Constants.VisionConstants.kFieldLengthMeters - (310.5*Constants.kInchesToMeters);
 
-
+            flip = Rotation2d.k180deg;
         }
-        Pose2d targetPose = new Pose2d(bargeDistanceMeters,m_PoseEstimation.getCurrentPose().getY(),Rotation2d.k180deg);
+        Pose2d targetPose = new Pose2d(bargeDistanceMeters,m_PoseEstimation.getCurrentPose().getY(),flip);
         double dist =  m_PoseEstimation.getCurrentPose().getTranslation().getDistance(targetPose.getTranslation());
         if(dist<.5){
 
@@ -88,7 +92,7 @@ public class DriveCommandBuilder {
         }
         else{
 
-            PathConstraints constraints = new PathConstraints(3, 3, 1, 1);
+            PathConstraints constraints = new PathConstraints(3.7, 3, 1.3, 1.3);
             var cmd = AutoBuilder.pathfindToPose(targetPose, constraints);
             return cmd;
             

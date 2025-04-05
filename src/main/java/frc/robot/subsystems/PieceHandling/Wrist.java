@@ -106,6 +106,13 @@ public class Wrist extends SubsystemBase {
    // m_WristTalon2.setPosition(0);
   }
 
+
+  public double getVelocity(){
+
+    return m_talon.getVelocity().getValueAsDouble();
+
+  }
+
   @Override
   public void periodic() {
     switch (m_WristRequestedState) {
