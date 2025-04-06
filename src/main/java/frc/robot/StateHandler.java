@@ -14,6 +14,7 @@ import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.Constants.PivotConstants.*;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.SynchronousInterrupt.WaitResult;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -397,6 +398,14 @@ public class StateHandler extends SubsystemBase{
                     currentState = RobotStates.StateL2AlgaeInit;
 
                 }
+                if(DriverStation.isAutonomous()){
+                    if(requestedState == RobotStates.StateL2AlgaeInit || requestedState == RobotStates.StateL3AlgaeInit){
+
+                        currentState = requestedState;                        
+
+                    }
+
+                }
                 break;
             
             case StateL4RetractInit:
@@ -515,7 +524,7 @@ public class StateHandler extends SubsystemBase{
                 break;
             
             case StateBargeFinal:
-                if(requestedState == RobotStates.StateCoralStationInit){
+                if(requestedState == RobotStates.StateCoralStationInit || requestedState == RobotStates.StateL3AlgaeInit || requestedState == RobotStates.StateL2AlgaeInit){
 
                     currentState=requestedState;
 

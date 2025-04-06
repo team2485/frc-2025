@@ -1,15 +1,12 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularAccelerationRadiansPerSecondSquared;
 import static frc.robot.Constants.DriveConstants.kTeleopMaxAngularSpeedRadiansPerSecond;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingDeque;
 
 import org.json.simple.parser.ParseException;
 
-import com.ctre.phoenix6.signals.RobotEnableValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -18,10 +15,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,7 +24,6 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.StateHandler.RobotStates;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
-import frc.robot.subsystems.Vision.PoseEstimation;
 import frc.robot.subsystems.drive.AlignHandler.AlignStates;
 
 
@@ -85,6 +79,7 @@ public class AutoCommandBuilder {
         lineAuto,
         BasicScoreAuto,
         BasicMidScoreAuto,
+        MidScoreAutoV2,
     }
 
     public enum lineAutoStates {
@@ -125,9 +120,25 @@ public class AutoCommandBuilder {
         StateTravellingBarge,
         StateScoreBarge,
         StateScoringBarge,
-        StateIntake2Transition, StateAbortInit,
+        StateIntake2Transition,
+        StateAbortInit,
     }
+    public enum MidScoreAutoV2States {
+        StateInit,
+        StateIdle,
+        StateIntaking,
+        StatePlace,
+        StatePlaceTransition,
+        StateDriveBack,
+        StateDriveDone,
+        StateLowerAlgae,
+        StateLowerAlgaeTransition,
+        StateDriveBackAlgae,
+        StateShootAlgaeInit,
+        StateShootAlgaeTransition,
+        StateDriveAlgae2, StateDriveBackAlgae2, StateAlgaeIntake2, StateLowerAlgaeTransition2, StateDriveDone2, StateShootAlgaeInit2, StateShootAlgaeTransition2,
 
+    }
     public static autoPeriodicStates m_autoPeriodicCurrentState = autoPeriodicStates.StateInit;
     public static autoPeriodicStates m_autoPeriodicRequestedState = autoPeriodicStates.StateInit;
 
@@ -145,8 +156,11 @@ public class AutoCommandBuilder {
 
     public static lineAutoStates m_lineAutoCurrentState = lineAutoStates.StateInit;
     public static lineAutoStates m_lineAutoRequestedState = lineAutoStates.StateInit;
+    public static MidScoreAutoV2States m_midScoreAutoV2CurrentState = MidScoreAutoV2States.StateInit;
+    public static MidScoreAutoV2States m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateInit;
+
     static GenericEntry dashEntry = Shuffleboard.getTab("Autos")
-            .add("auto state", m_basicScoreAutoCurrentState.toString()).getEntry();
+            .add("auto state", m_midScoreAutoV2CurrentState.toString()).getEntry();
     static GenericEntry shouldRunTop = Shuffleboard.getTab("Autos").add("Should Run Topside?",true).withWidget(BuiltInWidgets.kBooleanBox).getEntry();
     public static Command m_activeFollowCommand = null;
 
@@ -180,7 +194,7 @@ public class AutoCommandBuilder {
 
         m_lineAutoCurrentState = lineAutoStates.StateIdle;
         m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIdle;
-
+        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateIdle;
         m_basicScoreAutoCurrentState = BasicScoreAutoStates.StateIdle;
         if (m_activeFollowCommand != null) {
 
@@ -192,7 +206,7 @@ public class AutoCommandBuilder {
     }
 
     static Pose2d targetPoint = Pose2d.kZero;
-
+    
     // @Override
     public static void autoControlLoop() {
         // TODO: Include verification on state change here
@@ -200,15 +214,193 @@ public class AutoCommandBuilder {
         m_basicScoreAutoCurrentState = m_basicScoreAutoRequestedState;
         m_autoPeriodicCurrentState = m_autoPeriodicRequestedState;
         m_basicMidScoreAutoCurrentState = m_basicMidScoreAutoRequestedState;
+        m_midScoreAutoV2CurrentState=m_midScoreAutoV2RequestedState;
+
+
         // dashEntry.setString(m_basicScoreAutoCurrentState.name());
         // System.out.println(m_activeFollowCommand);
-        dashEntry.setString(m_basicScoreAutoRequestedState.name());
+        dashEntry.setString(m_midScoreAutoV2CurrentState.name());
         // dashEntry.setString(Integer.valueOf(incrementer).toString());
-
+        
         switch (m_autoPeriodicCurrentState) {
+
+            //middle auto
+            case MidScoreAutoV2:
+                if(m_Container.m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
+                    isExtended = false;
+                }
+                else{
+                    isExtended=true;
+                }
+
+                switch(m_midScoreAutoV2CurrentState){
+                    case StateIdle:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                        break;
+
+                    case StateInit:
+                        intakeStartTime = System.currentTimeMillis();
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateIntaking;
+                        break;
+                    case StateIntaking:
+                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+                        long curTime = System.currentTimeMillis();
+                        if(curTime - intakeStartTime >= 350){
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StatePlace;
+                            
+                        }
+                        break;
+                    case StatePlace:
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StatePlaceTransition;
+                        
+                        break;
+                    case StatePlaceTransition:
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveBack;
+
+                            intakeStartTime = System.currentTimeMillis();
+
+                        }
+                        
+                        break;
+                    case StateDriveBack:
+                        if(System.currentTimeMillis() - intakeStartTime >= 1000) {
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit);
+                        }
+                        m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                            -1,0,0
+                        ));
+                        if(System.currentTimeMillis()-intakeStartTime >= 1500){
+
+                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                                0,0,0
+                            )); 
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveDone;
+
+                        }
+                        break;
+                    case StateDriveDone:
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateLowerAlgae;
+                        break;
+                    case StateLowerAlgae:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL2Init);
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateLowerAlgaeTransition;
+                        break;
+                    case StateLowerAlgaeTransition:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                        if(m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveBackAlgae;
+                            intakeStartTime = System.currentTimeMillis();
+                        }
+                        break;
+                    case StateDriveBackAlgae:
+                        if(System.currentTimeMillis() - intakeStartTime >= 500) {
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+                        }
+                        m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                            -1,0,0
+                        ));
+                        if(System.currentTimeMillis()-intakeStartTime >= 1000){
+
+                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                                0,0,0
+                            )); 
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateShootAlgaeInit;
+
+                        }
+                        break;
+                    case StateShootAlgaeInit:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateShootBargeInit);
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateShootAlgaeTransition;
+                        break;
+                    case StateShootAlgaeTransition:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                        if(m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveAlgae2;
+                            intakeStartTime = System.currentTimeMillis();
+                        }
+                        break;
+                case StateDriveAlgae2:
+                        m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                            -2,-1.5,0
+                        ));
+                        if(System.currentTimeMillis()-intakeStartTime >= 500){
+
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
+
+                            // m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveDone2;
+
+                        }
+                        if(System.currentTimeMillis()-intakeStartTime >= 1000){
+
+                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                                0,0,0
+                            )); 
+                            // m_Container.m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
+
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveDone2;
+
+                        }
+
+                        break;
+                case StateDriveDone2:
+
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateAlgaeIntake2;
+                        break;
+
+                case StateAlgaeIntake2:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL3Init);
+
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateLowerAlgaeTransition2;
+                        break;
+                case StateLowerAlgaeTransition2:
+                        if(m_Container.m_Aligner.isAllowedToDrive()) {
+                             m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+
+                            m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveBackAlgae2;
+                            intakeStartTime = System.currentTimeMillis();
+                        }
+                        break;
+                case StateDriveBackAlgae2:
+                    if(System.currentTimeMillis() - intakeStartTime >= 500) {
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+                    }
+                    m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                        -1,0,0
+                    ));
+                    if(System.currentTimeMillis()-intakeStartTime >= 1000){
+
+                        m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
+                            0,0,0
+                        )); 
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateShootAlgaeInit2;
+
+                    }
+                    break;
+                case StateShootAlgaeInit2:
+                    m_Container.m_Aligner.requestAlignState(AlignStates.StateShootBargeInit);
+                    m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateShootAlgaeTransition2;
+                    break;
+                case StateShootAlgaeTransition2:
+                    m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                    if(m_Container.m_Aligner.isAllowedToDrive()) {
+                        m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateIdle;
+                        intakeStartTime = System.currentTimeMillis();
+                    }
+                    break;
+                    
+            }
+                // intaking = forward;
+                break;
+
             case StateInit:
                 m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
-                m_autoPeriodicRequestedState = autoPeriodicStates.BasicScoreAuto; // desired auto can go here based on
+               
+                m_autoPeriodicRequestedState = autoPeriodicStates.MidScoreAutoV2; // desired auto can go here based on
                                                                                   // chooser :)
                 break;
             case lineAuto:
@@ -602,356 +794,7 @@ public class AutoCommandBuilder {
                 break;
 
 
-                //middle auto
-case BasicScoreAuto: //3 piece auto L4
-                if(m_Container.m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
-                    isExtended = false;
-                
 
-                }
-                else{
-                    isExtended=true;
-                }
-                switch (m_basicScoreAutoCurrentState) {
-                    
-                    case StateInit:
-
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
-                        intakeStartTime = -1;
-
-                        break;
-                    case StateIdle:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
-                        break;
-                    case StateTravelTopLeft:
-                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-                        // isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
-
-
-
-                        // targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
-                        if(!isOnRed){
-                            if(runsTop){
-
-
-                                targetPoint = new Pose2d(5.7, 6, Rotation2d.fromDegrees(-120));
-
-                            }
-                            else{
-
-                                targetPoint = new Pose2d(5.7, 1.98, Rotation2d.fromDegrees(120));
-
-
-                            }
-
-                        }
-                        else{
-                            if(runsTop){
-                                targetPoint = new Pose2d(17.55-5.7, 6, Rotation2d.fromDegrees(-60));
-                            }else{
-
-
-                                targetPoint = new Pose2d(17.55-5.7 , 1.98, Rotation2d.fromDegrees(60));
-
-                            }
-
-                        }
-
-
-                        m_activeFollowCommand = pathfindCommand(targetPoint);
-                        
-                       // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-
-                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                        incrementer++;
-                        // intakeStartTime = -1;
-                        intakeStartTime = System.currentTimeMillis();
-                        // m_activeFollowCommand.schedule();
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft;
-
-                        break;
-                    case StateTravellingTopLeft:
-                        double dist = targetPoint.getTranslation()
-                                .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-
-
-                        // if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
-                            
-
-                        // }
-
-                        long deltaTime = System.currentTimeMillis() - intakeStartTime;
-                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-
-                  
-                        if (deltaTime > 300)
-                        // add dynamic part here
-                        {
-
-                            // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                            // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
-                            m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-
-                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
-
-
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
-        
-                        }
-
-                        
-
-                        // if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
-
-                        // if (m_activeFollowCommand.isFinished() || dist<0.35) {
-                        //     m_activeFollowCommand.cancel();
-                        //                         m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
-
-                        //     m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
-
-                        // }
-                        break;
-                    case StateScoreTopLeft:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft;
-
-                        break;
-                    case StateScoringTopLeft:
-
-                        if (m_Container.m_Aligner.isAllowedToDrive()) {
-
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Init;
-
-                        }
-                        break;
-                    case StateIntake1Init:
-                       m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
-
-                       // put in the command here that makes it go forward;
-                         
-                       intakeStartTime = -1;
-                        
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
-                        break;
-                    case StateIntake1Transition:
-                        int targetCoralID = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
-                        Pose2d forwardPosCoral = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
-                        if(isOnRed){
-
-                            forwardPosCoral = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
-
-                        } 
-                        
-                       // Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetCoralID, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
-                        double distIntake = forwardPosCoral.getTranslation()
-                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-                        if(distIntake >2){
-
-                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
-
-                        }
-                        if (m_Container.m_Aligner.isAllowedToDrive()) {
-                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-
-                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
-                                intakeStartTime = System.currentTimeMillis();
-
-                            }
-
-                            long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-
-                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
-                            // add dynamic part here
-                            {
-
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
-
-                            }
-
-                            if (deltaTime2 > 5000) {
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
-
-                            }
-
-                        }
-
-                        break;
-                    case StateTravelTopLeft2:
-                        intakeStartTime = -1;
-                        if(!isOnRed){ 
-                            if(runsTop){
-                                targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
-                            }
-                            else{
-                                targetPoint = new Pose2d(3, 2, Rotation2d.fromDegrees(60));
-                            }
-
-
-                        }
-                        else{
-                            if(runsTop){
-                            targetPoint = new Pose2d(17.55-3 , 6, Rotation2d.fromDegrees(-120));
-                            }
-                            else{
-                                targetPoint = new Pose2d(17.55-3, 2, Rotation2d.fromDegrees(120));
-                            }
-
-                        }
-                        m_activeFollowCommand = pathfindCommand(targetPoint);
-                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                        // m_activeFollowCommand.schedule();
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft2;
-                        incrementer++;
-                        break;
-                    case StateTravellingTopLeft2:
-                        double dist2 = targetPoint.getTranslation()
-                                .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-                        // if (m_activeFollowCommand.isFinished() ) {
-                            // m_activeFollowCommand.cancel();
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft2;
-                        // }
-                        break;
-                    case StateScoreTopLeft2:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft2;
-
-                        break;
-                    case StateScoringTopLeft2:
-
-                        if (m_Container.m_Aligner.isAllowedToDrive()) {
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Init;
-
-                        }
-                        break;
-                    case StateIntake2Init:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
-                        intakeStartTime = -1;
-                        break;
-                    case StateIntake2Transition:
-                        int targetCoralID2 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
-                        
-                        Pose2d forwardPosCoral2 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
-                        if(isOnRed){
-
-                            forwardPosCoral2 = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
-
-                        } 
-                        
-                        
-                        double distIntake2 = forwardPosCoral2.getTranslation()
-                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-                        if(distIntake2 > 1.6){
-
-                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
-
-                        }
-                        if (m_Container.m_Aligner.isAllowedToDrive()) {
-                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-
-                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
-                                intakeStartTime = System.currentTimeMillis();
-
-                            }
-
-                            long deltaTime3 = System.currentTimeMillis() - intakeStartTime;
-                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
-
-                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1000)
-                            // add dynamic part here
-                            {
-
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScore3;
-
-                            }
-
-                            if (deltaTime3 > 5000) {
-                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-
-                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
-
-                            }
-
-                        }
-
-                
-                        break;
-                    case StateScore3:
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
-                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoring3;
-                        break;
-                    case StateScoring3:
-                        
-                        if (m_Container.m_Aligner.isAllowedToDrive()) {
-                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateDone;
-
-                        }
-                        break;
-                    case StateDone:
-                        int targetCoralID3 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
-                        Pose2d forwardPosCoral3 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
-                        if(isOnRed){
-
-                            forwardPosCoral3 = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
-
-                        }
-                       // Pose2d forwardPosCoral3 = DriveCommandBuilder.convertAprilTag(targetCoralID3, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
-                        double distIntake3 = forwardPosCoral3.getTranslation()
-                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
-                        if(distIntake3 > 2){
-
-                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
-
-                        }
-                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
-                        intakeStartTime = -1;
-                        
-                        break;
-                    case StateAbortInit:
-                        m_Container.m_roller.requestState(RollerStates.StateRollerOff);
-                        if(!isOnRed){
-
-                            targetPoint = new Pose2d(5, 7, Rotation2d.fromDegrees(-120));
-
-
-                        }
-                        else{
-
-                            targetPoint = new Pose2d(17.55-5, 7, Rotation2d.fromDegrees(-120));
-                            
-
-                        }
-                        m_activeFollowCommand = pathfindCommand(targetPoint);
-                        // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
-
-                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
-                        // m_activeFollowCommand.schedule();
-                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbort;
-                    
-                        break;
-                    case StateAbort:
-                        if(m_activeFollowCommand.isFinished()){
-
-                            m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateIdle;
-
-
-                        }
-                        break;
-                    default:
-                        break;
-
-                }
-
-                break;
 
             case BasicMidScoreAuto:
                 switch (m_basicMidScoreAutoCurrentState) {
@@ -1007,7 +850,7 @@ case BasicScoreAuto: //3 piece auto L4
                         m_basicMidScoreAutoRequestedState = BasicMidScoreAutoStates.StateAbortInit;
                         break;
                     case StateScoreBarge:
-                        
+                        // m_Container.m_Aligner.requestedState(AlignStates.);
 
                         break;
                     

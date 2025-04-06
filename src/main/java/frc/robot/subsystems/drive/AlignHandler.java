@@ -51,6 +51,7 @@ public class AlignHandler extends SubsystemBase{
     private PoseEstimation m_PoseEstimation;
     private Command m_activeFollowCommand = null;
     private int currentTag = -1;
+    private int algaeShots = 0;
     private Command kteleOpCommand;
     private WL_CommandXboxController m_driver;
     private WL_CommandXboxController m_operator;
@@ -478,6 +479,11 @@ public class AlignHandler extends SubsystemBase{
 
                 break;
             case StateRoughAlign:
+                if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
+                    m_roller.requestState(RollerStates.StateAlgaeIntake);
+                    
+
+                }
                 // if(DriverStation.isAutonomousEnabled()){
 
                 //     if(m_activeFollowCommand != null  && desiredExtension != AlignStates.StateExtendL2Init && desiredExtension != AlignStates.StateExtendL2AlgaeInit){
@@ -596,13 +602,29 @@ public class AlignHandler extends SubsystemBase{
                 
                 if(DriverStation.isAutonomous()){
                     count++; // first placement is 1
-                    if(count == 2){
+                    if(  desiredExtension == AlignStates.StateExtendL3AlgaeInit){
+                        // m_roller.requestState(RollerStates.StateAlgaeIntake);
+                        forwardOffsetApproach = .6;
+    
+                    } else if(desiredExtension == AlignStates.StateExtendL2AlgaeInit)
+                    {
 
-                        forwardOffsetApproach = .52;
+                        forwardOffsetApproach = .46;
 
                     }
+                    
                     else{
-                        forwardOffsetApproach=.54;
+                        if(count == 2){
+
+                            forwardOffsetApproach = .52;
+    
+                        }
+                        else{
+                            forwardOffsetApproach=.53; // previously was 54, use 52 for middle auto cuz black poles = bad
+                        
+
+
+                        }
                     }
 
                 }else if(targetID == 17 && horizontalOffset < 0){
@@ -626,9 +648,10 @@ public class AlignHandler extends SubsystemBase{
     
                     }
                 }
+                
                 if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
                     m_roller.requestState(RollerStates.StateAlgaeIntake);
-
+                    
 
                 }
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
@@ -636,7 +659,7 @@ public class AlignHandler extends SubsystemBase{
                 // put in the command here that makes it go forward;
 
                 Pose2d forwardPosRight = DriveCommandBuilder.convertAprilTag(targetID, forwardOffsetApproach, horizontalOffset, m_Drivetrain, m_PoseEstimation);
-
+                
                 
                 
                 if(!DriverStation.isAutonomousEnabled()){
@@ -665,7 +688,10 @@ public class AlignHandler extends SubsystemBase{
                 if(DriverStation.isAutonomous()){
                     
                     PathConstraints constraints = new PathConstraints(3.15, 1.7,1, 1, 12);//new PathConstraints(1, 1, 0.5,0.5);
-                   
+                    if(desiredExtension == AlignStates.StateExtendL2AlgaeInit || desiredExtension == AlignStates.StateExtendL3AlgaeInit){
+                        constraints = new PathConstraints(4.5, 2,2, 2, 12);//new PathConstraints(1, 1, 0.5,0.5);
+
+                    }
                     Pose2d roughAlignPos = DriveCommandBuilder.convertAprilTag(targetID, 1.2, horizontalOffset,m_Drivetrain,m_Container.m_poseEstimation);
                 
                     // if(count == 0)5
@@ -772,8 +798,8 @@ public class AlignHandler extends SubsystemBase{
                 break;  
             case StateAutoBackupInit:
                 
-                if(requestedState==AlignStates.StateAlignCoralStationInit){
-                    currentState = requestedState   ;
+                if(requestedState==AlignStates.StateAlignCoralStationInit || requestedState == AlignStates.StateAlignAlgaeL2Init || requestedState == AlignStates.StateAlignAlgaeL3Init || requestedState == AlignStates.StateAuto){
+                    currentState = requestedState;
 
                 }
                 break;
@@ -856,23 +882,7 @@ public class AlignHandler extends SubsystemBase{
                 currentState = AlignStates.StateLower;
                 break;
             case StateLower:
-                if(!DriverStation.isAutonomous()){
 
-                    CommandScheduler.getInstance().schedule(kteleOpCommand);
-                    
-
-                }
-                else{
-                    if(requestedState != AlignStates.StateAlignCoralStationInit ){
-
-                        requestedState=AlignStates.StateAlignFinished;
-
-
-                    } else{
-                        currentState = requestedState;
-                    }
-                    
-                }
                 if(speedMult < speedLimit){
                     speedMult+=0.003;
 
@@ -893,7 +903,23 @@ public class AlignHandler extends SubsystemBase{
            
                     
                 }
-                
+                if(!DriverStation.isAutonomous()){
+
+                    CommandScheduler.getInstance().schedule(kteleOpCommand);
+                    
+
+                }
+                else{
+                    if(requestedState != AlignStates.StateAlignCoralStationInit && requestedState != AlignStates.StateAlignAlgaeL2Init && requestedState != AlignStates.StateAlignAlgaeL3Init){
+
+                        requestedState=AlignStates.StateAlignFinished;
+
+
+                    } else{
+                        currentState = requestedState;
+                    }
+                     
+                }
                 break;
                 
             case StateAlignFinished:
@@ -901,7 +927,7 @@ public class AlignHandler extends SubsystemBase{
                     requestedState=AlignStates.StateDriving;
                 }
                 else{
-                    if(requestedState != AlignStates.StateAlignCoralStationInit){
+                    if(requestedState != AlignStates.StateAlignCoralStationInit || requestedState != AlignStates.StateAlignAlgaeL2Init ||requestedState != AlignStates.StateAlignAlgaeL3Init ){
 
                         requestedState=AlignStates.StateAuto;
 
@@ -1049,12 +1075,33 @@ public class AlignHandler extends SubsystemBase{
                 if(m_Handler.getCurrentState() == RobotStates.StateBargeFinal && System.currentTimeMillis() - bargeShotStopTime >= 1000){ // shot delay
 
                     // requestedState = AlignStates.StateLower;
-                   // m_Container.m_roller.requestState(RollerStates.StateSHOOOOOT);\
-                    
-                   m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
-                    m_roller.requestState(RollerStates.StateRollerOff);
-                    currentState = AlignStates.StateLower;
+                   // m_Container.m_roller.requestState(RollerStates.StateSHOOOOOT);
+                   algaeShots ++;
+                    if(!DriverStation.isAutonomous()){
 
+                        m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+                        m_roller.requestState(RollerStates.StateRollerOff);
+                        currentState = AlignStates.StateLower;
+    
+                        
+                    }else{
+                        if(algaeShots == 1){
+
+                            m_Handler.requestRobotState(RobotStates.StateL3AlgaeInit);
+
+
+                        }else{
+                            m_Handler.requestRobotState(RobotStates.StateL2AlgaeInit);
+
+
+                        }
+                        m_roller.requestState(RollerStates.StateRollerOff);
+                        currentState = AlignStates.StateLower;
+    
+                        
+
+                    }
+                   
                     // currentState =AlignStates.StateLowerInit;
                     // m_Handler.requestRobotState(RobotStates.StateCoralStationInit);    
                 }
