@@ -603,7 +603,355 @@ public class AutoCommandBuilder {
 
 
                 //middle auto
+case BasicScoreAuto: //3 piece auto L4
+                if(m_Container.m_Handler.getCurrentState() == RobotStates.StateCoralStationFinal){
+                    isExtended = false;
+                
 
+                }
+                else{
+                    isExtended=true;
+                }
+                switch (m_basicScoreAutoCurrentState) {
+                    
+                    case StateInit:
+
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft;
+                        intakeStartTime = -1;
+
+                        break;
+                    case StateIdle:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
+                        break;
+                    case StateTravelTopLeft:
+                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+                        // isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
+
+
+
+                        // targetPoint = new Pose2d(5, 6, Rotation2d.fromDegrees(-120));
+                        if(!isOnRed){
+                            if(runsTop){
+
+
+                                targetPoint = new Pose2d(5.7, 6, Rotation2d.fromDegrees(-120));
+
+                            }
+                            else{
+
+                                targetPoint = new Pose2d(5.7, 1.98, Rotation2d.fromDegrees(120));
+
+
+                            }
+
+                        }
+                        else{
+                            if(runsTop){
+                                targetPoint = new Pose2d(17.55-5.7, 6, Rotation2d.fromDegrees(-60));
+                            }else{
+
+
+                                targetPoint = new Pose2d(17.55-5.7 , 1.98, Rotation2d.fromDegrees(60));
+
+                            }
+
+                        }
+
+
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
+                        
+                       // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
+                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        incrementer++;
+                        // intakeStartTime = -1;
+                        intakeStartTime = System.currentTimeMillis();
+                        // m_activeFollowCommand.schedule();
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft;
+
+                        break;
+                    case StateTravellingTopLeft:
+                        double dist = targetPoint.getTranslation()
+                                .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+
+
+                        // if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                            
+
+                        // }
+
+                        long deltaTime = System.currentTimeMillis() - intakeStartTime;
+                        m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                  
+                        if (deltaTime > 300)
+                        // add dynamic part here
+                        {
+
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                            // m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
+                            m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+
+
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+        
+                        }
+
+                        
+
+                        // if (m_activeFollowCommand.isFinished()){// || dist < 0.75) {
+
+                        // if (m_activeFollowCommand.isFinished() || dist<0.35) {
+                        //     m_activeFollowCommand.cancel();
+                        //                         m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
+
+                        //     m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft;
+
+                        // }
+                        break;
+                    case StateScoreTopLeft:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft;
+
+                        break;
+                    case StateScoringTopLeft:
+
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Init;
+
+                        }
+                        break;
+                    case StateIntake1Init:
+                       m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+
+                       // put in the command here that makes it go forward;
+                         
+                       intakeStartTime = -1;
+                        
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake1Transition;
+                        break;
+                    case StateIntake1Transition:
+                        int targetCoralID = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        Pose2d forwardPosCoral = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        if(isOnRed){
+
+                            forwardPosCoral = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
+
+                        } 
+                        
+                       // Pose2d forwardPosCoral = DriveCommandBuilder.convertAprilTag(targetCoralID, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        double distIntake = forwardPosCoral.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake >2){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                                intakeStartTime = System.currentTimeMillis();
+
+                            }
+
+                            long deltaTime2 = System.currentTimeMillis() - intakeStartTime;
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (m_Container.m_roller.isStalling() && deltaTime2 > 1000)
+                            // add dynamic part here
+                            {
+
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravelTopLeft2;
+
+                            }
+
+                            if (deltaTime2 > 5000) {
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
+
+                            }
+
+                        }
+
+                        break;
+                    case StateTravelTopLeft2:
+                        intakeStartTime = -1;
+                        if(!isOnRed){ 
+                            if(runsTop){
+                                targetPoint = new Pose2d(3, 6, Rotation2d.fromDegrees(-60));
+                            }
+                            else{
+                                targetPoint = new Pose2d(3, 2, Rotation2d.fromDegrees(60));
+                            }
+
+
+                        }
+                        else{
+                            if(runsTop){
+                            targetPoint = new Pose2d(17.55-3 , 6, Rotation2d.fromDegrees(-120));
+                            }
+                            else{
+                                targetPoint = new Pose2d(17.55-3, 2, Rotation2d.fromDegrees(120));
+                            }
+
+                        }
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
+                        // CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // m_activeFollowCommand.schedule();
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateTravellingTopLeft2;
+                        incrementer++;
+                        break;
+                    case StateTravellingTopLeft2:
+                        double dist2 = targetPoint.getTranslation()
+                                .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        // if (m_activeFollowCommand.isFinished() ) {
+                            // m_activeFollowCommand.cancel();
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoreTopLeft2;
+                        // }
+                        break;
+                    case StateScoreTopLeft2:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignLeftL4Init);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoringTopLeft2;
+
+                        break;
+                    case StateScoringTopLeft2:
+
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Init;
+
+                        }
+                        break;
+                    case StateIntake2Init:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
+                        intakeStartTime = -1;
+                        break;
+                    case StateIntake2Transition:
+                        int targetCoralID2 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        
+                        Pose2d forwardPosCoral2 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        if(isOnRed){
+
+                            forwardPosCoral2 = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
+
+                        } 
+                        
+                        
+                        double distIntake2 = forwardPosCoral2.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake2 > 1.6){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            // m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (intakeStartTime == -1) { // intakeStartTime will be -1 when not being counted
+                                intakeStartTime = System.currentTimeMillis();
+
+                            }
+
+                            long deltaTime3 = System.currentTimeMillis() - intakeStartTime;
+                            m_Container.m_roller.requestState(RollerStates.StateRollerOnForward);
+
+                            if (m_Container.m_roller.isStalling() && deltaTime3 > 1000)
+                            // add dynamic part here
+                            {
+
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScore3;
+
+                            }
+
+                            if (deltaTime3 > 5000) {
+                                m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+
+                                m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbortInit; // ABORT
+
+                            }
+
+                        }
+
+                
+                        break;
+                    case StateScore3:
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignRightL4Init);
+                        m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateScoring3;
+                        break;
+                    case StateScoring3:
+                        
+                        if (m_Container.m_Aligner.isAllowedToDrive()) {
+                            m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateDone;
+
+                        }
+                        break;
+                    case StateDone:
+                        int targetCoralID3 = DriveCommandBuilder.findNearestSourceId(m_Container.m_poseEstimation,m_Container.m_drivetrain);
+                        Pose2d forwardPosCoral3 = new Pose2d(179*Constants.kInchesToMeters, 159 * Constants.kInchesToMeters, Rotation2d.kZero);// DriveCommandBuilder.convertAprilTag(targetCoralID2, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        if(isOnRed){
+
+                            forwardPosCoral3 = new Pose2d(Constants.VisionConstants.kFieldLengthMeters - (179*Constants.kInchesToMeters), 159 *Constants.kInchesToMeters, Rotation2d.kZero);
+
+                        }
+                       // Pose2d forwardPosCoral3 = DriveCommandBuilder.convertAprilTag(targetCoralID3, 0.8, 0, m_Container.m_drivetrain, m_Container.m_poseEstimation,true);
+                        double distIntake3 = forwardPosCoral3.getTranslation()
+                        .getDistance(m_Container.m_poseEstimation.getCurrentPose().getTranslation());
+                        if(distIntake3 > 2){
+
+                            m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
+
+                        }
+                        m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignCoralStationInit);
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateIntake2Transition;
+                        intakeStartTime = -1;
+                        
+                        break;
+                    case StateAbortInit:
+                        m_Container.m_roller.requestState(RollerStates.StateRollerOff);
+                        if(!isOnRed){
+
+                            targetPoint = new Pose2d(5, 7, Rotation2d.fromDegrees(-120));
+
+
+                        }
+                        else{
+
+                            targetPoint = new Pose2d(17.55-5, 7, Rotation2d.fromDegrees(-120));
+                            
+
+                        }
+                        m_activeFollowCommand = pathfindCommand(targetPoint);
+                        // m_Container.m_Handler.requestRobotState(RobotStates.StateL4Prepare1);
+
+                        CommandScheduler.getInstance().schedule(m_activeFollowCommand);
+                        // m_activeFollowCommand.schedule();
+                        m_basicScoreAutoRequestedState = BasicScoreAutoStates.StateAbort;
+                    
+                        break;
+                    case StateAbort:
+                        if(m_activeFollowCommand.isFinished()){
+
+                            m_basicScoreAutoRequestedState=BasicScoreAutoStates.StateIdle;
+
+
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+
+                break;
 
             case BasicMidScoreAuto:
                 switch (m_basicMidScoreAutoCurrentState) {
