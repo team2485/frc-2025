@@ -65,8 +65,8 @@ public class Roller extends SubsystemBase {
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     talonFXConfigs.CurrentLimits.SupplyCurrentLowerTime = 0;
     talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable=true;
-    talonFXConfigs.CurrentLimits.SupplyCurrentLimit=60;
-    talonFXConfigs.CurrentLimits.StatorCurrentLimit=100;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimit=70;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit=120;
     talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable=true;
     if (kRollerClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;

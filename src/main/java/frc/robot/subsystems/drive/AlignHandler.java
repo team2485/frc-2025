@@ -598,13 +598,13 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
-                double forwardOffsetApproach = 0.54; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.507; // yuvi code says .43 but need to account for bend in wrist
                 
                 if(DriverStation.isAutonomous()){
                     count++; // first placement is 1
                     if(  desiredExtension == AlignStates.StateExtendL3AlgaeInit){
-                        // m_roller.requestState(RollerStates.StateAlgaeIntake);
-                        forwardOffsetApproach = .6;
+                        // m_roller.requestState(RollerSta%tes.StateAlgaeIntake);
+                        forwardOffsetApproach = .54;
     
                     } else if(desiredExtension == AlignStates.StateExtendL2AlgaeInit)
                     {
@@ -616,11 +616,11 @@ public class AlignHandler extends SubsystemBase{
                     else{
                         if(count == 2){
 
-                            forwardOffsetApproach = .52;
+                            forwardOffsetApproach = .52-0.033;
     
                         }
                         else{
-                            forwardOffsetApproach=.53; // previously was 54, use 52 for middle auto cuz black poles = bad
+                            forwardOffsetApproach=.52-0.033; // previously was 54, use 52 for middle auto cuz black poles = bad
                         
 
 

@@ -325,7 +325,7 @@ public class AutoCommandBuilder {
                         break;
                 case StateDriveAlgae2:
                         m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
-                            -2,-1.5,0
+                            -2,-1.75,0
                         ));
                         if(System.currentTimeMillis()-intakeStartTime >= 500){
 
@@ -335,7 +335,7 @@ public class AutoCommandBuilder {
                             // m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateDriveDone2;
 
                         }
-                        if(System.currentTimeMillis()-intakeStartTime >= 1000){
+                        if(System.currentTimeMillis()-intakeStartTime >= 1200){
 
                             m_Container.m_drivetrain.driveAuto(new ChassisSpeeds(
                                 0,0,0
@@ -354,10 +354,11 @@ public class AutoCommandBuilder {
 
                 case StateAlgaeIntake2:
                         m_Container.m_Aligner.requestAlignState(AlignStates.StateAlignAlgaeL3Init);
-
+                        
                         m_midScoreAutoV2RequestedState = MidScoreAutoV2States.StateLowerAlgaeTransition2;
                         break;
                 case StateLowerAlgaeTransition2:
+                        m_Container.m_roller.requestState(RollerStates.StateAlgaeIntake);
                         if(m_Container.m_Aligner.isAllowedToDrive()) {
                              m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
 
@@ -366,6 +367,7 @@ public class AutoCommandBuilder {
                         }
                         break;
                 case StateDriveBackAlgae2:
+                    m_Container.m_roller.requestState(RollerStates.StateAlgaeIntake);  
                     if(System.currentTimeMillis() - intakeStartTime >= 500) {
                         m_Container.m_Handler.requestRobotState(RobotStates.StateCoralStationInit);
                     }
