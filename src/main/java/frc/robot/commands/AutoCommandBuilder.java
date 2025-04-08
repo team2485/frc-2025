@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -81,6 +82,9 @@ public class AutoCommandBuilder {
         BasicMidScoreAuto,
         MidScoreAutoV2,
     }
+
+    private static final SendableChooser<autoPeriodicStates> m_Chooser = new SendableChooser<>();
+
 
     public enum lineAutoStates {
         StateInit,
@@ -402,8 +406,12 @@ public class AutoCommandBuilder {
             case StateInit:
                 m_Container.m_Aligner.requestAlignState(AlignStates.StateAuto);
                
-                m_autoPeriodicRequestedState = autoPeriodicStates.MidScoreAutoV2; // desired auto can go here based on
-                                                                                  // chooser :)
+                
+                var chooserVal = m_Chooser.getSelected();
+                    
+
+                m_autoPeriodicRequestedState =chooserVal; // desired auto can go here based on
+                                                                              // chooser :)
                 break;
             case lineAuto:
 
