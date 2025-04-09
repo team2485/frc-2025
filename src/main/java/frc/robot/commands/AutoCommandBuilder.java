@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -155,6 +156,12 @@ public class AutoCommandBuilder {
     public static RobotContainer m_Container;
 
     public static void setRobotContainer(RobotContainer cont) {
+        m_Chooser.setDefaultOption("Side Auto",autoPeriodicStates.BasicScoreAuto);
+        m_Chooser.addOption("Mid Auto",autoPeriodicStates.MidScoreAutoV2);
+        
+        
+        SmartDashboard.putData(m_Chooser);
+        
         m_Container = cont;
     }
 
@@ -174,6 +181,9 @@ public class AutoCommandBuilder {
     private static boolean isOnRed;
     private static boolean runsTop;// = false; // TODO: CHANGE THIS BASED ON WHERE U WANNA RUN AUTO
     public static void reset() {
+
+
+
         runsTop = shouldRunTop.getBoolean(true);
         isOnRed = m_Container.m_poseEstimation.getFieldConstants().isOnRed();
         m_lineAutoRequestedState = lineAutoStates.StateInit;
@@ -410,7 +420,7 @@ public class AutoCommandBuilder {
                 var chooserVal = m_Chooser.getSelected();
                     
 
-                m_autoPeriodicRequestedState =chooserVal; // desired auto can go here based on
+                m_autoPeriodicRequestedState = chooserVal; // desired auto can go here based on
                                                                               // chooser :)
                 break;
             case lineAuto:

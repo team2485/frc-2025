@@ -404,7 +404,7 @@ public class AlignHandler extends SubsystemBase{
                 break;
 
             case StateAlignLeftInit:
-                horizontalOffset = -0.03;
+                horizontalOffset = -0.05;
                 if(DriverStation.isAutonomous()){
                     horizontalOffset=-0.05;
 
@@ -620,7 +620,7 @@ public class AlignHandler extends SubsystemBase{
     
                         }
                         else{
-                            forwardOffsetApproach=.52-0.033; // previously was 54, use 52 for middle auto cuz black poles = bad
+                            forwardOffsetApproach=.51-0.033; // previously was 54, use 52 for middle auto cuz black poles = bad
                         
 
 

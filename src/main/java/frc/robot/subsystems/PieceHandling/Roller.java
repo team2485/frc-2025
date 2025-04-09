@@ -37,7 +37,7 @@ public class Roller extends SubsystemBase {
   // You may need more than one motor
   private final TalonFX m_talon = new TalonFX(kRollerPort,"Mast");
   // private GenericEntry stateLog = Shuffleboard.getTab("Roller").addString("Roller State", "blah").;
-  public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of ROller", "init").getEntry();
+  public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of Roller", "init").getEntry();
   public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of Roller", "init").getEntry();
   public static GenericEntry currentLog = Shuffleboard.getTab("Roller").add("current",0.0).getEntry();
   public static GenericEntry veloLog = Shuffleboard.getTab("Roller").add("velocity",0.0).getEntry();

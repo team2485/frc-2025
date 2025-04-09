@@ -85,6 +85,7 @@ public class LED extends SubsystemBase {
         }
         break;
     }
+    // Future stuff?:
     // autos will have alliance color for LEDs
     // green LEDs for scoring in processor
 
@@ -92,18 +93,12 @@ public class LED extends SubsystemBase {
 
     runControlLoop();
   }
-    public void runControlLoop() {
-    }
+    public void runControlLoop() {}
 
- 
-  // example of a "setter" method
   public void requestState(LEDStates requestedState) {
     m_LEDRequestedState = requestedState;
   }
-  // example of a "getter" method
   public LEDStates getCurrentState() {
     return m_LEDCurrentState;
   }
-
-  // misc methods go here, getters and setters should follow above format
 }
