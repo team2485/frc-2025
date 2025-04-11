@@ -598,7 +598,7 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
-                double forwardOffsetApproach = 0.507; // yuvi code says .43 but need to account for bend in wrist
+                double forwardOffsetApproach = 0.54 - 0.065; // dummy constant so i don't want to kms durign drive practice 
                 
                 if(DriverStation.isAutonomous()){
                     count++; // first placement is 1
