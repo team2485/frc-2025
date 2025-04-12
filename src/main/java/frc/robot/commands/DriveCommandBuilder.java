@@ -140,6 +140,9 @@ public class DriveCommandBuilder {
 
         }else{
             bargeDistanceMeters = 103.5*Constants.kInchesToMeters;
+
+            flip = Rotation2d.kZero;
+
         }
         Translation2d dir = currentPos.minus(PoseEstimation.getFieldConstants().getBargePose()).getTranslation();
         
