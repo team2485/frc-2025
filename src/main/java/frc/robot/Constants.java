@@ -228,7 +228,7 @@ public final class Constants {
     public Pose2d getBargePose(){
 
 
-      return VisionConstants.kBlueTagList.get(14).pose.toPose2d();
+      return VisionConstants.kBlueTagList.get(4).pose.toPose2d();
 
     }
     public double[] getReefXOffsetsLeft(){
