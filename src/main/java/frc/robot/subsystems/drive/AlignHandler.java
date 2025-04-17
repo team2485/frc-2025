@@ -27,9 +27,11 @@ import frc.robot.StateHandler.RobotStates;
 import frc.robot.commands.DriveCommandBuilder;
 import frc.robot.commands.DriveWithController;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LEDStates;
 import frc.robot.subsystems.PieceHandling.Roller;
 import frc.robot.subsystems.PieceHandling.Roller.RollerStates;
 import frc.robot.subsystems.Vision.PoseEstimation;
+import frc.robot.subsystems.Vision.Vision;
 
 /*
  * 
@@ -774,7 +776,17 @@ public class AlignHandler extends SubsystemBase{
             //     currentState = AlignStates.StateApproach;
             //     break;
             case StateApproach:
+
+
+                if(!m_PoseEstimation.getTagUsage()){
+
+
+                    m_leds.requestState(LEDStates.StateRed);
+
+                }
+
                 if(m_activeFollowCommand != null && m_activeFollowCommand.isFinished() && (m_Container.m_Handler.getCurrentState() == RobotStates.StateL4Finished ||m_Container.m_Handler.getCurrentState() == RobotStates.StateL3Finished || m_Container.m_Handler.getCurrentState() == RobotStates.StateL2Finished || m_Container.m_Handler.getCurrentState() == RobotStates.StateL1Final || m_Container.m_Handler.getCurrentState() == RobotStates.StateL2AlgaeFinal || m_Container.m_Handler.getCurrentState() == RobotStates.StateL3AlgaeFinal )){
+                    
                     if(DriverStation.isAutonomousEnabled()){
 
 
@@ -982,7 +994,7 @@ public class AlignHandler extends SubsystemBase{
             case StateShootBargeInit:
              CommandScheduler.getInstance().cancel(kteleOpCommand);
                 // m_Drivetrain.driveAuto(new ChassisSpeeds(0,0,0));
-                
+                m_leds.requestState(LEDStates.StateBlueAnim);
                 m_activeFollowCommand = DriveCommandBuilder.driveToShoot(m_Drivetrain,m_PoseEstimation);
                 if(m_activeFollowCommand == null){
 

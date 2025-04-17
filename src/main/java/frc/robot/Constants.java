@@ -156,7 +156,7 @@ public final class Constants {
                                         new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126*Math.PI/180.0))),
                                         new AprilTag(2, new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234*Math.PI/180.0))),
                                         new AprilTag(3, new Pose3d(455.15*kInchesToMeters, 317.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,270*Math.PI/180.0))),
-                                        new AprilTag(4, new Pose3d(3.6520*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
+                                        new AprilTag(4, new Pose3d(365.20*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
                                         new AprilTag(5, new Pose3d(365.20*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
                                         new AprilTag(6, new Pose3d(530.49*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300*Math.PI/180.0))),
                                         new AprilTag(7, new Pose3d(546.87*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
@@ -228,7 +228,7 @@ public final class Constants {
     public Pose2d getBargePose(){
 
 
-      return VisionConstants.kBlueTagList.get(4).pose.toPose2d();
+      return VisionConstants.kBlueTagList.get(14).pose.toPose2d();
 
     }
     public double[] getReefXOffsetsLeft(){
@@ -599,7 +599,7 @@ public final class Constants {
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
     public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(3.65,0,0.55),new PIDConstants(2.4,0,0.2));  //6.1,0,1
-
+    // public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(3.5,0,0.42),new PIDConstants(2.4,0,0.2));
  
 
 

@@ -20,7 +20,8 @@ public class LED extends SubsystemBase {
     StateYellow,
     StatePink,
     StateRainbow,
-    StateBlueAnim
+    StateBlueAnim,
+    StateRed
   }
 
   public static LEDStates m_LEDCurrentState;
@@ -83,6 +84,9 @@ public class LED extends SubsystemBase {
           candle.animate(blue);
           runningAnimation = true;
         }
+        break;
+      case StateRed:
+        candle.setLEDs(255, 0, 0);
         break;
     }
     // Future stuff?:
