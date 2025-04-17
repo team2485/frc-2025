@@ -342,7 +342,7 @@ public class AlignHandler extends SubsystemBase{
                 
                 targetID = DriveCommandBuilder.findNearestScoringTagId(m_PoseEstimation);
 
-                horizontalOffset = .29;
+                horizontalOffset = .27;
                 if(DriverStation.isAutonomous()){
                     horizontalOffset=.27;
 
@@ -598,7 +598,7 @@ public class AlignHandler extends SubsystemBase{
                 // }
                 break;
             case StateApproachInit:
-                double forwardOffsetApproach = 0.54 - 0.065; // dummy constant so i don't want to kms durign drive practice 
+                double forwardOffsetApproach = 0.54 - 0.06; // dummy constant so i don't want to kms durign drive practice 
                 
                 if(DriverStation.isAutonomous()){
                     count++; // first placement is 1
