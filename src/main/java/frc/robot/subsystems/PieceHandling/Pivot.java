@@ -36,6 +36,7 @@ public class Pivot extends SubsystemBase {
     StateLollipop,
     StateMoveToRequestedState,
     StateStation,
+    StateClimb,
     StateIntake
   }
 
@@ -75,16 +76,16 @@ public class Pivot extends SubsystemBase {
     slot0Configs.kG = 0;// kGPivot;
     slot0Configs.kV = 0.25;
     slot0Configs.kA = 0.01;
-    slot0Configs.kP = 1;// kPPivot;
+    slot0Configs.kP = 2;// kPPivot;
     slot0Configs.kI = 0;
-    slot0Configs.kD = kDPivot;
+    slot0Configs.kD = 0.2;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 30;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 100;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 80;
+    motionMagicConfigs.MotionMagicAcceleration = 600;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 500;
+    motionMagicConfigs.MotionMagicJerk = 1800;
 
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kPivotClockwisePositive)
@@ -114,7 +115,9 @@ public class Pivot extends SubsystemBase {
       case StateZero:
         desiredPosition = 0;
         break;
-
+      case StateClimb:
+        desiredPosition = 0.172;
+        break;
       case StateIntake:
         desiredPosition = 0;
         break;
@@ -124,10 +127,10 @@ public class Pivot extends SubsystemBase {
       case StateL4Transition:
         desiredPosition = 0.125;
       case StateL1:
-        desiredPosition = 0.05;
+        desiredPosition = 0.03;
         break;
       case StateL2:
-        desiredPosition = 0.09;
+        desiredPosition = 0.03;
         break;
       case StateL3:
         desiredPosition = 0;
@@ -170,7 +173,7 @@ public class Pivot extends SubsystemBase {
   //  m_PivotTalon2.setControl(request.withPosition(desiredPosition));
   }
 
-  private double getPosition() {
+  public double getPosition() {
     return m_talon.getPosition().getValueAsDouble();
   }
   public double getPositionWithRatio(){

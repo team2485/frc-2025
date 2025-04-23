@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.List;
 
+import javax.xml.transform.TransformerFactory;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -15,12 +17,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.Vision.Vision;
 import frc.util.COTSFalconSwerveConstants;
 import frc.util.SwerveModuleConstants;
 
@@ -89,13 +93,15 @@ public final class Constants {
   public interface FieldConstants {
     public int[] getProcessorId();
     public int[] getReefTagIds();
+    public Pose2d getBargePose();
     public int[] getCoralStationTags();
-
+    public double[ ] getReefXOffsetsRight();
+    public double[] getReefXOffsetsLeft();
     public List<AprilTag> getAprilTagList();
     public AprilTag[] getReefTags();
     public boolean isOnRed();
-    public Pose2d getUpperPickupPos();
-    public Pose2d getLowerPickupPos();
+    public int getUpperPickupId();
+    public int getLowerPickupId();
   }
 
   public static final class VisionConstants {
@@ -135,9 +141,9 @@ public final class Constants {
     public static final double THETA_kD = 0.15;
 
     // TODO: ensure validity of measurements
-    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3429, 0.27305, 0.187325),
+    public static final Transform3d kRobotToCameraLeft = new Transform3d(new Translation3d(0.3719, 0.27305, 0.09),
         new Rotation3d(0,.1745,0)); 
-    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3429, -0.27305, 0.187325),
+    public static final Transform3d kRobotToCameraRight = new Transform3d(new Translation3d(0.3719, -0.27305, 0.09),
         new Rotation3d(0,.1745,0)); 
     //-0.698
 
@@ -146,13 +152,13 @@ public final class Constants {
     // DOCS: https://firstfrc.blob.core.windows.net/frc2025/FieldAssets/2025FieldDrawings-FieldLayoutAndMarking.pdf
     // Z-Rotation is Yaw, X-Rotation is Pitch
     // Rotation3d has roll first, then pitch, then yaw
-  
+
     public static final List<AprilTag> kBlueTagList = 
                                         List.of(
                                         new AprilTag(1, new Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126*Math.PI/180.0))),
                                         new AprilTag(2, new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234*Math.PI/180.0))),
                                         new AprilTag(3, new Pose3d(455.15*kInchesToMeters, 317.15*kInchesToMeters, 51.25*kInchesToMeters, new Rotation3d(0,0,270*Math.PI/180.0))),
-                                        new AprilTag(4, new Pose3d(3.6520*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
+                                        new AprilTag(4, new Pose3d(365.20*kInchesToMeters,241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
                                         new AprilTag(5, new Pose3d(365.20*kInchesToMeters, 75.39*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,0))),
                                         new AprilTag(6, new Pose3d(530.49*kInchesToMeters, 130.17*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,300*Math.PI/180.0))),
                                         new AprilTag(7, new Pose3d(546.87*kInchesToMeters, 158.50*kInchesToMeters, 12.13*kInchesToMeters, new Rotation3d(0,0,0))),
@@ -193,6 +199,53 @@ public final class Constants {
       6,7,8,9,10,11
 
     };
+
+
+
+    static final double[] reefXOffsetsLeft = new double[] {
+      // correctional offsets for the following IDS:
+      // PHR CONSTANTS:
+      // 3* kInchesToMeters, //6
+      // 2.5* kInchesToMeters, //7
+      // 1.5* kInchesToMeters, //8
+      // 1* kInchesToMeters, //9 
+      // 2* kInchesToMeters, //10
+      // 1.75 * kInchesToMeters, //11
+      0,0,0,0,0,0
+
+    };
+    static final double[] reefXOffsetsRight = new double[] {
+      // correctional offsets for the following IDS:
+      // PHR CONSTANTS: 
+      // 3* kInchesToMeters, //6
+      // 2.5* kInchesToMeters, //7
+      // 1.5* kInchesToMeters, //8
+      // 1* kInchesToMeters, //9 
+      // 2* kInchesToMeters, //10
+      // 1.75 * kInchesToMeters, //11
+      0,0,0,0,0,0
+
+
+    };
+    public Pose2d getBargePose(){
+
+
+      return new Pose2d(VisionConstants.kBlueTagList.get(14).pose.getTranslation().toTranslation2d().plus(new Translation2d(20 * kInchesToMeters,0)), Rotation2d.kZero);
+
+    }
+    public double[] getReefXOffsetsLeft(){
+
+      return reefXOffsetsLeft;
+
+    }
+    public double[] getReefXOffsetsRight(){
+
+      return reefXOffsetsRight;
+
+    }
+
+
+
     static final int[] coralTags = new int[]{
 
       1,2
@@ -207,8 +260,9 @@ public final class Constants {
 
       return reefTagIds;
   }
-    public Pose2d getUpperPickupPos() {
-      return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
+    public int getUpperPickupId() {
+      //return  new Pose3d(657.37*kInchesToMeters, 291.20*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,234)).toPose2d();
+        return 2;
       //2
     }
     static final int[] procId = new int[] {
@@ -227,9 +281,9 @@ public final class Constants {
       
 
     }
-    public Pose2d getLowerPickupPos(){
-
-      return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
+    public int getLowerPickupId(){
+      return 1;
+      //return new  Pose3d(657.37*kInchesToMeters, 25.80*kInchesToMeters, 058.50*kInchesToMeters, new Rotation3d(0,0,126)).toPose2d();
     }
 
     public Pose2d getFrontMiddlePlacementPos() {
@@ -260,6 +314,49 @@ public final class Constants {
      
 
     };
+    public Pose2d getBargePose(){
+
+
+      return new Pose3d(325.68*kInchesToMeters, 241.64*kInchesToMeters, 73.54*kInchesToMeters, new Rotation3d(0,30*Math.PI/180.0,180*Math.PI/180.0)).toPose2d(); //.getTranslation().toTranslation2d().plus(new Translation2d(20 * kInchesToMeters,0)), Rotation2d.kZero);
+
+
+    }
+    static final double[] reefXOffsetsLeft = new double[] {
+      // PHR CONSTANTS:
+      // 2* kInchesToMeters, //17
+      // 2* kInchesToMeters, //18 
+      // 1* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 3 * kInchesToMeters,
+      0,0,0,0,0,0
+
+    };
+    public static final double[] reefXOffsetsRight = new double[] {
+      // PHR CONSTANTS:
+      // 3* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 1* kInchesToMeters,
+      // 2.5* kInchesToMeters,
+      // 2* kInchesToMeters,
+      // 3 * kInchesToMeters,
+      0,0,0,0,0,0
+      
+
+
+    };
+    public double[] getReefXOffsetsLeft(){
+
+      return reefXOffsetsLeft;
+
+    }
+    public double[] getReefXOffsetsRight(){
+
+      return reefXOffsetsRight;
+
+    }
+
+
     static final int[] coralTags = new int[]{
 
       12,13
@@ -288,9 +385,9 @@ public final class Constants {
 
         return reefTagIds;
     }
-    public Pose2d getUpperPickupPos(){
-
-      return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
+    public int getUpperPickupId(){
+      return 13;
+      //return new Pose3d(33.51*kInchesToMeters, 291.20*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,306)).toPose2d();
 
 
     }
@@ -304,9 +401,9 @@ public final class Constants {
     public List<AprilTag> getAprilTagList(){
       return VisionConstants.kBlueTagList;
     }
-    public Pose2d getLowerPickupPos(){
-      return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
-
+    public int getLowerPickupId(){
+      //return new Pose3d(33.51*kInchesToMeters, 25.80*kInchesToMeters, 58.50*kInchesToMeters, new Rotation3d(0,0,54)).toPose2d();
+      return 12;
 
     }
 
@@ -465,6 +562,19 @@ public final class Constants {
 
 
   }
+  public static final class ClimberConstants{
+
+    
+    public static final int kClimberPort = 14; // TODO: placeholder port
+
+    public static final boolean kClimberClockwisePositive = true;
+
+    public static final double kClimberErrorTolerance = 0;
+    
+
+
+
+  }
   public static final class Swerve 
   {
 
@@ -491,8 +601,8 @@ public final class Constants {
     //                     6, // Max module speed, in m/s
     //                     driveRadius, // Drive base radius in meters. Distance from robot center to furthest module.
     //                     new ReplanningConfig());
-    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(6.5,.0,0.4),new PIDConstants(1,0,0));
-
+    public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(3.65,0,0.55),new PIDConstants(2.4,0,0.2));  //6.1,0,1
+    // public static final PPHolonomicDriveController kDriveController = new PPHolonomicDriveController(new PIDConstants(3.5,0,0.42),new PIDConstants(2.4,0,0.2));
  
 
 
@@ -576,7 +686,7 @@ public final class Constants {
       public static final int driveMotorID = 4;
       public static final int angleMotorID = 3;
       public static final int canCoderID = 12;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.01123046875); 
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.017333984375); 
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }
@@ -596,7 +706,7 @@ public final class Constants {
       public static final int driveMotorID = 8;
       public static final int angleMotorID = 7;
       public static final int canCoderID = 14;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.08935546875);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.08935546875 + 0.00972222); // ADDED DEG: 3.5
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, true);
     }
@@ -606,7 +716,7 @@ public final class Constants {
       public static final int driveMotorID = 6;
       public static final int angleMotorID =5;
       public static final int canCoderID = 13;
-      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.379150390625);
+      public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.379150390625 + 0.008333);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset, false);
     }

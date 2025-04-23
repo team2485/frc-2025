@@ -37,7 +37,8 @@ public class Wrist extends SubsystemBase {
     StateLollipop,
     StateMoveToRequestedState,
     StateStation,
-    StateL4Tuck
+    StateL4Tuck,
+    StateClimb
   }
 
   public static WristStates m_WristCurrentState;
@@ -53,15 +54,16 @@ public class Wrist extends SubsystemBase {
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Wrist").add("desiredPos", 0).getEntry();
   public static GenericEntry motorPosition = Shuffleboard.getTab("Wrist").add("position", 0.0).getEntry();
 
+  public static GenericEntry errorLog = Shuffleboard.getTab("Wrist").add("error", 0.0).getEntry();
   
   public Wrist() {
     // Misc setup goes here
 
     var talonFXConfigs = new TalonFXConfiguration();
-    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 60;
-    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfigs.CurrentLimits.SupplyCurrentLimit = 20;
-    talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit = 80;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+    talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
     // These will be derived experimentally but in case you are wondering
     // How these terms are defined from the TalonFX docs
     // kS adds n volts to overcome static friction
@@ -73,18 +75,18 @@ public class Wrist extends SubsystemBase {
     slot0Configs.kS = kSWrist;
     slot0Configs.kG = kGWrist;// kGWrist;
 
-    slot0Configs.kV = 0.6;
-    slot0Configs.kA = 0.1;
-    slot0Configs.kP = kPWrist;// kPWrist;
-    slot0Configs.kI = kIWrist;
-    slot0Configs.kD = kDWrist;
+    slot0Configs.kV = 1.0;
+    slot0Configs.kA = 0.075;
+    slot0Configs.kP = 10;// kPWrist;
+    slot0Configs.kI = 0.1;
+    slot0Configs.kD = 0.25;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 32;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 60;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 100;
+    motionMagicConfigs.MotionMagicAcceleration = 1250;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 150;
+    motionMagicConfigs.MotionMagicJerk = 2500;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kWristClockwisePositive)
@@ -104,6 +106,13 @@ public class Wrist extends SubsystemBase {
    // m_WristTalon2.setPosition(0);
   }
 
+
+  public double getVelocity(){
+
+    return m_talon.getVelocity().getValueAsDouble();
+
+  }
+
   @Override
   public void periodic() {
     switch (m_WristRequestedState) {
@@ -117,40 +126,47 @@ public class Wrist extends SubsystemBase {
         desiredPosition = 0.25/kWristGearRatio;
         break;
       case StateL1:
-        desiredPosition = 0;
+        desiredPosition = .7;
         break;
       case StateL2:
-        desiredPosition = 0.8-0.21891;
+        desiredPosition = 0.7;
         break;
       case StateL3:
-        desiredPosition = 0.6036;//-0.21891;
+        desiredPosition = 0.6336;//-0.21891;
         break;
       case StateL4:
-        desiredPosition = 0.68750-0.21891;
+
+        desiredPosition = 0.54; //(0.68750-0.21891) + (1/18);
+
         break;
       case StateIntake:
         desiredPosition = 0;
         break;
       case StateBarge:
-        desiredPosition = 19.5/kWristGearRatio;
+        desiredPosition = 21/kWristGearRatio;
         break;
       case StateProcessor:
         desiredPosition = 0.13;
         break;
       case StateL2Algae:
-        desiredPosition = 0.13;
+        desiredPosition = 0.19;
         break;
       case StateL3Algae:
         desiredPosition = 0.16;
         break;
       case StateLollipop:
-        desiredPosition = 0;
+        desiredPosition = 0.2/kWristGearRatio;
+        break;
+      case StateClimb:
+        desiredPosition=0.16;
         break;
       case StateL4Tuck:
         desiredPosition=(25/kWristGearRatio );
-    }
+        break;
+      }
     desiredPosition*=kWristGearRatio;
     runControlLoop();
+    errorLog.setDouble(getError());
  // 4.2 wrist 14 pivot
     if (getError() < kWristErrorTolerance)
       m_WristCurrentState = m_WristRequestedState;
@@ -169,7 +185,7 @@ public class Wrist extends SubsystemBase {
   //  m_WristTalon2.setControl(request.withPosition(desiredPosition));
   }
 
-  private double getPosition() {
+  public double getPosition() {
     return m_talon.getPosition().getValueAsDouble();
   }
 

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.PieceHandling;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 // Imports go here
@@ -12,6 +13,7 @@ import static frc.robot.Constants.ElevatorConstants.*;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -50,6 +52,8 @@ public class Elevator extends SubsystemBase {
   public static GenericEntry motorVelo = Shuffleboard.getTab("Elevator").add("Velocity", 0.0).getEntry();
   public static GenericEntry desiredPositionLog = Shuffleboard.getTab("Elevator").add("position", 0).getEntry();
   public static GenericEntry motorPosition = Shuffleboard.getTab("Elevator").add("position2", 0.0).getEntry();
+  static GenericEntry velocityLog = Shuffleboard.getTab("Elevator").add("MM Velocity",0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+  public static GenericEntry voltageLog = Shuffleboard.getTab("Elevator").add("volts", 0.0).getEntry();
 
 
   public Elevator() {
@@ -67,18 +71,18 @@ public class Elevator extends SubsystemBase {
     slot0Configs.kS = kSElevator;
     slot0Configs.kG =0;// kGElevator;
 
-    slot0Configs.kV = 5;
-    slot0Configs.kA = .1;
-    slot0Configs.kP = 18;// kPElevator;
+    slot0Configs.kV = .15;
+    slot0Configs.kA = .02;
+    slot0Configs.kP = 4;// kPElevator;
     slot0Configs.kI = kIElevator;
-    slot0Configs.kD = .16;//kDElevator;
+    slot0Configs.kD = 0.005;//kDElevator;
 
     var motionMagicConfigs = talonFXConfigs.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 60;//kElevatorCruiseVelocity;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 80;//kElevatorCruiseVelocity;
     // vel/acc = time to reach constant velocity
-    motionMagicConfigs.MotionMagicAcceleration = 300;//kElevatorAcceleration;
+    motionMagicConfigs.MotionMagicAcceleration = 400;//kElevatorAcceleration;
     // acc/jerk = time to reach constant acceleration
-    motionMagicConfigs.MotionMagicJerk = 400;
+    motionMagicConfigs.MotionMagicJerk = 3000;
     
     var motorOutputConfigs = talonFXConfigs.MotorOutput;
     if (kElevatorClockwisePositive)
@@ -116,24 +120,25 @@ public class Elevator extends SubsystemBase {
         desiredPosition = 1;
         break;
       case StateL3:
-        desiredPosition = 22.75;
+        desiredPosition = 19 + 2.5; //DUMMY FIX for gala recording
         break;
       case StateL4Half:
-        desiredPosition = 5-.25;
+        desiredPosition = 7;
         break;
       case StateL4:
-        desiredPosition = 27.625-.25;
+        desiredPosition = 27.625+0.25;
         break;
       case StateProcessor:
         desiredPosition = 1;
         break;
       case StateBarge:
-        desiredPosition = 27.625 ;
+        desiredPosition = 27.625  ;
         break;
       case StateL2Algae:
         desiredPosition = 1;
         break;
       case StateL3Algae:
+      
         desiredPosition = 17.125;
         break;
       case StateLollipop:
@@ -142,12 +147,12 @@ public class Elevator extends SubsystemBase {
  
         
       case StateStation:
-        desiredPosition = 1;
+        desiredPosition = 0.5;
     }
     desiredPosition*=kELevatorInchesToOutput;
     runControlLoop();
 
-    if (getError() < kElevatorErrorTolerance)
+    if (getError() < kElevatorErrorTolerance && m_elevatorTalon1.getVelocity().getValueAsDouble() < 4)
       m_ElevatorCurrentState = m_ElevatorRequestedState;
     else
       m_ElevatorCurrentState = ElevatorStates.StateMoveToRequestedState;  
@@ -155,9 +160,16 @@ public class Elevator extends SubsystemBase {
 
   public void runControlLoop() {
    // MotionMagicVoltage voltage = request.withPosition(desiredPosition);
-    
+   final DynamicMotionMagicVoltage m_request =
+   new DynamicMotionMagicVoltage(0, 80, 400, 900);
+
+  //  m_request.Velocity = 10;
+  //  m_request.Acceleration = 100;
+  //  m_request.Jerk = 100;
     m_elevatorTalon1.setControl(request.withPosition(desiredPosition));
     //motorVoltage.setDouble(m_elevatorTalon1.getMotorVoltage().getValueAsDouble());
+    voltageLog.setDouble(m_elevatorTalon1.getMotorVoltage().getValueAsDouble());
+
     motorVelo.setDouble(m_elevatorTalon1.getVelocity().getValueAsDouble());
     desiredPositionLog.setDouble(m_elevatorTalon1.getPosition().getValueAsDouble());
     //motorPosition.setDouble(m_elevatorTalon.getPosition().getValueAsDouble());

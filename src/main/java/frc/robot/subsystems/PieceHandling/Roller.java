@@ -26,7 +26,9 @@ public class Roller extends SubsystemBase {
     StateMovingToRequestedState,
     StateRollerOnForward,
     StateRollerOnBackward,
-    StateAlgaeIntake
+    StateAlgaeIntake,
+    StateBloop,
+    StateSHOOOOOT
   }
 
   public static RollerStates m_RollerCurrentState;
@@ -35,8 +37,10 @@ public class Roller extends SubsystemBase {
   // You may need more than one motor
   private final TalonFX m_talon = new TalonFX(kRollerPort,"Mast");
   // private GenericEntry stateLog = Shuffleboard.getTab("Roller").addString("Roller State", "blah").;
-  public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of ROller", "init").getEntry();
-  public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of ROller", "init").getEntry();
+  public static GenericEntry state = Shuffleboard.getTab("Roller").add("State of Roller", "init").getEntry();
+  public static GenericEntry stateRequested = Shuffleboard.getTab("Roller").add("Req. State of Roller", "init").getEntry();
+  public static GenericEntry currentLog = Shuffleboard.getTab("Roller").add("current",0.0).getEntry();
+  public static GenericEntry veloLog = Shuffleboard.getTab("Roller").add("velocity",0.0).getEntry();
 
   // Unit default for TalonFX libraries is rotations
   private double desiredVoltage = 0;
@@ -62,7 +66,7 @@ public class Roller extends SubsystemBase {
     talonFXConfigs.CurrentLimits.SupplyCurrentLowerTime = 0;
     talonFXConfigs.CurrentLimits.SupplyCurrentLimitEnable=true;
     talonFXConfigs.CurrentLimits.SupplyCurrentLimit=70;
-    talonFXConfigs.CurrentLimits.StatorCurrentLimit=80;
+    talonFXConfigs.CurrentLimits.StatorCurrentLimit=120;
     talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable=true;
     if (kRollerClockwisePositive)
       motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -82,16 +86,23 @@ public class Roller extends SubsystemBase {
   public void periodic() {
     switch (m_RollerRequestedState) {
       case StateRollerOff:
-        desiredVoltage = 0;
+        desiredVoltage = .5;
         break;
       case StateRollerOnForward:
-        desiredVoltage = 4;
+        desiredVoltage = 5;
         break;
       case StateRollerOnBackward:
-        desiredVoltage = -4;
+        desiredVoltage = -3;
         break;
       case StateAlgaeIntake:
-        desiredVoltage = 8;
+        desiredVoltage = 9;
+        break;
+      case StateBloop:
+        desiredVoltage = -7;
+        break;
+      case StateSHOOOOOT:
+        desiredVoltage = -12;
+        break;
       }
 
  
@@ -99,7 +110,22 @@ public class Roller extends SubsystemBase {
     // state.setString(m_RollerCurrentState.toString());
     stateRequested.setString(m_RollerRequestedState.toString());
   }
+
+  public boolean isStalling(){
+
+    if(m_talon.getVelocity().getValueAsDouble() < 1.5 && m_talon.getSupplyCurrent().getValueAsDouble() > 10 ){
+
+      return true;
+
+    }
+    return false;
+
+  }
+
   public void runControlLoop() {
+    currentLog.setDouble(m_talon.getSupplyCurrent().getValueAsDouble());
+    veloLog.setDouble(m_talon.getVelocity().getValueAsDouble());
+   
     m_talon.setVoltage(desiredVoltage);
   }
 

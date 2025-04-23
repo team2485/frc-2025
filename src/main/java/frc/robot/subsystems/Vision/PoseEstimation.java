@@ -32,11 +32,13 @@ import frc.robot.Constants.RedFieldConstants;
 import frc.robot.Constants.Swerve;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveCommandBuilder;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LEDStates;
 import frc.robot.subsystems.drive.Drivetrain;
 
 public class PoseEstimation extends SubsystemBase {
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 2);
 
   private final Supplier<Rotation2d> rotation;
   private final Supplier<SwerveModulePosition[]> modulePosition;
@@ -58,12 +60,15 @@ public class PoseEstimation extends SubsystemBase {
 
 
   Drivetrain m_drivetrain;
+  LED leds = new LED();
 
   GenericEntry visionTest;
   GenericEntry xSped;
   GenericEntry xLog;
   GenericEntry attemptedNavPosition;
   boolean isOnRed;
+  boolean doesSeeTag = false;
+  public boolean getTagUsage(){return doesSeeTag;}
 
   public PoseEstimation(Supplier<Rotation2d> rotation, Supplier<SwerveModulePosition[]> modulePosition, Supplier<ChassisSpeeds> chassisSpeeds, WL_CommandXboxController m_driver, WL_CommandXboxController m_operator, Drivetrain m_drivetrain) {
     visionTest = Shuffleboard.getTab("Swerve").add("YSped", 10).getEntry();
@@ -107,7 +112,6 @@ public class PoseEstimation extends SubsystemBase {
     tab.add("Field", field2d);//.withPosition(0, 0).withSize(6, 4);
     tab.addString("Pose", this::getFormattedPose).withPosition(6, 2).withSize(2, 1);
   }
-
   @Override
   public void periodic() {
     poseEstimator.update(rotation.get(), modulePosition.get());
@@ -117,18 +121,22 @@ public class PoseEstimation extends SubsystemBase {
     var visionPoseFrontLeft = frontLeftPhoton.grabLatestEstimatedPose();
     var visionPoseFrontRight = frontRightPhoton.grabLatestEstimatedPose();
     if(visionPoseFrontLeft != null){
-
+      doesSeeTag=true;
       var pose2d = visionPoseFrontLeft.estimatedPose.toPose2d();
       poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontLeft.timestampSeconds);
 
 
     }
-    if(visionPoseFrontRight != null){
+    else{
+      doesSeeTag=false; // CHECK TO SEE IF TAG IS IN VIEW (would necessitate a visionPoseFrontLeft)
+      leds.requestState(LEDStates.StateRed);
+    }
+    if(visionPoseFrontRight != null){ // RIGHT CAMERA DISABLED
 
       var pose2d = visionPoseFrontRight.estimatedPose.toPose2d();
-      poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
+      // poseEstimator.addVisionMeasurement(pose2d, visionPoseFrontRight.timestampSeconds);
      
-    }
+    } 
     // var visionPose = photonEstimator.grabLatestEstimatedPose();
     // var theoreticalOtherCamPose = multiCamTest.grabLatestEstimatedPose();
     // if (visionPose != null) { // Multicamera Reference : https://www.chiefdelphi.com/t/multi-camera-setup-and-photonvisions-pose-estimator-seeking-advice/431154/4
