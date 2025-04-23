@@ -789,8 +789,6 @@ public class AlignHandler extends SubsystemBase{
                     
                     if(DriverStation.isAutonomousEnabled()){
 
-
-
                         currentState=AlignStates.StateAutoBackupInit;
                     }
                     else{

@@ -134,12 +134,12 @@ public class DriveCommandBuilder {
         Rotation2d flip = Rotation2d.k180deg;
         if(DriverStation.getAlliance().get() == Alliance.Blue){
 
-            bargeDistanceMeters = 107*Constants.kInchesToMeters;
+            bargeDistanceMeters = 127*Constants.kInchesToMeters; // 107
             flip = Rotation2d.kZero;
             
 
         }else{
-            bargeDistanceMeters = 142*Constants.kInchesToMeters;
+            bargeDistanceMeters = 162*Constants.kInchesToMeters; // 142
 
             flip = Rotation2d.kZero;
 

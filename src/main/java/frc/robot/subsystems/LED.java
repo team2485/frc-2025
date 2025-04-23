@@ -89,9 +89,9 @@ public class LED extends SubsystemBase {
         candle.setLEDs(255, 0, 0);
         break;
     }
-    // Future stuff?:
+    // Future stuff?: 
     // autos will have alliance color for LEDs
-    // green LEDs for scoring in processor
+    // green LEDs for scoring in processor 
 
     m_LEDCurrentState = m_LEDRequestedState;
 
