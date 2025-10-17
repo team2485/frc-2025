@@ -307,7 +307,7 @@ public class AlignHandler extends SubsystemBase{
 
                 // put in the command here that makes it go forward;
                  coralSign = 1;
-                if(targetID == 13){ // TODO: ADD OTHER CORAL STATION ID FOR RED 
+                if(targetID == 12){ // TODO: ADD OTHER CORAL STATION ID FOR RED 
                     coralSign=-1;
 
 
